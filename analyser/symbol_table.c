@@ -29,6 +29,7 @@ void init_symbtable(void)
     void_token->lexeme = "void";
 }
 
+// Return index of Identifier in symbol table
 int hash(char *s)
 {
     int h = 0;
