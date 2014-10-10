@@ -1,5 +1,6 @@
-OBJS = analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o main.o
-SRCS = analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c main.c
+## TODO Clean up all the repitition in this file
+OBJS = analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o translate.o main.o
+SRCS = analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c translate.c main.c
 CC = gcc
 
 CFLAGS = -Wall
@@ -23,10 +24,12 @@ C.tab.c:	analysis/C.y
 .c.o:
 	${CC} -g -c -o $@ $*.c
 
+# FIXME
 depend:
 	${CC} -M $(SRCS) > .deps
 	cat Makefile .deps > makefile
 
-dist:	symbol_table.c nodes.c main.c Makefile C.flex C.y nodes.h token.h
-	tar cvfz mycc.tgz symbol_table.c nodes.c main.c Makefile C.flex C.y \
+# FIXME
+dist:	symbol_table.c nodes.c translate.c main.c Makefile C.flex C.y nodes.h token.h
+	tar cvfz mycc.tgz symbol_table.c nodes.c translate.c main.c Makefile C.flex C.y \
 		nodes.h token.h

@@ -1,108 +1,76 @@
 #include <stdio.h>
-#include <ctype.h>
-#include "analysis/nodes.h"
-#include "analysis/C.tab.h"
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 
-char *named(int t)
+#include "translate.h"
+
+/* Translate source to three address code */
+void translate_to_TAC()
 {
-    static char b[100];
-    if (isgraph(t) || t==' ') {
-      sprintf(b, "%c", t);
-      return b;
-    }
-    switch (t) {
-      default: return "???";
-    case IDENTIFIER:
-      return "id";
-    case CONSTANT:
-      return "constant";
-    case STRING_LITERAL:
-      return "string";
-    case LE_OP:
-      return "<=";
-    case GE_OP:
-      return ">=";
-    case EQ_OP:
-      return "==";
-    case NE_OP:
-      return "!=";
-    case EXTERN:
-      return "extern";
-    case AUTO:
-      return "auto";
-    case INT:
-      return "int";
-    case VOID:
-      return "void";
-    case APPLY:
-      return "apply";
-    case LEAF:
-      return "leaf";
-    case IF:
-      return "if";
-    case ELSE:
-      return "else";
-    case WHILE:
-      return "while";
-    case CONTINUE:
-      return "continue";
-    case BREAK:
-      return "break";
-    case RETURN:
-      return "return";
-    }
+    return;
 }
 
-void print_leaf(NODE *tree, int level)
+/* Translate three address code to MIPS */
+void translate_to_MIPS()
 {
-    TOKEN *t = (TOKEN *)tree;
-    int i;
-    for (i=0; i<level; i++) putchar(' ');
-    if (t->type == CONSTANT) printf("%d\n", t->value);
-    else if (t->type == STRING_LITERAL) printf("\"%s\"\n", t->lexeme);
-    else if (t) puts(t->lexeme);
+    return;
 }
 
-void print_tree0(NODE *tree, int level)
+/* Read node, evaluate, continue */
+void interpret_source()
 {
-    int i;
-    if (tree==NULL) return;
-    if (tree->type==LEAF) {
-      print_leaf(tree->left, level);
+    translate();
+    return;
+
+}
+
+/* Interpret --C program */
+int main ( int argc, char *argv[] )
+{
+    int c         = 0;
+    int max_chars = 100; //for strncmp
+    char *action  = "";
+
+    // Determine translation requested
+    while ((c = getopt(argc, argv, "a:")) != -1)
+    {
+        switch (c)
+        {
+            case 'a':
+                action = optarg;
+                printf("Action Selected: %s\n", action);
+                break;
+            default:
+                printf("Invalid argument.\n");
+                abort();
+        }
     }
-    else {
-      for(i=0; i<level; i++) putchar(' ');
-      printf("%s\n", named(tree->type));
-/*       if (tree->type=='~') { */
-/*         for(i=0; i<level+2; i++) putchar(' '); */
-/*         printf("%p\n", tree->left); */
-/*       } */
-/*       else */
-        print_tree0(tree->left, level+2);
-      print_tree0(tree->right, level+2);
+
+    /* Translate */
+    if ( strncmp(action, "", max_chars) == 0 )
+    {
+        printf("No action selected\n");
+        abort();
     }
-}
-
-void print_tree(NODE *tree)
-{
-    print_tree0(tree, 0);
-}
-
-extern int yydebug;
-extern NODE* yyparse(void);
-extern NODE* ans;
-extern void init_symbtable(void);
-
-int main(int argc, char** argv)
-{
-    NODE* tree;
-    if (argc>1 && strcmp(argv[1],"-d")==0) yydebug = 1;
-    init_symbtable();
-    printf("--C COMPILER\n");
-    yyparse();
-    tree = ans;
-    printf("parse finished with %p\n", tree);
-    print_tree(tree);
+    else if ( strncmp(action, "interpret", max_chars) == 0 )
+    {
+        interpret_source();
+    }
+    else if ( strncmp(action, "tac", max_chars) == 0 )
+    {
+        translate_to_TAC();
+    }
+    else if ( strncmp(action, "mips", max_chars) == 0 )
+    {
+        translate_to_MIPS(); // expects TAC input
+    }
+    else
+    {
+        printf("Action is invalid!\n");
+        abort();
+    }
     return 0;
 }
+
+

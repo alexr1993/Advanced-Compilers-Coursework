@@ -1,0 +1,1 @@
+int translate (void);
