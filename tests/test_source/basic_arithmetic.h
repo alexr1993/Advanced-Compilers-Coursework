@@ -1,0 +1,9 @@
+char *basic_addition (void);
+char *basic_multiplication (void);
+char *basic_division (void);
+char *arithmetic (void);
+char *arithmetic_2 (void);
+char *division_rounding (void);
+char *division_error (void);
+char *divide_zero (void);
+char *division_error_2 (void);

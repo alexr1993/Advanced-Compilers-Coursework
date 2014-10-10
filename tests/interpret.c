@@ -1,9 +1,13 @@
 #include <check.h>
 #include <stdlib.h>
 
+#include "test_source/basic_arithmetic.h"
+
 START_TEST (interpret)
 {
-    ck_assert_int_eq(1, 1);
+    ck_assert_str_eq(
+        interpret(basic_addition()),
+        "8");
 }
 END_TEST
 
