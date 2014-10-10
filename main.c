@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <ctype.h>
-#include "nodes.h"
-#include "C.tab.h"
+#include "analysis/nodes.h"
+#include "analysis/C.tab.h"
 #include <string.h>
 
 char *named(int t)

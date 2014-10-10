@@ -1,6 +1,8 @@
-OBJS = lex.yy.o C.tab.o symbol_table.o nodes.o main.o
-SRCS = lex.yy.c C.tab.c symbol_table.c nodes.c main.c
+OBJS = analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o main.o
+SRCS = analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c main.c
 CC = gcc
+
+CFLAGS = -Wall
 
 all:	mycc
 
@@ -11,15 +13,15 @@ mycc:	${OBJS}
 	${CC} -g -o mycc ${OBJS}
 
 # Generate lexical analyser with flex
-lex.yy.c: C.flex
-	flex C.flex
+lex.yy.c: analysis/C.flex
+	flex analysis/C.flex
 
 # Generate parser with bison
-C.tab.c:	C.y
-	bison -d -t -v C.y
+C.tab.c:	analysis/C.y
+	bison -d -t -v analysis/C.y
 
 .c.o:
-	${CC} -g -c $*.c
+	${CC} -g -c -o $@ $*.c
 
 depend:
 	${CC} -M $(SRCS) > .deps

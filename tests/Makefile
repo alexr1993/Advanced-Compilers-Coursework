@@ -1,10 +1,15 @@
-OBJS = test_source/basic_arithmetic.o
-SRCS = test_source/basic_arithmetic.c
+SRCDIR = test_source
+
+OBJS := $(wildcard ${SRCDIR}/*.o)
+SRCS := $(wildcard ${SRCDIR}/*.c)
+
 CC = gcc
 
 all: ${OBJS}
-	gcc -o interpret_tests interpret.c `pkg-config --cflags --libs check`
+	gcc -o run_tests tests.c `pkg-config --cflags --libs check`
 
 .c.o:
 	${CC} -g -c -o $@ $*.c
+
+clean:
 	rm ${OBJS}
