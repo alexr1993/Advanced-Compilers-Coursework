@@ -12,6 +12,7 @@ clean:
 
 mycc:	${OBJS}
 	${CC} -g -o mycc ${OBJS}
+	rm ${OBJS}
 
 # Generate lexical analyser with flex
 lex.yy.c: analysis/C.flex

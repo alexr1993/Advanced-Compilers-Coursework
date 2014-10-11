@@ -7,10 +7,14 @@
 #include "analysis/nodes.h"
 #include "translate.h"
 
+#define str_eq(s1, s2)    (!strcmp ((s1),(s2)))
+
 extern int yydebug;
 extern NODE *yyparse (void);
 extern NODE *ans;
 extern void init_symbtable (void);
+
+FILE *yyin;
 
 /* Read input from user to evaluate */
 char *prompt (void)
@@ -23,6 +27,7 @@ char *prompt (void)
 /* Translate source to three address code */
 void translate_to_TAC()
 {
+    translate();
     return;
 }
 
@@ -55,19 +60,33 @@ void interpret_source(char *input)
 int main ( int argc, char *argv[] )
 {
     int c         = 0;
-    int max_chars = 100; //for strncmp
-    char *action  = "";
+    int len;
+    char *action = "";
 
     // Determine translation requested
-    while ((c = getopt(argc, argv, "a:")) != -1)
+    while ((c = getopt(argc, argv, "a:f:")) != -1)
     {
-        printf("%s\n", optarg);
         switch (c)
         {
             case 'a':
-                action = optarg;
+                // copy action type to var
+                len = strlen(optarg);
+                action = (char *) malloc(len * sizeof(char));
+                strncpy(action, optarg, len);
+
                 printf("Action Selected: %s\n", action);
                 break;
+
+            case 'f':
+                yyin = fopen(optarg, "r");
+                if (!yyin)
+                {
+                    printf("Invalid input file path.\n");
+                    abort();
+                }
+                printf("Input source file: %s\n", optarg);
+                break;
+
             default:
                 printf("Invalid argument.\n");
                 abort();
@@ -75,21 +94,21 @@ int main ( int argc, char *argv[] )
     }
 
     /* Translate */
-    if ( strncmp(action, "", max_chars) == 0 )
+    if ( str_eq(action, "") )
     {
         printf("No action selected\n");
         abort();
     }
-    else if ( strncmp(action, "interpret", max_chars) == 0 )
+    else if ( str_eq(action, "interpret") )
     {
         char *interpret_input = "";
         interpret_source(interpret_input);
     }
-    else if ( strncmp(action, "tac", max_chars) == 0 )
+    else if ( str_eq(action, "tac") )
     {
         translate_to_TAC();
     }
-    else if ( strncmp(action, "mips", max_chars) == 0 )
+    else if ( str_eq(action, "mips") )
     {
         translate_to_MIPS(); // expects TAC input
     }
