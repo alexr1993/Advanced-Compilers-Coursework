@@ -45,13 +45,13 @@ void interpret_source(char *input)
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
-        evaluate(tree);
+        evaluate_tree(tree);
     }
     // start interactive session
     while (false) // TODO change to true when implemented
     {
         char *command = prompt(); // accept input one expression at a time
-        evaluate(command);
+        evaluate_tree(command);
     }
     return;
 }
@@ -61,7 +61,7 @@ int main ( int argc, char *argv[] )
 {
     int c         = 0;
     int len;
-    char *action = "";
+    char *action  = "";
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:f:")) != -1)

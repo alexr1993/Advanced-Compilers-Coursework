@@ -1,43 +1,51 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include "analysis/C.tab.h"
 #include "analysis/nodes.h"
 #include "analysis/token.h"
 
 extern TOKEN *void_token;
 
+/*
+ * maybe use this as an error checker, to catch when leaves cannot
+ * evaluate
+ */
 bool is_self_evaluating (NODE *node)
 {
     return true;
 }
 
-bool has_child (NODE *node)
-{
-    return false;
-}
+NODE *evaluate_tree (NODE *parse_tree);
 
-NODE *get_next_child(NODE *tree)
+NODE *evaluate_node (NODE *node)
 {
-    // return the empty node
-    NODE *empty_node = make_leaf(void_token);
-    return empty_node;
-}/* Handles the crunching of parse trees */
-
-NODE *evaluate (NODE *parse_tree)
-{
-    while (has_child(parse_tree))
-    {
-        NODE *current = get_next_child(parse_tree);
-
-        /* return if self evaluating node */
-        if (is_self_evaluating(current))
+        /* return if self evaluating node, leaves *should* be */
+        if (node->type == LEAF)
         {
-            return current;
+            return node;
         }
         /* otherwise recurse */
         else
         {
-            evaluate(current);
+            evaluate_tree(node);
         }
+}
+
+/* Handles the crunching of parse trees */
+NODE *evaluate_tree (NODE *parse_tree)
+{
+    /* recursively turn branches into leaves */
+    if (parse_tree->type != LEAF)
+    {
+        NODE *left  = parse_tree->left;
+        NODE *right = parse_tree->right;
+        evaluate_node(left);
+        evaluate_node(right);
+    }
+    /* tree is just a leaf, so evaluate */
+    else
+    {
+        evaluate_node(parse_tree);
     }
 }
 
