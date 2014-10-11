@@ -1,9 +1,24 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
 
+#include "analysis/nodes.h"
 #include "translate.h"
+
+extern int yydebug;
+extern NODE *yyparse (void);
+extern NODE *ans;
+extern void init_symbtable (void);
+
+/* Read input from user to evaluate */
+char *prompt (void)
+{
+    // TODO implement as input mechanism which will accept single lines
+    // or multi line constructs, e.g. while, function declarations
+    return "";
+}
 
 /* Translate source to three address code */
 void translate_to_TAC()
@@ -17,12 +32,23 @@ void translate_to_MIPS()
     return;
 }
 
-/* Read node, evaluate, continue */
-void interpret_source()
+/* Basic evaluation of parse tree */
+void interpret_source(char *input)
 {
-    translate();
+    if (input != "")
+    {
+        yyparse();
+        NODE *tree = ans;
+        print_tree(tree);
+        evaluate(tree);
+    }
+    // start interactive session
+    while (false) // TODO change to true when implemented
+    {
+        char *command = prompt(); // accept input one expression at a time
+        evaluate(command);
+    }
     return;
-
 }
 
 /* Interpret --C program */
@@ -35,6 +61,7 @@ int main ( int argc, char *argv[] )
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:")) != -1)
     {
+        printf("%s\n", optarg);
         switch (c)
         {
             case 'a':
@@ -55,7 +82,8 @@ int main ( int argc, char *argv[] )
     }
     else if ( strncmp(action, "interpret", max_chars) == 0 )
     {
-        interpret_source();
+        char *interpret_input = "";
+        interpret_source(interpret_input);
     }
     else if ( strncmp(action, "tac", max_chars) == 0 )
     {
@@ -72,5 +100,4 @@ int main ( int argc, char *argv[] )
     }
     return 0;
 }
-
 

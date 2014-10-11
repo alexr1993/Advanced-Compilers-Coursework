@@ -1,6 +1,6 @@
 int fact(int n)
 {
-    // n arg must shadow n in lexical scope
+    /* n arg must shadow n in lexical scope */
     int inner_fact(int n, int a)
     {
         if (n==0) return a;

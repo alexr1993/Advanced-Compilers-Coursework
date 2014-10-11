@@ -25,7 +25,7 @@ char *arithmetic_2 (void)
 
 char *division_rounding (void)
 {
-    return "4 / 3"; // --C has no floats, round down
+    return "4 / 3"; /* --C has no floats, round down */
 }
 
 char *division_error (void)
@@ -43,4 +43,4 @@ char *division_error_2 (void)
     return "0 / 0";
 }
 
-// TODO: Modulo? Sqrt? Exponent?
+/* TODO: Modulo? Sqrt? Exponent? */

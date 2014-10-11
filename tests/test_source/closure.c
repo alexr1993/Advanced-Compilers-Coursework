@@ -1,4 +1,4 @@
-// needs function type
+/* needs function type */
 function cplus (int a)
 {
     int cplusa (int b)

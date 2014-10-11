@@ -3,7 +3,7 @@ function twice (function f)
 {
     int g (int x)
     {
-        // leverage dynamic scope
+        /* leverage dynamic scope */
         return f( f(x) );
     }
     return g;

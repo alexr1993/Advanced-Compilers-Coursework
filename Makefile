@@ -1,6 +1,6 @@
 ## TODO Clean up all the repitition in this file
-OBJS = analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o translate.o main.o
-SRCS = analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c translate.c main.c
+OBJS = evaluate.o analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o translate.o main.o
+SRCS = evaluate.c analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c translate.c main.c
 CC = gcc
 
 CFLAGS = -Wall
