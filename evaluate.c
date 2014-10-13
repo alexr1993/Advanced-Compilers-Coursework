@@ -3,6 +3,7 @@
 #include "analysis/C.tab.h"
 #include "analysis/nodes.h"
 #include "analysis/token.h"
+#include "util.h"
 
 extern TOKEN *void_token;
 
@@ -25,8 +26,6 @@ NODE *evaluate_tree (NODE *parse_tree);
  */
 NODE *evaluate_node (NODE *node)
 {
-    TOKEN *t = (TOKEN *)node;
-    printf("Lexeme: %s\n", t->lexeme);
     /* return if self evaluating node, leaves *should* be */
     if (node->type == LEAF)
     {
@@ -40,6 +39,8 @@ NODE *evaluate_node (NODE *node)
     else if (    node->left  && node->left->type  == LEAF
               && node->right && node->right->type == LEAF )
     {
+        //print_leaf(node->left, 0);
+        //print_leaf(node->right, 0);
     }
 
     /* TODO else if node has 2 children, one being a leaf
@@ -62,14 +63,23 @@ NODE *evaluate_tree (NODE *parse_tree)
     /* recursively turn branches into leaves */
     if (parse_tree->type != LEAF)
     {
+        /* Evaluate left and right subtrees */
         NODE *left  = parse_tree->left;
         NODE *right = parse_tree->right;
-        if (left)  evaluate_node(left);
-        if (right) evaluate_node(right);
+        if (left)
+        {
+            evaluate_node(left);
+        }
+        if (right)
+        {
+            evaluate_node(right);
+        }
     }
     /* tree is just a leaf, so evaluate */
     else
     {
+        printf("Leaf\n");
+        print_leaf(parse_tree->left, 0);
         evaluate_node(parse_tree);
     }
 }

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include "analysis/nodes.h"
-#include "translate.h"
+#include "util.h"
 
 #define str_eq(s1, s2)    (!strcmp ((s1),(s2)))
 
@@ -27,7 +27,11 @@ char *prompt (void)
 /* Translate source to three address code */
 void translate_to_TAC()
 {
-    translate();
+    init_symbtable();
+    yyparse();
+    NODE *tree = ans;
+    print_tree(tree);
+    evaluate_tree(tree);
     return;
 }
 
@@ -46,6 +50,7 @@ void interpret_source(void)
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
+        printf("Entering evaluate_tree\n");
         evaluate_tree(tree);
     }
     // start interactive session
@@ -65,7 +70,7 @@ int main ( int argc, char *argv[] )
     char *action  = "";
 
     // Determine translation requested
-    while ((c = getopt(argc, argv, "a:f")) != -1)
+    while ((c = getopt(argc, argv, "a:df")) != -1)
     {
         switch (c)
         {
@@ -76,6 +81,10 @@ int main ( int argc, char *argv[] )
                 strncpy(action, optarg, len);
 
                 printf("Action Selected: %s\n", action);
+                break;
+
+            case 'd':
+                yydebug = 1;
                 break;
 
             case 'f':
