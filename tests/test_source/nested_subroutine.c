@@ -8,4 +8,3 @@ int fact(int n)
     }
     return inner_fact(n,1);
 }
-return 0;

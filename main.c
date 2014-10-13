@@ -38,10 +38,11 @@ void translate_to_MIPS()
 }
 
 /* Basic evaluation of parse tree */
-void interpret_source(char *input)
+void interpret_source(void)
 {
-    if (input != "")
+    if (yyin)
     {
+        init_symbtable();
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
@@ -64,7 +65,7 @@ int main ( int argc, char *argv[] )
     char *action  = "";
 
     // Determine translation requested
-    while ((c = getopt(argc, argv, "a:f:")) != -1)
+    while ((c = getopt(argc, argv, "a:f")) != -1)
     {
         switch (c)
         {
@@ -93,6 +94,8 @@ int main ( int argc, char *argv[] )
         }
     }
 
+    yyin = fopen("tests/test_source/add.c", "r");
+
     /* Translate */
     if ( str_eq(action, "") )
     {
@@ -101,8 +104,7 @@ int main ( int argc, char *argv[] )
     }
     else if ( str_eq(action, "interpret") )
     {
-        char *interpret_input = "";
-        interpret_source(interpret_input);
+        interpret_source();
     }
     else if ( str_eq(action, "tac") )
     {
