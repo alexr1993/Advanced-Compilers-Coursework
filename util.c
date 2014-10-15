@@ -64,6 +64,11 @@ void print_leaf(NODE *tree, int level)
     else if (t) puts(t->lexeme);
 }
 
+void print_branch(NODE *tree)
+{
+      printf("%s\n", named(tree->type));
+}
+
 void print_tree0(NODE *tree, int level)
 {
     int i;
@@ -73,7 +78,7 @@ void print_tree0(NODE *tree, int level)
     }
     else {
       for(i=0; i<level; i++) putchar(' ');
-      printf("%s\n", named(tree->type));
+        print_branch(tree);
         print_tree0(tree->left, level+2);
       print_tree0(tree->right, level+2);
     }

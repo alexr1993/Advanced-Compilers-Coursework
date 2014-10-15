@@ -31,7 +31,7 @@ void translate_to_TAC()
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
-    evaluate_tree(tree);
+    evaluate(tree);
     return;
 }
 
@@ -50,14 +50,14 @@ void interpret_source(void)
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
-        printf("Entering evaluate_tree\n");
-        evaluate_tree(tree);
+        printf("Entering evaluate\n");
+        evaluate(tree);
     }
     // start interactive session
     while (false) // TODO change to true when implemented
     {
         char *command = prompt(); // accept input one expression at a time
-        evaluate_tree(command);
+        evaluate(command);
     }
     return;
 }
