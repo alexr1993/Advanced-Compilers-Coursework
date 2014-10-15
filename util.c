@@ -8,6 +8,7 @@ char *named(int t)
 {
     static char b[100];
     if (isgraph(t) || t==' ') {
+      // Write the symbol to the string at identifier b
       sprintf(b, "%c", t);
       return b;
     }

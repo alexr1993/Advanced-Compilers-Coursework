@@ -16,13 +16,36 @@ bool is_self_evaluating (NODE *node)
     return true;
 }
 
+/**
+ * Supported unary operators: -, return
+ *
+ */
 NODE *evaluate_unary(NODE *operator, NODE *operand)
 {
+    switch (operator->type)
+    {
+      case RETURN:
+        printf("Processing return operator\n");
+        return; // operand->left;
+      default:
+        return;
+    }
 }
 
 NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
 {
-
+    switch (operator->type)
+    {
+      case 'F':
+        printf("Processing function definition\n");
+        return;
+      case 'f':
+        printf("Processing function signature\n");
+        return;
+      case '+':
+        printf("Processing add\n");
+        return;
+    }
 }
 
 /**
