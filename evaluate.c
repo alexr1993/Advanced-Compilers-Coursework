@@ -22,6 +22,7 @@ bool is_self_evaluating (NODE *node)
  */
 NODE *evaluate_unary(NODE *operator, NODE *operand)
 {
+    printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case RETURN:
@@ -34,6 +35,7 @@ NODE *evaluate_unary(NODE *operator, NODE *operand)
 
 NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
 {
+    printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case 'F':
