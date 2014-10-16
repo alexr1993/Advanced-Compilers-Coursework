@@ -5,6 +5,8 @@
 #include <unistd.h>
 
 #include "analysis/nodes.h"
+#include "analysis/token.h"
+#include "evaluate.h"
 #include "util.h"
 
 #define str_eq(s1, s2)    (!strcmp ((s1),(s2)))
@@ -51,13 +53,15 @@ void interpret_source(void)
         NODE *tree = ans;
         print_tree(tree);
         printf("Entering evaluate\n");
-        evaluate(tree);
+        NODE *output = evaluate(tree);
+        printf("--------------------------------------------\n");
+        print_leaf(output->left, 0);
     }
     // start interactive session
     while (false) // TODO change to true when implemented
     {
         char *command = prompt(); // accept input one expression at a time
-        evaluate(command);
+        //evaluate(command);
     }
     return;
 }
