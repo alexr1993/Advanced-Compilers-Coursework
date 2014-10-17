@@ -6,9 +6,11 @@
 
 char *named(int t)
 {
+    //printf("Op type: %d\n", t);
     static char b[100];
     if (isgraph(t) || t==' ') {
       // Write the symbol to the string at identifier b
+        //printf("isgraph: true\n");
       sprintf(b, "%c", t);
       return b;
     }

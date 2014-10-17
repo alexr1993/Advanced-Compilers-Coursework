@@ -18,7 +18,7 @@ bool is_self_evaluating (NODE *node)
     return true;
 }
 
-/**
+/*
  * Supported unary operators: -, return
  *
  */
@@ -29,8 +29,19 @@ NODE *evaluate_unary(NODE *operator, NODE *operand)
     {
       case RETURN:
         printf("Processing return operator\n");
-        return operand; // operand->left;
+        return operand;
+      /* The only unary operator that makes it through the parses is RETURN
+       * This seems to be a bug with the prewritten code (in C.y)
+       */
+      //case '-':
+      //  printf("Processing unary minus\n");
+      //  TOKEN *t = new_token(CONSTANT); // new token for result
+      //  TOKEN *left_token = (TOKEN *) operand->left;
+
+      //  t->value = 0 - left_token->value;
+      //  return make_leaf(t);
       default:
+        printf("Unknown unary operator\n");
         return;
     }
 }
@@ -67,6 +78,9 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         TOKEN *t = new_token(CONSTANT);
         t->value = left_token->value + right_token->value;
         return make_leaf(t);
+      default:
+        printf("Unknown binary operator\n");
+        return;
     }
 }
 
@@ -78,7 +92,10 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
  */
 NODE *evaluate (NODE *node)
 {
-    /* return if self evaluating node, leaves *should* be */
+    /* Base case:
+     *
+     * return if self evaluating node, leaves *should* be
+     */
     if (node->type == LEAF)
     {
         printf("Evaluate output: ");
@@ -87,8 +104,7 @@ NODE *evaluate (NODE *node)
         print_leaf(node->left, 0);
         return node;
     }
-    /* TODO else if node has 1 child execute unary operator
-    */
+    /* Recursive case: Evaluate unary operator    */
     else if (!node->right)
     {
         print_branch(node);
@@ -96,14 +112,17 @@ NODE *evaluate (NODE *node)
         return evaluate_unary( node, evaluate(node->left) );
     }
 
-    /* Evaluate binary operator if both children are leaves */
+    /* Recursive case:
+     *
+     * Evaluate binary operator if both children are leaves
+     */
     else
     {
         print_branch(node);
         NODE *left_operand  = evaluate(node->left);
         NODE *right_operand = evaluate(node->right);
         print_tree(right_operand);
-        // operate(evaluate(node->left), evaluate(node->right))
+
         return evaluate_binary( node,
                                 left_operand,
                                 right_operand );
