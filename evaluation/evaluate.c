@@ -41,7 +41,7 @@ NODE *evaluate_unary(NODE *operator, NODE *operand)
 
       //  t->value = 0 - left_token->value;
       //  return make_leaf(t);
-      default:
+     default:
         printf("Unknown unary operator\n");
         return;
     }
@@ -79,6 +79,13 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         TOKEN *t = new_token(CONSTANT);
         t->value = left_token->value + right_token->value;
         return make_leaf(t);
+      case '~':
+        printf("Processing initialisation\n");
+        if (left_token->value == INT)
+        {
+            // TODO get name and value from evaluated = node
+            //envstore_int(name, value);
+        }
       default:
         printf("Unknown binary operator\n");
         return;
