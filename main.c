@@ -6,10 +6,8 @@
 
 #include "analysis/nodes.h"
 #include "analysis/token.h"
-#include "evaluate.h"
+#include "evaluation/evaluate.h"
 #include "util.h"
-
-#define str_eq(s1, s2)    (!strcmp ((s1),(s2)))
 
 extern int yydebug;
 extern NODE *yyparse (void);
@@ -107,7 +105,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/add2.c", "r");
+    yyin = fopen("tests/test_source/variables1.c", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

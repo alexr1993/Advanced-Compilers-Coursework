@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "analysis/C.tab.h"
-#include "analysis/nodes.h"
-#include "analysis/token.h"
-#include "util.h"
+#include "../analysis/C.tab.h"
+#include "../analysis/nodes.h"
+#include "../analysis/token.h"
+#include "environment.h"
+#include "../util.h"
 
 extern TOKEN *void_token;
 
