@@ -85,7 +85,22 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         {
             // TODO get name and value from evaluated = node
             //envstore_int(name, value);
+            // If there is no initialisation, then the two children will be
+            // the type, and then the function
+            if (right_token->value == 0)
+            {
+                right_token->value = 0;
+            }
+            envstore_int(right_token->lexeme, right_token->value);
         }
+      case '=':
+        printf("Processing assignment\n");
+        /* lvalue type should match rvalue type, this can be confirmed using
+           a var lookup, or from a parent initialisation operator */
+
+        // FIXME assuming we are assigning an int for now
+        INT_STATE_MAPPING *variable = envlookup_int(left_token->lexeme);
+        variable->value = right_token->value;
       default:
         printf("Unknown binary operator\n");
         return;

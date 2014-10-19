@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "environment.h"
 #include "../util.h"
 
@@ -17,7 +19,8 @@ void init_environment(void)
 
 int get_lowest_free_index(mapping)
 {
-    for (int i=0; i<MAX_ENTRIES; ++i)
+    int i;
+    for (i=0; i<MAX_ENTRIES; ++i)
     {
         if (!mapping[i])
         {
@@ -28,12 +31,12 @@ int get_lowest_free_index(mapping)
     return -1;
 }
 
-envlookup_int(char *name)
+INT_STATE_MAPPING *envlookup_int(char *name)
 {
-    int location;
+    int location, i;
 
     /* Lookup binding location */
-    for (int i=0; i<MAX_ENTRIES; ++i)
+    for (i = 0; i<MAX_ENTRIES; ++i)
     {
         if (str_eq(name, INT_BINDINGS[i]->name))
         {
@@ -41,17 +44,14 @@ envlookup_int(char *name)
         }
     }
 
-    int value;
-
-    /* Lookup value at location */
-    for (int i=0; i<MAX_ENTRIES; ++i)
+    /* Lookup data structure location */
+    for (i = 0; i<MAX_ENTRIES; ++i)
     {
         if (location == INT_LOCATIONS[i]->location)
         {
-            value = INT_LOCATIONS[i]->value;
+            return INT_LOCATIONS[i];
         }
     }
-    return value;
 }
 
 void envstore_int(char *name, int value)

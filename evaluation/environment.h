@@ -31,8 +31,8 @@ typedef struct FN_STATE_MAPPING
     function  fn;
 } FN_STATE_MAPPING;
 
-INT_ENV_MAPPING   envlookup_int(char *name);
-FN_ENV_MAPPING    envlookup_fn(char *name);
+INT_STATE_MAPPING   *envlookup_int(char *name);
+FN_STATE_MAPPING    *envlookup_fn(char *name);
 
 void envstore_int(char *name, int value);
 // TODO void envstore_fn();
