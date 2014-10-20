@@ -91,7 +91,8 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
             {
                 right_token->value = 0;
             }
-            envstore_int(right_token->lexeme, right_token->value);
+            // TODO sort out storage
+            //envstore_int(right_token->lexeme, right_token->value);
         }
       case '=':
         printf("Processing assignment\n");
@@ -99,8 +100,8 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
            a var lookup, or from a parent initialisation operator */
 
         // FIXME assuming we are assigning an int for now
-        INT_STATE_MAPPING *variable = envlookup_int(left_token->lexeme);
-        variable->value = right_token->value;
+        // ENV *variable = envlookup_int(left_token->lexeme);
+        // variable->value = right_token->value;
       default:
         printf("Unknown binary operator\n");
         return;
