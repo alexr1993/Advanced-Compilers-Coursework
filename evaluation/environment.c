@@ -3,62 +3,91 @@
 #include "environment.h"
 #include "../util.h"
 
-#define MAX_ENTRIES 100
 // Environment maps names to locations
-INT_ENV_MAPPING *[MAX_ENTRIES] INT_BINDINGS;
-FN_ENV_MAPPING  *[MAX_ENTRIES] FN_BINDINGS;
+ENV_MAPPING *environment;
 
 // State maps locations to values
-INT_STATE_MAPPING *[MAX_ENTRIES] INT_LOCATIONS;
-FN_STATE_MAPPING *[MAX_ENTRIES] FN_LOCATIONS;
+STATE_MAPPING *state;
+
+int STACK_POINTER = 0;
 
 void init_environment(void)
 {
-    // Set everything to 0 (probs unecessary)
+    environment = new_env_mapping("testvar", 1);
+    state = new_state_mapping(1, 42); // map testvar to = 42
 }
 
-int get_lowest_free_index(mapping)
+STATE_MAPPING *envlookup(char *name, int type)
 {
-    int i;
-    for (i=0; i<MAX_ENTRIES; ++i)
+    ENV_MAPPING current_env = environment;
+    STATE_MAPPING current_state = state;
+
+    /* Find the env mapping with the given name */
+    while (true)
     {
-        if (!mapping[i])
+        if (str_eq(name, current_env->name))
         {
-            printf("Lowest free index in mapping: %d\n", i);
-            return i;
+            break;
+        }
+        // Name has no location associated
+        if (!current_env->next)
+        {
+            printf("Variable name lookup failed!\n";
+            abort();
+        }
+        else
+        {
+            current_env = current_env->next;
         }
     }
-    return -1;
-}
-
-INT_STATE_MAPPING *envlookup_int(char *name)
-{
-    int location, i;
-
-    /* Lookup binding location */
-    for (i = 0; i<MAX_ENTRIES; ++i)
+    /* Find the state mapping with the location */
+    while (true)
     {
-        if (str_eq(name, INT_BINDINGS[i]->name))
+        if (current_env->location == current_state->location)
         {
-            location = INT_BINDINGS[i]->location;
+            break;
+        }
+        // Location has no state
+        if (!current_state->next)
+        {
+            printf("Location of variable has no value!\n");
+            abort();
+        }
+        else
+        {
+            current_state = current_state->next;
         }
     }
-
-    /* Lookup data structure location */
-    for (i = 0; i<MAX_ENTRIES; ++i)
-    {
-        if (location == INT_LOCATIONS[i]->location)
-        {
-            return INT_LOCATIONS[i];
-        }
-    }
+    return current_state;
 }
 
 void envstore_int(char *name, int value)
 {
-    int bind_index = get_lowest_free_index(INT_BINDINGS);
-    INT_BINDINGS[bind_index] = { .name = name, .location = location };
+    ENV_MAPPING current_env = environment;
+    STATE_MAPPING current_state = state;
 
-    int loc_index = get_lowest_free_index(INT_LOCATIONS);
-    INT_LOCATIONS[loc_index] = { .location = location, .value = value };
+    // Get last env mapping
+    while (current_env->next)
+    {
+        current_env = current_env->next;
+    }
+    ENV_MAPPING *new_em = new_env_mapping(name, STACK_POINTER);
+
+    // Store new env mapping
+    current_env->next = new_em;
+}
+
+void statestore_int(int location, int value)
+{
+
+};
+
+void envstore(char *name, int value)
+{
+    ENV_MAPPING current_env = environment;
+    STATE_MAPPING current_state = int_state;
+
+    while (true)
+    {
+        if (
 }
