@@ -52,7 +52,8 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
     TOKEN *left_token;
     TOKEN *right_token;
     /* Leaf data is stored in the left child of the leaf node */
-    if (left_operand->left && right_operand->left)
+    if ( left_operand && left_operand->left
+         && right_operand && right_operand->left)
     { // FIXME this fails because no node is returned from the child operation
         left_token  = (TOKEN *) left_operand->left;
         right_token = (TOKEN *) right_operand->left;
@@ -65,7 +66,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         printf("Processing function definition\n");
         // Currently return without checking signature
         // Program is assumed to be correct
-        return right_operand;
+        return right_operand ? right_operand : NULL;
       case 'd':
         printf("Processing function signature\n");
         // Currently does nothing as we do not type check
@@ -80,31 +81,46 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         t->value = left_token->value + right_token->value;
         return make_leaf(t);
       case '~':
-        printf("Processing initialisation\n");
+        /* TODO What the hell should an initialization return? */
+        // TODO make STATE the return type of everything, or this section
+        // won't really work for closures
         if (left_token->value == INT)
         {
+            printf("Processing int initialisation\n");
             // TODO get name and value from evaluated = node
             //envstore_int(name, value);
             // If there is no initialisation, then the two children will be
             // the type, and then the function
             if (right_token->value == 0)
             {
-                right_token->value = 0;
+                init_var(right_token->lexeme, INT_TYPE);
             }
-            // TODO sort out storage
-            //envstore_int(right_token->lexeme, right_token->value);
+            else
+            {
+                // TODO sort out storage
+                init_var(right_token->lexeme, INT_TYPE);
+                assign_var(right_token->lexeme,
+                           INT_TYPE,
+                           new_int_state(right_token->value));
+            }
         }
-      case '=':
+        return;
+     case '=':
+        /* TODO should return the lvalue */
         printf("Processing assignment\n");
         /* lvalue type should match rvalue type, this can be confirmed using
            a var lookup, or from a parent initialisation operator */
-
-        // FIXME assuming we are assigning an int for now
-        // ENV *variable = envlookup_int(left_token->lexeme);
-        // variable->value = right_token->value;
+        printf("Lexeme: %s, Value: %d\n", left_token->lexeme, right_token->value);
+        assign_var(left_token->lexeme,
+                   INT_TYPE,
+                   new_int_state(right_token->value));
+        TOKEN *t2 = new_token(CONSTANT);
+        t2->value = lookup_var(left_token->lexeme, right_token->value)
+                        ->state->value;
+        return make_leaf(t2);
       default:
-        printf("Unknown binary operator\n");
-        return;
+        printf("Unknown binary operator!\n");
+        abort();
     }
 }
 

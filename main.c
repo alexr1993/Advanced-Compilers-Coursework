@@ -6,6 +6,7 @@
 
 #include "analysis/nodes.h"
 #include "analysis/token.h"
+#include "evaluation/environment.h"
 #include "evaluation/evaluate.h"
 #include "util.h"
 
@@ -53,7 +54,10 @@ void interpret_source(void)
         printf("Entering evaluate\n");
         NODE *output = evaluate(tree);
         printf("--------------------------------------------\n");
-        print_leaf(output->left, 0);
+        if (output && output->left)
+        {
+            print_leaf(output->left, 0);
+        }
     }
     // start interactive session
     while (false) // TODO change to true when implemented
@@ -70,6 +74,8 @@ int main ( int argc, char *argv[] )
     int c         = 0;
     int len;
     char *action  = "";
+
+    init_environment();
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:df")) != -1)

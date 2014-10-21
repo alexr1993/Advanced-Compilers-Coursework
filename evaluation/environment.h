@@ -32,4 +32,6 @@ ENV *assign_var(char *name, int type, STATE *value);
 ENV *new_env_mapping(char *name, int *location);
 STATE *new_int_state(int value);
 STATE *new_fn_state(NODE *closure);
+
+void init_environment(void);
 #endif

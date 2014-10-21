@@ -13,18 +13,20 @@ STATE *state;
 ENV *_add_env(ENV *env)
 {
     ENV *current = environment;
-    while (current->next)
-    {
-        current = current->next;
-    }
 
     /* Lazily initialise */
     if (!current)
     {
+        // env is the first variable
         environment = env;
     }
     else
     {
+        // Add new env to the end
+        while (current->next)
+        {
+            current = current->next;
+        }
         current->next = env;
     }
     // Return whole environment
@@ -34,6 +36,14 @@ ENV *_add_env(ENV *env)
 /* Finds and returns the env mapping with the given name and type */
 ENV *lookup_var(char *name, int type)
 {
+    printf("Checking there is any env\n");
+    // Check there are any variables
+    if (!environment || !environment->name)
+    {
+        return NULL;
+    }
+    // FIXME reading environment->name causes a segfault
+    printf("Env->name: %s\n", environment->name);
     ENV *current_env = environment;
 
     /* Find the env mapping with the given name */
@@ -82,15 +92,10 @@ ENV *init_var(char *name, int type)
     }
 
     // Init env mapping
-    ENV* new_var;
+    ENV new_var = { .name = name, .type = type, .state = new_state };
+    _add_env(&new_var);
 
-    new_var->name = name;
-    new_var->type = type;
-    new_var->state = new_state;
-
-    _add_env(new_var);
-
-    return new_var;
+    return &new_var;
 }
 
 /* Sets the state of the variable */
@@ -111,9 +116,8 @@ ENV *assign_var(char *name, int type, STATE* value)
 
 STATE *new_int_state(int value)
 {
-    STATE *state;
-    state->value = value;
-    return state;
+    STATE state = { .value = value };
+    return &state;
 }
 
 STATE *new_fn_state(NODE *closure)
@@ -124,7 +128,7 @@ STATE *new_fn_state(NODE *closure)
 }
 
 /* Init some globals, or whatever else */
-void _init_environment(void)
+void init_environment(void)
 {
     ENV *var1 = init_var("testvar", INT_TYPE);
 

@@ -1,4 +1,4 @@
 int main(void)
 {
-    my_variable = 2;
+    int my_variable = 2;
 }
