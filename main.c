@@ -111,7 +111,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/variables1.c", "r");
+    yyin = fopen("tests/test_source/closure.c", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

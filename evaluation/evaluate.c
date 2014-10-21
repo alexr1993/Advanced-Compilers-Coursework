@@ -54,7 +54,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
     /* Leaf data is stored in the left child of the leaf node */
     if ( left_operand && left_operand->left
          && right_operand && right_operand->left)
-    { // FIXME this fails because no node is returned from the child operation
+    {
         left_token  = (TOKEN *) left_operand->left;
         right_token = (TOKEN *) right_operand->left;
     }
@@ -81,7 +81,6 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         t->value = left_token->value + right_token->value;
         return make_leaf(t);
       case '~':
-        /* TODO What the hell should an initialization return? */
         // TODO make STATE the return type of everything, or this section
         // won't really work for closures
         print_environment();
@@ -104,6 +103,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         {
             printf("Processing fn initialisation\n");
         }
+        // an init can't be an arg for anything, so don't return anything
         return;
      case '=':
         /* TODO should return the lvalue */
@@ -147,6 +147,7 @@ NODE *evaluate (NODE *node)
         print_leaf(node->left, 0);
         return node;
     }
+
     /* Recursive case: Evaluate unary operator    */
     else if (!node->right)
     {
@@ -161,6 +162,9 @@ NODE *evaluate (NODE *node)
      */
     else
     {
+        // TODO Initialisation must be done before it's leaves
+        // which may involve assignment
+        if (node->type == '~');
         print_branch(node);
         NODE *left_operand  = evaluate(node->left);
         NODE *right_operand = evaluate(node->right);
