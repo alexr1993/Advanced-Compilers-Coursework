@@ -84,6 +84,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         /* TODO What the hell should an initialization return? */
         // TODO make STATE the return type of everything, or this section
         // won't really work for closures
+        print_environment();
         if (left_token->type == INT)
         {
             printf("Processing int initialisation\n");
@@ -119,6 +120,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         return make_leaf(t2);
       case ';':
         printf("Processing multiple statements\n");
+        return right_operand;
       default:
         printf("Unknown binary operator!\n");
         abort();
@@ -162,7 +164,7 @@ NODE *evaluate (NODE *node)
         print_branch(node);
         NODE *left_operand  = evaluate(node->left);
         NODE *right_operand = evaluate(node->right);
-        print_tree(right_operand);
+        //print_tree(right_operand);
 
         return evaluate_binary( node,
                                 left_operand,

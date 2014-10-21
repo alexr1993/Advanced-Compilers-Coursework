@@ -9,7 +9,22 @@ ENV *environment;
 // State maps locations to values
 STATE *state;
 
-/* Adds env mapping to the environment */
+void print_env(ENV *current)
+{
+        char *type;
+        if (current->type == INT_TYPE) type = "INT";
+        else type = "FN";
+
+        printf("Name: %s, Type: %s", current->name, type);
+
+        if  (current->type == INT_TYPE)
+        {
+            printf(", Value: %d", current->state->value);
+        }
+        printf("\n");
+}
+
+ /* Adds env mapping to the environment */
 ENV *_add_env(ENV *env)
 {
     ENV *current = environment;
@@ -46,12 +61,13 @@ ENV *lookup_var(char *name, int type)
         return NULL;
     }
     // FIXME reading environment->name causes a segfault
-    printf("Env->name: %s\n", environment->name);
     ENV *current_env = environment;
 
     /* Find the env mapping with the given name */
     while (true)
     {
+        //print_env(current_env);
+
         // Mapping found
         if (str_eq(name, current_env->name))
         {
@@ -61,7 +77,7 @@ ENV *lookup_var(char *name, int type)
         if (!current_env->next)
         {
             printf("Variable name lookup failed!\n");
-            abort();
+            return NULL;
         }
         // Still looking
         else
@@ -153,4 +169,15 @@ void init_environment(void)
 
     STATE *state = new_int_state(42);
     assign_var("testvar", INT_TYPE, state);
+}
+
+void print_environment(void)
+{
+    ENV *current = environment;
+    printf("VARIABLES CURRENTLY IN ENVIRONMENT\n");
+    while (current)
+    {
+        print_env(current);
+        current = current->next;
+    }
 }

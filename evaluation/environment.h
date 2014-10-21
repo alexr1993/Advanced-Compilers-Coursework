@@ -34,4 +34,5 @@ STATE *new_int_state(int value);
 STATE *new_fn_state(NODE *closure);
 
 void init_environment(void);
+void print_environment(void);
 #endif
