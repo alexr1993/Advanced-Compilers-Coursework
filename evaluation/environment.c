@@ -18,7 +18,9 @@ ENV *_add_env(ENV *env)
     if (!current)
     {
         // env is the first variable
+        printf("Setting environment\n");
         environment = env;
+        printf("environment->name: %s\n", environment->name);
     }
     else
     {
@@ -36,6 +38,7 @@ ENV *_add_env(ENV *env)
 /* Finds and returns the env mapping with the given name and type */
 ENV *lookup_var(char *name, int type)
 {
+    printf("Name: %s\n", name);
     printf("Checking there is any env\n");
     // Check there are any variables
     if (!environment || !environment->name)
@@ -69,6 +72,21 @@ ENV *lookup_var(char *name, int type)
     return current_env;
 }
 
+ENV *new_env(char *name, int type, STATE *state)
+{
+    // Init env mapping
+    ENV *new_env = malloc(sizeof(ENV));
+    int name_length = strlen(name);
+
+    new_env->name = malloc(name_length * sizeof(char));
+    strncpy(new_env->name, name, name_length);
+    printf("Name: %s, var->name: %s\n", name, new_env->name);
+    new_env->type = type;
+    new_env->state = state;
+
+    return new_env;
+}
+
 /* Attempts to store new variable, initialised to default values */
 ENV *init_var(char *name, int type)
 {
@@ -84,18 +102,18 @@ ENV *init_var(char *name, int type)
 
     if (type == INT_TYPE)
     {
-        new_state->value = 0;
+        new_state = new_int_state(0);
     }
     else if (type == FN_TYPE)
     {
-        new_state->closure = make_leaf(NULL);
+        new_state = new_fn_state( make_leaf(NULL) );
     }
 
     // Init env mapping
-    ENV new_var = { .name = name, .type = type, .state = new_state };
-    _add_env(&new_var);
+    ENV *new_var = new_env(name, type, new_state);
+    _add_env(new_var);
 
-    return &new_var;
+    return new_var;
 }
 
 /* Sets the state of the variable */
@@ -116,13 +134,14 @@ ENV *assign_var(char *name, int type, STATE* value)
 
 STATE *new_int_state(int value)
 {
-    STATE state = { .value = value };
-    return &state;
+    STATE *state = malloc(sizeof(STATE));
+    state->value = value;
+    return state;
 }
 
 STATE *new_fn_state(NODE *closure)
 {
-    STATE *state;
+    STATE *state = malloc(sizeof(STATE));
     state->closure = closure;
     return state;
 }

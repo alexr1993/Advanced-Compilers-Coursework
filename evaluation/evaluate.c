@@ -84,25 +84,24 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         /* TODO What the hell should an initialization return? */
         // TODO make STATE the return type of everything, or this section
         // won't really work for closures
-        if (left_token->value == INT)
+        if (left_token->type == INT)
         {
             printf("Processing int initialisation\n");
             // TODO get name and value from evaluated = node
             //envstore_int(name, value);
             // If there is no initialisation, then the two children will be
             // the type, and then the function
-            if (right_token->value == 0)
+            init_var(right_token->lexeme, INT_TYPE);
+            if (right_token->value != 0)
             {
-                init_var(right_token->lexeme, INT_TYPE);
-            }
-            else
-            {
-                // TODO sort out storage
-                init_var(right_token->lexeme, INT_TYPE);
                 assign_var(right_token->lexeme,
                            INT_TYPE,
                            new_int_state(right_token->value));
             }
+        }
+        else
+        {
+            printf("Processing fn initialisation\n");
         }
         return;
      case '=':
@@ -118,6 +117,8 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         t2->value = lookup_var(left_token->lexeme, right_token->value)
                         ->state->value;
         return make_leaf(t2);
+      case ';':
+        printf("Processing multiple statements\n");
       default:
         printf("Unknown binary operator!\n");
         abort();
