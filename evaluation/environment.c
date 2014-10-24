@@ -4,7 +4,7 @@
 #include "environment.h"
 
 // Environment maps names to locations
-ENV *environment;
+ENV *gbl_environment;
 
 // State maps locations to values
 STATE *state;
@@ -27,15 +27,15 @@ void print_env(ENV *current)
  /* Adds env mapping to the environment */
 ENV *_add_env(ENV *env)
 {
-    ENV *current = environment;
+    ENV *current = gbl_environment;
 
     /* Lazily initialise */
     if (!current)
     {
         // env is the first variable
-        printf("Setting environment\n");
-        environment = env;
-        printf("environment->name: %s\n", environment->name);
+        printf("Setting gbl_environment\n");
+        gbl_environment = env;
+        printf("gbl_environment->name: %s\n", gbl_environment->name);
     }
     else
     {
@@ -46,8 +46,8 @@ ENV *_add_env(ENV *env)
         }
         current->next = env;
     }
-    // Return whole environment
-    return environment;
+    // Return whole gbl_environment
+    return gbl_environment;
 }
 
 /* Finds and returns the env mapping with the given name and type */
@@ -56,12 +56,12 @@ ENV *lookup_var(char *name, int type)
     printf("Name: %s\n", name);
     printf("Checking there is any env\n");
     // Check there are any variables
-    if (!environment || !environment->name)
+    if (!gbl_environment || !gbl_environment->name)
     {
         return NULL;
     }
-    // FIXME reading environment->name causes a segfault
-    ENV *current_env = environment;
+    // FIXME reading gbl_environment->name causes a segfault
+    ENV *current_env = gbl_environment;
 
     /* Find the env mapping with the given name */
     while (true)
@@ -101,6 +101,20 @@ ENV *new_env(char *name, int type, STATE *state)
     new_env->state = state;
 
     return new_env;
+}
+
+STATE *new_int_state(int value)
+{
+    STATE *state = malloc(sizeof(STATE));
+    state->value = value;
+    return state;
+}
+
+STATE *new_fn_state(function *closure)
+{
+    STATE *state = malloc(sizeof(STATE));
+    state->closure = closure;
+    return state;
 }
 
 /* Attempts to store new variable, initialised to default values */
@@ -148,20 +162,6 @@ ENV *assign_var(char *name, int type, STATE* value)
     }
 }
 
-STATE *new_int_state(int value)
-{
-    STATE *state = malloc(sizeof(STATE));
-    state->value = value;
-    return state;
-}
-
-STATE *new_fn_state(NODE *closure)
-{
-    STATE *state = malloc(sizeof(STATE));
-    state->closure = closure;
-    return state;
-}
-
 /* Init some globals, or whatever else */
 void init_environment(void)
 {
@@ -173,7 +173,7 @@ void init_environment(void)
 
 void print_environment(void)
 {
-    ENV *current = environment;
+    ENV *current = gbl_environment;
     printf("VARIABLES CURRENTLY IN ENVIRONMENT\n");
     while (current)
     {

@@ -11,19 +11,10 @@
 extern TOKEN *void_token;
 
 /*
- * maybe use this as an error checker, to catch when leaves cannot
- * evaluate
- */
-bool is_self_evaluating (NODE *node)
-{
-    return true;
-}
-
-/*
  * Supported unary operators: -, return
  *
  */
-NODE *evaluate_unary(NODE *operator, NODE *operand)
+STATE *evaluate_unary(NODE *operator, STATE *operand)
 {
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
@@ -47,7 +38,7 @@ NODE *evaluate_unary(NODE *operator, NODE *operand)
     }
 }
 
-NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
+STATE *evaluate_binary(NODE *operator, STATE *left_operand, STATE *right_operand)
 {
     TOKEN *left_token;
     TOKEN *right_token;
@@ -66,20 +57,31 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
         printf("Processing function definition\n");
         // Currently return without checking signature
         // Program is assumed to be correct
-        return right_operand ? right_operand : NULL;
+        return new_int_state(right_operand ? right_operand : NULL);
+
+
       case 'd':
         printf("Processing function signature\n");
         // Currently does nothing as we do not type check
-        return operator;
+        return new_fn_state(operator);
+
       case 'F':
         printf("Processing function return type\n");
-        return operator;
+        // Return null values to represent the return type
+        if (left_token->type == INT)
+        {
+            return new_int_state(0);
+        }
+        else
+        {
+            return new_fn_state(NULL);
+        }
+
       case '+':
         printf("Processing add\n");
         printf("Output: %d\n", left_token->value + right_token->value);
-        TOKEN *t = new_token(CONSTANT);
-        t->value = left_token->value + right_token->value;
-        return make_leaf(t);
+        return new_int_state(left_token->value + right_token->value);
+
       case '~':
         // TODO make STATE the return type of everything, or this section
         // won't really work for closures
@@ -94,33 +96,42 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
             init_var(right_token->lexeme, INT_TYPE);
             if (right_token->value != 0)
             {
+                STATE *var_state = new_int_state(right_token->value);
+
                 assign_var(right_token->lexeme,
                            INT_TYPE,
-                           new_int_state(right_token->value));
+                           var_state);
+
             }
+            return;
         }
         else
         {
+            init_function(ret_type,  name,    args,
+                                   lex_scope, right_operand);
+
             printf("Processing fn initialisation\n");
         }
-        // an init can't be an arg for anything, so don't return anything
-        return;
+
      case '=':
-        /* TODO should return the lvalue */
+        /* Should return the lvalue, only for ints */
         printf("Processing assignment\n");
+
         /* lvalue type should match rvalue type, this can be confirmed using
            a var lookup, or from a parent initialisation operator */
         printf("Lexeme: %s, Value: %d\n", left_token->lexeme, right_token->value);
+
+        STATE *int_state = new_int_state(right_token->value);
         assign_var(left_token->lexeme,
                    INT_TYPE,
-                   new_int_state(right_token->value));
-        TOKEN *t2 = new_token(CONSTANT);
-        t2->value = lookup_var(left_token->lexeme, right_token->value)
-                        ->state->value;
-        return make_leaf(t2);
+                   int_state);
+
+        return int_state;
+
       case ';':
         printf("Processing multiple statements\n");
         return right_operand;
+
       default:
         printf("Unknown binary operator!\n");
         abort();
@@ -133,7 +144,7 @@ NODE *evaluate_binary(NODE *operator, NODE *left_operand, NODE *right_operand)
  * Simply returns leaves
  *
  */
-NODE *evaluate (NODE *node)
+STATE *evaluate (NODE *node)
 {
     /* Base case:
      *
@@ -166,8 +177,8 @@ NODE *evaluate (NODE *node)
         // which may involve assignment
         if (node->type == '~');
         print_branch(node);
-        NODE *left_operand  = evaluate(node->left);
-        NODE *right_operand = evaluate(node->right);
+        STATE *left_operand  = evaluate(node->left);
+        STATE *right_operand = evaluate(node->right);
         //print_tree(right_operand);
 
         return evaluate_binary( node,

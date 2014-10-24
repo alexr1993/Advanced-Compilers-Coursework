@@ -51,8 +51,9 @@ void interpret_source(void)
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
+        // TODO process contents of tree to populate global env
         printf("Entering evaluate\n");
-        NODE *output = evaluate(tree);
+        NODE *output = evaluate(tree); // Call eval with fn main, passing global env
         printf("--------------------------------------------\n");
         if (output && output->left)
         {
