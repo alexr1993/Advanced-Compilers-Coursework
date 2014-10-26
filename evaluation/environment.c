@@ -25,7 +25,7 @@ void print_env(ENV *current)
 }
 
  /* Adds env mapping to the environment */
-ENV *_add_env(ENV *env)
+ENV *_add_env(ENV *env, FRAME *frame)
 {
     ENV *current = gbl_environment;
 
@@ -50,15 +50,22 @@ ENV *_add_env(ENV *env)
     return gbl_environment;
 }
 
-/* Finds and returns the env mapping with the given name and type */
-ENV *lookup_var(char *name, int type)
+/*
+ * Finds and returns the env mapping with the given name and type
+ *
+ * Checks given env first, then recursive looks at parent until var
+ * is found
+ *
+ */
+ENV *lookup_var(char *name, int type, FRAME *frame)
 {
     printf("Name: %s\n", name);
     printf("Checking there is any env\n");
     // Check there are any variables
     if (!gbl_environment || !gbl_environment->name)
     {
-        return NULL;
+        // Lookup variable in next stack frame
+        return lookup_var(name, type, frame->next);
     }
     // FIXME reading gbl_environment->name causes a segfault
     ENV *current_env = gbl_environment;
@@ -118,10 +125,10 @@ STATE *new_fn_state(function *closure)
 }
 
 /* Attempts to store new variable, initialised to default values */
-ENV *init_var(char *name, int type)
+ENV *init_var(char *name, int type, FRAME *frame)
 {
     // Check for collision
-    if (lookup_var(name, type))
+    if (lookup_var(name, type, frame))
     {
         printf("Attempted to initialise variable twice!\n");
         abort();
@@ -136,20 +143,20 @@ ENV *init_var(char *name, int type)
     }
     else if (type == FN_TYPE)
     {
-        new_state = new_fn_state( make_leaf(NULL) );
+        new_state = new_fn_state( new_function(0, NULL, NULL, NULL) );
     }
 
     // Init env mapping
     ENV *new_var = new_env(name, type, new_state);
-    _add_env(new_var);
+    _add_env(new_var, frame);
 
     return new_var;
 }
 
 /* Sets the state of the variable */
-ENV *assign_var(char *name, int type, STATE* value)
+ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
 {
-    ENV *var = lookup_var(name, type);
+    ENV *var = lookup_var(name, type, frame);
 
     if (var && var->type == type)
     {
@@ -160,15 +167,16 @@ ENV *assign_var(char *name, int type, STATE* value)
         printf("Error: Assigning to uninitialised variable, check type!");
         abort();
     }
+    return var;
 }
 
 /* Init some globals, or whatever else */
-void init_environment(void)
+void init_environment(FRAME *frame)
 {
-    ENV *var1 = init_var("testvar", INT_TYPE);
+    ENV *var1 = init_var("testvar", INT_TYPE, frame);
 
     STATE *state = new_int_state(42);
-    assign_var("testvar", INT_TYPE, state);
+    assign_var("testvar", INT_TYPE, state, frame);
 }
 
 void print_environment(void)

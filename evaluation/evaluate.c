@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "environment.h"
+
 #include "../analysis/C.tab.h"
 #include "../analysis/nodes.h"
 #include "../analysis/token.h"
-#include "environment.h"
 #include "../util.h"
 
 extern TOKEN *void_token;
@@ -34,22 +35,14 @@ STATE *evaluate_unary(NODE *operator, STATE *operand)
       //  return make_leaf(t);
      default:
         printf("Unknown unary operator\n");
-        return;
+        return operand;
     }
 }
 
-STATE *evaluate_binary(NODE *operator, STATE *left_operand, STATE *right_operand)
+STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
+                        STATE *right_operand,  FRAME *frame         )
 {
-    TOKEN *left_token;
-    TOKEN *right_token;
-    /* Leaf data is stored in the left child of the leaf node */
-    if ( left_operand && left_operand->left
-         && right_operand && right_operand->left)
-    {
-        left_token  = (TOKEN *) left_operand->left;
-        right_token = (TOKEN *) right_operand->left;
-    }
-
+    // TODO add type checking 
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
@@ -59,16 +52,17 @@ STATE *evaluate_binary(NODE *operator, STATE *left_operand, STATE *right_operand
         // Program is assumed to be correct
         return new_int_state(right_operand ? right_operand : NULL);
 
-
       case 'd':
         printf("Processing function signature\n");
-        // Currently does nothing as we do not type check
-        return new_fn_state(operator);
+        // function body is null until it reaches the D operator
+        // right_operand needs to be a linkedlist to allow arbitrary params
+        return new_fn_state( new_function( left_operand->value, right_operand,
+                                           scope,       NULL    ));
 
       case 'F':
         printf("Processing function return type\n");
         // Return null values to represent the return type
-        if (left_token->type == INT)
+        if (left_operand->value == INT)
         {
             return new_int_state(0);
         }
@@ -79,38 +73,39 @@ STATE *evaluate_binary(NODE *operator, STATE *left_operand, STATE *right_operand
 
       case '+':
         printf("Processing add\n");
-        printf("Output: %d\n", left_token->value + right_token->value);
-        return new_int_state(left_token->value + right_token->value);
+        printf("Output: %d\n", left_operand->value + right_operand->value);
+        return new_int_state(left_operand->value + right_operand->value);
 
       case '~':
         // TODO make STATE the return type of everything, or this section
         // won't really work for closures
         print_environment();
-        if (left_token->type == INT)
+        if (left_operand->value == INT)
         {
             printf("Processing int initialisation\n");
             // TODO get name and value from evaluated = node
             //envstore_int(name, value);
             // If there is no initialisation, then the two children will be
             // the type, and then the function
-            init_var(right_token->lexeme, INT_TYPE);
-            if (right_token->value != 0)
-            {
-                STATE *var_state = new_int_state(right_token->value);
+            init_var(right_token->lexeme, INT_TYPE, frame);
 
-                assign_var(right_token->lexeme,
-                           INT_TYPE,
-                           var_state);
+            /* Initialise to 0 if no value is given */
+            STATE *var_state = right_operand->value ? right_operand->value
+                             :                        new_int_state(0);
 
+            assign_var(right_token->lexeme,
+                       INT_TYPE,
+                       var_state,
+                       frame);
             }
             return;
         }
         else
         {
-            init_function(ret_type,  name,    args,
-                                   lex_scope, right_operand);
-
             printf("Processing fn initialisation\n");
+            register_function(ret_type,  name,    args,
+                              lex_scope, right_operand);
+
         }
 
      case '=':

@@ -8,11 +8,12 @@ struct ENV;
 
 typedef struct function
 {
-    int  *return_type; // INT_FN or INT_TYPE as defined in environment.h
-    char *name;
-    struct ENV *arguments;
-    struct ENV *lex_scope;
-    NODE *fn_body;
+    int    return_type; // INT_FN or INT_TYPE as defined in environment.h
+    struct ENV *params;
+    struct FRAME *scope;
+    NODE   *body;
 } function;
 
+function *new_function( int return_type, struct ENV *params,
+                        struct FRAME *scope,      NODE *body   );
 #endif

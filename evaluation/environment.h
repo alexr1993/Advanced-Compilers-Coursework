@@ -7,6 +7,7 @@
 #define INT_TYPE 0
 #define FN_TYPE  1
 
+struct function;
 /*
  * Types required for name -> storage -> state lookup using environment
  * and state respectively
@@ -14,9 +15,10 @@
 typedef union STATE
 {
     int value;
-    function *closure;
+    struct function *closure;
 } STATE;
 
+// Stores name -> state mappings, AKA a binding
 typedef struct ENV
 {
     char *name;
@@ -29,14 +31,21 @@ typedef struct ENV
     // 2 structs - a frame list and a binding list
 } ENV;
 
-ENV *lookup_var(char *name, int type);
-ENV *init_var(char *name, int type);
-ENV *assign_var(char *name, int type, STATE *value);
+// Stack frames, provides lookup (lexical scope)
+typedef struct FRAME
+{
+    struct ENV *variables;
+    struct FRAME *next;
+} FRAME;
+
+ENV *lookup_var(char *name, int type, FRAME *frame);
+ENV *init_var(char *name, int type, FRAME *frame);
+ENV *assign_var(char *name, int type, STATE *value, FRAME *frame);
 
 ENV *new_env_mapping(char *name, int *location);
 STATE *new_int_state(int value);
-STATE *new_fn_state(NODE *function);
+STATE *new_fn_state(struct function* closure);
 
-void init_environment(void);
+void init_environment(FRAME *frame);
 void print_environment(void);
 #endif
