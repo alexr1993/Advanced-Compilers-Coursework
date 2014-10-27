@@ -2,6 +2,7 @@
 #define __ENVIRONMENT_H
 
 #include "function.h"
+#include "param.h"
 #include "../util.h"
 
 #define INT_TYPE 0
@@ -16,6 +17,7 @@ typedef union STATE
 {
     int value;
     struct function *closure;
+    struct param *paramlist;
 } STATE;
 
 // Stores name -> state mappings, AKA a binding

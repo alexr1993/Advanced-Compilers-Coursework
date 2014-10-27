@@ -52,6 +52,23 @@ void interpret_source(void)
         NODE *tree = ans;
         print_tree(tree);
         // TODO process contents of tree to populate global env
+        //
+        // This can be done by:
+        //  1. Backpatching (but no idea how to implement)
+        //
+        //  2. First pass to get vars
+        //      Issue is if you init env here then there can be weird situations where
+        //      variables can be used before being initialised as initialisations are 
+        //      done on the first pass
+        //
+        //  3. Don't do it
+        //      You must use forward declarations, and can't init at the same time
+        //      as assign.
+        //      Also not sure if this will work for functions
+        //
+
+        evaluate_variable_inits(tree); // Option 1
+
         printf("Entering evaluate\n");
         NODE *output = evaluate(tree); // Call eval with fn main, passing global env
         printf("--------------------------------------------\n");

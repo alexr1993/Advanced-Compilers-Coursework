@@ -50,14 +50,15 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         printf("Processing function definition\n");
         // Currently return without checking signature
         // Program is assumed to be correct
-        return new_int_state(right_operand ? right_operand : NULL);
+        return new_int_state( right_operand->value ? right_operand->value
+                             :                       NULL                 );
 
       case 'd':
         printf("Processing function signature\n");
         // function body is null until it reaches the D operator
         // right_operand needs to be a linkedlist to allow arbitrary params
         return new_fn_state( new_function( left_operand->value, right_operand,
-                                           scope,       NULL    ));
+                                           frame,       NULL    ));
 
       case 'F':
         printf("Processing function return type\n");
@@ -97,7 +98,6 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
                        INT_TYPE,
                        var_state,
                        frame);
-            }
             return;
         }
         else

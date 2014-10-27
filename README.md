@@ -15,3 +15,86 @@ minus2C
   * token.h - For storing and looking up tokens in source
 
 * synthesis
+
+
+### Example parse trees
+
+For closure.c
+
+D
+  d
+    function
+    F
+      cplus
+      ~
+        int
+        a
+  ;
+    D
+      d
+        int
+        F
+          cplusa
+          ~
+            int
+            b
+      return
+        +
+          a
+          b
+    return
+      cpluasa
+
+For awkward_declarations.cmm
+~
+  ~
+    D
+      d
+        int
+        F
+          f
+          ~
+            int
+            x
+      ;
+        ~
+          int
+          ,
+            =
+              z
+              2
+            =
+              y
+              3
+        return
+          apply
+            g
+            +
+              x
+              z
+    D
+      d
+        int
+        F
+          g
+          ,
+            ~
+              int
+              y
+            ~
+              int
+              z
+      return
+        +
+          3
+          y
+  D
+    d
+      int
+      F
+        main
+        void
+    return
+      apply
+        f
+        4
