@@ -18,6 +18,7 @@ typedef union STATE
     int value;
     struct function *closure;
     struct param *paramlist;
+    char *var_name; // only used for variable/function names
 } STATE;
 
 // Stores name -> state mappings, AKA a binding

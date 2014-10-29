@@ -57,7 +57,8 @@ void interpret_source(void)
         //  1. Backpatching (but no idea how to implement)
         //
         //  2. First pass to get vars
-        //      Issue is if you init env here then there can be weird situations where
+        //      Issue is if you init env here then there can be weird
+        //      situations where
         //      variables can be used before being initialised as initialisations are 
         //      done on the first pass
         //

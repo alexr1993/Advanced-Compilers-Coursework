@@ -42,7 +42,7 @@ STATE *evaluate_unary(NODE *operator, STATE *operand)
 STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
                         STATE *right_operand,  FRAME *frame         )
 {
-    // TODO add type checking 
+    // TODO add type checking
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
@@ -50,8 +50,7 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         printf("Processing function definition\n");
         // Currently return without checking signature
         // Program is assumed to be correct
-        return new_int_state( right_operand->value ? right_operand->value
-                             :                       NULL                 );
+        return new_int_state( right_operand->value );
 
       case 'd':
         printf("Processing function signature\n");
@@ -104,7 +103,7 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         {
             printf("Processing fn initialisation\n");
             register_function(ret_type,  name,    args,
-                              lex_scope, right_operand);
+                              frame, right_operand);
 
         }
 
