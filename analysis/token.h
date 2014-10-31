@@ -7,7 +7,7 @@
 
 typedef struct TOKEN
 {
-  int           type;
+  int           type; // Use tokens to store type info when walking down the tree
   char          *lexeme;
   int           value;
   struct TOKEN  *next;

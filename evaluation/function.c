@@ -2,15 +2,16 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-function *new_function( int return_type, ENV *params,
-                        FRAME *scope,      NODE *body   )
+function *new_function( int return_type,
+                        FRAME *scope, NODE *body,
+                        char *name   )
 {
     function *fn = malloc(sizeof(function));
 
     fn->return_type = return_type;
-    fn->params      = params;
     fn->scope       = scope;
     fn->body        = body;
+    fn->name        = name; // The original name
 
     return fn;
 }
@@ -23,14 +24,14 @@ function *new_function( int return_type, ENV *params,
  *
  * This is why there is no assign operation
  */
-void register_function( int return_type, char *name, ENV *params,
-                        FRAME *frame,      NODE *body               )
+void register_function( int return_type, char *name,
+                        FRAME *frame,    NODE *body )
 {
     ENV *env = init_var(name, FN_TYPE, frame);
     STATE *state = new_fn_state(new_function(return_type,
-                                             params,
                                              frame,
-                                             body        ));
+                                             body,
+                                             name         ));
     assign_var(name, FN_TYPE, state, frame);
     return;
 }
@@ -39,17 +40,19 @@ void register_function( int return_type, char *name, ENV *params,
  * Assigns params to given args list (for function call)
  *
  */
+/*
 int *bind_args(function *fn, ENV *args)
 {
-    ENV *current_param = fn->params;
-    ENV *current_arg   = args;
+    PARAM *current_param = fn->params;
+    ENV *current_arg = args;
 
     while (current_param && current_arg)
     {
         if (current_param->type == current_arg->type)
         {
+            // Params should be init at compile time, so assign now
             // TODO check this is mem safe
-            current_param->state = current_arg->state;
+            // current_param->state = current_arg->state;
         }
         else
         {
@@ -65,4 +68,6 @@ int *bind_args(function *fn, ENV *args)
         abort();
     }
     return 0;
+
 }
+*/

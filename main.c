@@ -14,6 +14,7 @@ extern int yydebug;
 extern NODE *yyparse (void);
 extern NODE *ans;
 extern void init_symbtable (void);
+extern FRAME *gbl_frame;
 
 FILE *yyin;
 
@@ -32,7 +33,7 @@ void translate_to_TAC()
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
-    evaluate(tree);
+    //evaluate(tree);
     return;
 }
 
@@ -51,6 +52,7 @@ void interpret_source(void)
         yyparse();
         NODE *tree = ans;
         print_tree(tree);
+
         // TODO process contents of tree to populate global env
         //
         // This can be done by:
@@ -59,7 +61,7 @@ void interpret_source(void)
         //  2. First pass to get vars
         //      Issue is if you init env here then there can be weird
         //      situations where
-        //      variables can be used before being initialised as initialisations are 
+        //      variables can be used before being initialised as initialisations are
         //      done on the first pass
         //
         //  3. Don't do it
@@ -67,11 +69,12 @@ void interpret_source(void)
         //      as assign.
         //      Also not sure if this will work for functions
         //
-
-        evaluate_variable_inits(tree); // Option 1
+        evaluate(tree, NULL, gbl_frame, true); // Option 1
 
         printf("Entering evaluate\n");
-        NODE *output = evaluate(tree); // Call eval with fn main, passing global env
+
+        // Call eval with fn main, passing global env
+        NODE *output = evaluate(tree, NULL, gbl_frame, false);
         printf("--------------------------------------------\n");
         if (output && output->left)
         {
@@ -94,7 +97,7 @@ int main ( int argc, char *argv[] )
     int len;
     char *action  = "";
 
-    init_environment();
+    init_environment(gbl_frame);
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:df")) != -1)

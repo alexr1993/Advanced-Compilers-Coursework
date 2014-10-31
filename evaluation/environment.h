@@ -9,6 +9,8 @@
 #define FN_TYPE  1
 
 struct function;
+struct PARAM;
+
 /*
  * Types required for name -> storage -> state lookup using environment
  * and state respectively
@@ -16,9 +18,10 @@ struct function;
 typedef union STATE
 {
     int value;
-    struct function *closure;
-    struct param *paramlist;
+    struct function *function;
+    struct PARAM *param;
     char *var_name; // only used for variable/function names
+    NODE *fn_body;
 } STATE;
 
 // Stores name -> state mappings, AKA a binding
@@ -28,26 +31,27 @@ typedef struct ENV
     int type;
     STATE *state;
     struct ENV *next;
-    // Singly linked list will cause with mutually recursive functions
-    // A frame structure is necessary, as described in Abelson book
-    // A list of frames (for each function), where each frame has a list of bindings
-    // 2 structs - a frame list and a binding list
 } ENV;
 
 // Stack frames, provides lookup (lexical scope)
 typedef struct FRAME
 {
     struct ENV *variables;
-    struct FRAME *next;
+    struct PARAM *params;
+    struct FRAME *parent;
 } FRAME;
+
+struct FRAME *gbl_frame;
 
 ENV *lookup_var(char *name, int type, FRAME *frame);
 ENV *init_var(char *name, int type, FRAME *frame);
 ENV *assign_var(char *name, int type, STATE *value, FRAME *frame);
 
 ENV *new_env_mapping(char *name, int *location);
+
 STATE *new_int_state(int value);
-STATE *new_fn_state(struct function* closure);
+STATE *new_fn_state(struct function* function);
+STATE *new_var_name_state(char *name);
 
 void init_environment(FRAME *frame);
 void print_environment(void);

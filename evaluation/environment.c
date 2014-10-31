@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include "environment.h"
 
-// Environment maps names to locations
-ENV *gbl_environment;
-
 // State maps locations to values
 STATE *state;
 
@@ -64,8 +61,8 @@ ENV *lookup_var(char *name, int type, FRAME *frame)
     // Check there are any variables
     if (!gbl_environment || !gbl_environment->name)
     {
-        // Lookup variable in next stack frame
-        return lookup_var(name, type, frame->next);
+        // TODO Lookup variable in next stack frame
+        //return lookup_var(name, type, frame->parent);
     }
     // FIXME reading gbl_environment->name causes a segfault
     ENV *current_env = gbl_environment;
@@ -117,10 +114,20 @@ STATE *new_int_state(int value)
     return state;
 }
 
-STATE *new_fn_state(function *closure)
+STATE *new_fn_state(function *function)
 {
     STATE *state = malloc(sizeof(STATE));
-    state->closure = closure;
+    state->function = function;
+    return state;
+}
+
+STATE *new_var_name_state(char *name)
+{
+    STATE *state = malloc(sizeof(STATE));
+    int name_length = strlen(name);
+
+    state->var_name = malloc(name_length * sizeof(char));
+    strncpy(state->var_name, name, name_length);
     return state;
 }
 
@@ -173,6 +180,8 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
 /* Init some globals, or whatever else */
 void init_environment(FRAME *frame)
 {
+    gbl_frame = malloc(sizeof(FRAME));
+
     ENV *var1 = init_var("testvar", INT_TYPE, frame);
 
     STATE *state = new_int_state(42);
