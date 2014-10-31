@@ -69,6 +69,7 @@ void interpret_source(void)
         //      as assign.
         //      Also not sure if this will work for functions
         //
+        printf("Starting first pass evaluation\n");
         evaluate(tree, NULL, gbl_frame, true); // Option 1
 
         printf("Entering evaluate\n");
@@ -97,7 +98,7 @@ int main ( int argc, char *argv[] )
     int len;
     char *action  = "";
 
-    init_environment(gbl_frame);
+    init_environment();
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:df")) != -1)

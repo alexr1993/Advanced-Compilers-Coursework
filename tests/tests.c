@@ -1,7 +1,10 @@
 #include <check.h>
 #include <stdlib.h>
 
+#include "../evaluation/environment.h"
 #include "test_source/basic_arithmetic.h"
+
+extern FRAME *gbl_frame;
 
 START_TEST (interpret)
 {
@@ -13,7 +16,14 @@ START_TEST (interpret)
 }
 END_TEST
 
-Suite *interpret_suite(void)
+START_TEST (environment)
+{
+    init_environment();
+    ck_assert_ptr_ne(gbl_frame, NULL);
+}
+END_TEST
+
+Suite *evaluate_suite(void)
 {
     Suite *s;
     TCase *tc_core;
@@ -24,6 +34,7 @@ Suite *interpret_suite(void)
     tc_core = tcase_create("Core");
 
     tcase_add_test(tc_core, interpret);
+    tcase_add_test(tc_core, environment);
     suite_add_tcase(s, tc_core);
 
     return s;
@@ -35,7 +46,7 @@ int main (void)
     Suite *s;
     SRunner *sr;
 
-    s = interpret_suite();
+    s = evaluate_suite();
     sr = srunner_create(s);
 
     /* Run suite */

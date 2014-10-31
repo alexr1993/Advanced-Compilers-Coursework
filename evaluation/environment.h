@@ -36,9 +36,11 @@ typedef struct ENV
 // Stack frames, provides lookup (lexical scope)
 typedef struct FRAME
 {
-    struct ENV *variables;
-    struct PARAM *params;
+    struct ENV *variable;
+    struct PARAM *param;
     struct FRAME *parent;
+    struct FRAME *child;
+    struct FRAME *sibling;
 } FRAME;
 
 struct FRAME *gbl_frame;
@@ -53,6 +55,8 @@ STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 STATE *new_var_name_state(char *name);
 
-void init_environment(FRAME *frame);
+FRAME *new_frame(FRAME *parent, struct PARAM *params, ENV *variables);
+
+void init_environment();
 void print_environment(void);
 #endif

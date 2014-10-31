@@ -4,11 +4,15 @@
 #include "environment.h"
 
 // State maps locations to values
-STATE *state;
+STATE *state; // TODO remove?
 
-void print_env(ENV *current)
+void print_env(ENV *env)
 {
-        char *type;
+    ENV *current = env;
+    printf("VARIABLES CURRENTLY IN ENVIRONMENT\n");
+    while (current)
+    {
+        char * type;
         if (current->type == INT_TYPE) type = "INT";
         else type = "FN";
 
@@ -18,33 +22,33 @@ void print_env(ENV *current)
         {
             printf(", Value: %d", current->state->value);
         }
+        current = current->next;
         printf("\n");
+    }
+}
+
+/*
+ * Prints frame including all of it's children
+ */
+void print_frame(FRAME *frame)
+{
+    print_env(frame->variable);
+
+    FRAME *child = frame->child;
+    while (child)
+    {
+        print_frame(child);
+        child = child->sibling;
+    }
 }
 
  /* Adds env mapping to the environment */
-ENV *_add_env(ENV *env, FRAME *frame)
+void _add_env(ENV *env, FRAME *frame)
 {
-    ENV *current = gbl_environment;
-
-    /* Lazily initialise */
-    if (!current)
-    {
-        // env is the first variable
-        printf("Setting gbl_environment\n");
-        gbl_environment = env;
-        printf("gbl_environment->name: %s\n", gbl_environment->name);
-    }
-    else
-    {
-        // Add new env to the end
-        while (current->next)
-        {
-            current = current->next;
-        }
-        current->next = env;
-    }
-    // Return whole gbl_environment
-    return gbl_environment;
+    // Insert env at the front of the frames variable list
+    ENV *frame_var = frame->variable;
+    env->next = frame_var;
+    frame->variable = env;
 }
 
 /*
@@ -58,40 +62,28 @@ ENV *lookup_var(char *name, int type, FRAME *frame)
 {
     printf("Name: %s\n", name);
     printf("Checking there is any env\n");
-    // Check there are any variables
-    if (!gbl_environment || !gbl_environment->name)
-    {
-        // TODO Lookup variable in next stack frame
-        //return lookup_var(name, type, frame->parent);
-    }
-    // FIXME reading gbl_environment->name causes a segfault
-    ENV *current_env = gbl_environment;
+
+    ENV *frame_var = frame->variable;
 
     /* Find the env mapping with the given name */
-    while (true)
+    while (frame_var)
     {
-        //print_env(current_env);
-
         // Mapping found
-        if (str_eq(name, current_env->name))
+        if (str_eq(name, frame_var->name))
         {
-            break;
-        }
-        // Lookup failed
-        if (!current_env->next)
-        {
-            printf("Variable name lookup failed!\n");
-            return NULL;
+            return frame_var;
         }
         // Still looking
-        else
-        {
-            current_env = current_env->next;
-        }
+        frame_var = frame_var->next;
     }
-    return current_env;
+    printf("Variable name lookup failed!\n");
+    return NULL;
 }
 
+/*
+ * Returns new env sruct
+ *
+ */
 ENV *new_env(char *name, int type, STATE *state)
 {
     // Init env mapping
@@ -177,24 +169,34 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
     return var;
 }
 
+/*
+ * Create new frame and attack it correctly to its parent
+ *
+ */
+FRAME *new_frame(FRAME *parent, PARAM *params, ENV *variables)
+{
+    FRAME *new_frame = malloc(sizeof(FRAME));
+    new_frame->parent = parent;
+
+    // Add frame as child of parent
+    FRAME *child = parent->child;
+    parent->child = new_frame;
+    new_frame->sibling = child;
+
+    new_frame->param = params;
+    new_frame->variable = variables;
+    return new_frame;
+}
+
 /* Init some globals, or whatever else */
-void init_environment(FRAME *frame)
+void init_environment(void)
 {
     gbl_frame = malloc(sizeof(FRAME));
 
-    ENV *var1 = init_var("testvar", INT_TYPE, frame);
+    // Test code
+    ENV *var1 = init_var("testvar", INT_TYPE, gbl_frame);
 
     STATE *state = new_int_state(42);
-    assign_var("testvar", INT_TYPE, state, frame);
+    assign_var("testvar", INT_TYPE, state, gbl_frame);
 }
 
-void print_environment(void)
-{
-    ENV *current = gbl_environment;
-    printf("VARIABLES CURRENTLY IN ENVIRONMENT\n");
-    while (current)
-    {
-        print_env(current);
-        current = current->next;
-    }
-}

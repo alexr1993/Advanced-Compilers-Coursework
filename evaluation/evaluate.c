@@ -122,13 +122,11 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         // Returns: Function state
 
         // Create new frame for function and populate it with params
-        FRAME *new_frame = malloc(sizeof(FRAME));
-        new_frame->parent = frame;
-        new_frame->params = right_operand->param;
+        FRAME *func_frame = new_frame(frame, right_operand->param, NULL);
 
         // Function still has no retrun type or body (hence 0 and NULL)
         return new_fn_state( new_function( 0,
-                                           new_frame,
+                                           func_frame,
                                            NULL,
                                            left_operand->var_name ));
 
