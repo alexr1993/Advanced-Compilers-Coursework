@@ -134,7 +134,7 @@ ENV *init_var(char *name, int type, FRAME *frame)
     }
 
     // Init union type (the state)
-    STATE *new_state;
+    STATE *new_state = NULL;
 
     if (type == INT_TYPE)
     {
@@ -194,7 +194,7 @@ void init_environment(void)
     gbl_frame = malloc(sizeof(FRAME));
 
     // Test code
-    ENV *var1 = init_var("testvar", INT_TYPE, gbl_frame);
+    init_var("testvar", INT_TYPE, gbl_frame);
 
     STATE *state = new_int_state(42);
     assign_var("testvar", INT_TYPE, state, gbl_frame);

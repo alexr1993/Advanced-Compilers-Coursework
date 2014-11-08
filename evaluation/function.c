@@ -27,7 +27,7 @@ function *new_function( int return_type,
 void register_function( int return_type, char *name,
                         FRAME *frame,    NODE *body )
 {
-    ENV *env = init_var(name, FN_TYPE, frame);
+    init_var(name, FN_TYPE, frame);
     STATE *state = new_fn_state(new_function(return_type,
                                              frame,
                                              body,

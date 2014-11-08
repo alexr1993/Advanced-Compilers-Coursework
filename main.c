@@ -85,7 +85,7 @@ void interpret_source(void)
     // start interactive session
     while (false) // TODO change to true when implemented
     {
-        char *command = prompt(); // accept input one expression at a time
+        //char *command = prompt(); // accept input one expression at a time
         //evaluate(command);
     }
     return;

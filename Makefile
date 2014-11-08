@@ -1,17 +1,25 @@
 ## TODO Clean up all the repitition in this file
-OBJS = evaluation/param.o evaluation/function.o evaluation/environment.o evaluation/evaluate.o analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o util.o main.o
-SRCS = evaluation/param.c evaluation/function.c evaluation/environment.c evaluation/evaluate.c analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c util.c main.c
-CC = gcc
+EVALOBJS = evaluation/param.o evaluation/function.o evaluation/environment.o evaluation/evaluate.o
+EVALSRCS = evaluation/param.c evaluation/function.c evaluation/environment.c evaluation/evaluate.c
 
-CFLAGS = -Wall
+ANALOBJS = analysis/lex.yy.o analysis/C.tab.o analysis/symbol_table.o analysis/nodes.o
+ANALSRCS = analysis/lex.yy.c analysis/C.tab.c analysis/symbol_table.c analysis/nodes.c
+
+TESTOBJS = util.o tests/tests.o
+TESTSRCS = util.c tests/tests.c
+
+OBJS = util.o main.o
+SRCS = util.c main.c
+
+CC = gcc
 
 all:	mycc
 
-clean:
-	rm ${OBJS}
+clean: cleantests
+	rm ${ANALOBJS} ${EVALOBJS} ${OBJS}
 
-mycc:	${OBJS}
-	${CC} -g -o mycc ${OBJS}
+mycc:	${ANALOBJS} ${EVALOBJS} ${OBJS}
+	${CC} -g -o mycc ${ANALOBJS} ${EVALOBJS} ${OBJS}
 	rm ${OBJS}
 
 # Generate lexical analyser with flex
@@ -23,14 +31,21 @@ C.tab.c:	analysis/C.y
 	bison -d -t -v analysis/C.y
 
 .c.o:
-	${CC} -g -c -o $@ $*.c
+	${CC} -Wall -g -c -o $@ $*.c
 
 # FIXME
 depend:
-	${CC} -M $(SRCS) > .deps
+	${CC} -M $(ANALSRCS) $(EVALSRCS) $(SRCS) > .deps
 	cat Makefile .deps > makefile
 
 # FIXME
 dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 	tar cvfz mycc.tgz symbol_table.c nodes.c util.c main.c Makefile C.flex C.y \
 		nodes.h token.h
+
+tests: ${ANALOBJS} ${EVALOBJS} ${TESTOBJS}
+	gcc -o run_tests ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} `pkg-config --cflags --libs check`
+
+cleantests:
+	rm tests/tests.o
+

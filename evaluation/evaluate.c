@@ -102,7 +102,7 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         // Store function in frame
         init_var(fn->name, FN_TYPE, frame);
         assign_var(fn->name, FN_TYPE, left_operand, frame);
-        return;
+        return NULL;
 
       case 'd':
         printf("Processing function signature\n");
@@ -176,12 +176,12 @@ STATE *first_pass_evaluate_binary( NODE *parent,
             else if (left_operand->value == FN_TYPE)
             {
                 // init function variable - not yet supported
-                return;
+                return NULL;
             }
             else
             {
                 // Multifunction initialisation, just return
-                return;
+                return NULL;
             }
             return NULL;
         }
@@ -251,7 +251,7 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         }
         else
         {
-            return;
+            return NULL;
         }
     }
 
@@ -270,9 +270,6 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
      */
     else
     {
-        // TODO Initialisation must be done before it's leaves
-        // which may involve assignment
-        if (node->type == '~');
         print_branch(node);
         STATE *left_operand  = evaluate(node->left, node, frame, is_first_pass);
         STATE *right_operand = evaluate(node->right, node, frame, is_first_pass);
@@ -294,6 +291,7 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
                                     frame          );
         }
     }
+    return NULL;
 }
 
 
