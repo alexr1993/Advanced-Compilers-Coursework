@@ -62,9 +62,13 @@ void print_leaf(NODE *tree, int level)
     TOKEN *t = (TOKEN *)tree;
     int i;
     for (i=0; i<level; i++) putchar(' ');
-    if (t->type == CONSTANT) printf("%d\n", t->value);
-    else if (t->type == STRING_LITERAL) printf("\"%s\"\n", t->lexeme);
-    else if (t) puts(t->lexeme);
+    if (t->type == CONSTANT) printf("%d (CONSTANT)\n", t->value);
+    else if (t->type == STRING_LITERAL) printf("\"%s\" (STRING_LITERAL)\n", t->lexeme);
+    else if (t)
+    {
+        printf("%s", t->lexeme);
+        printf(" (SYMBOL)\n");
+    }
 }
 
 void print_branch(NODE *tree)

@@ -54,6 +54,7 @@ ENV *new_env_mapping(char *name, int *location);
 STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 STATE *new_var_name_state(char *name);
+STATE *new_fn_body_state(NODE *body);
 
 FRAME *new_frame(FRAME *parent, struct PARAM *params, ENV *variables);
 

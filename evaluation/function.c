@@ -3,7 +3,8 @@
 #include <stdio.h>
 
 function *new_function( int return_type,
-                        FRAME *scope, NODE *body,
+                        FRAME *scope,
+                        NODE *body,
                         char *name   )
 {
     function *fn = malloc(sizeof(function));
@@ -24,8 +25,10 @@ function *new_function( int return_type,
  *
  * This is why there is no assign operation
  */
-void register_function( int return_type, char *name,
-                        FRAME *frame,    NODE *body )
+void register_function( int return_type,
+                        FRAME *frame,
+                        NODE *body,
+                        char *name        )
 {
     init_var(name, FN_TYPE, frame);
     STATE *state = new_fn_state(new_function(return_type,

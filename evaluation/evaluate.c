@@ -33,7 +33,7 @@ STATE *evaluate_unary(NODE *operator, STATE *operand)
 
       //  t->value = 0 - left_token->value;
       //  return make_leaf(t);
-     default:
+      default:
         printf("Unknown unary operator\n");
         return operand;
     }
@@ -90,14 +90,14 @@ STATE *first_pass_evaluate_binary( NODE *parent,
     switch (operator->type)
     {
       case 'D':
-        printf("Processing fn definition");
+        printf("Processing fn definition\n");
         // Left operand: function struct
         // Right operand: body of function
         // Returns: Nothing
 
         // Set body of function
         function *fn = left_operand->function;
-        fn->body = right_operand->fn_body;
+        fn->body = operator->right;
 
         // Store function in frame
         init_var(fn->name, FN_TYPE, frame);
@@ -122,7 +122,15 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         // Returns: Function state
 
         // Create new frame for function and populate it with params
-        FRAME *func_frame = new_frame(frame, right_operand->param, NULL);
+        printf("Frame created for function \"%s\"\n", left_operand->var_name);
+
+        PARAM *params = NULL;
+        if (right_operand && right_operand->param)
+        {
+            params = right_operand->param;
+        }
+
+        FRAME *func_frame = new_frame(frame, params, NULL);
 
         // Function still has no retrun type or body (hence 0 and NULL)
         return new_fn_state( new_function( 0,
@@ -164,23 +172,28 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         }
         else
         {
-            printf("Processing variable declaration\n"); // Return nothing
-            if (left_operand->value == INT_TYPE)
+            printf("Processing variable declaration..."); // Return nothing
+            if (str_eq(left_operand->var_name, "int"))
             {
+                printf("Of type int...");
+                printf("Called \"%s\"\n", temp->name);
+
                 while (temp)
                 {
                     init_var(temp->name, left_operand->value, frame);
                     temp = temp->next;
                 }
             }
-            else if (left_operand->value == FN_TYPE)
+            else if (str_eq(left_operand->var_name, "function"))
             {
+                printf("Of type function!\n");
                 // init function variable - not yet supported
                 return NULL;
             }
             else
             {
                 // Multifunction initialisation, just return
+                printf("Multiple function initialisation!\n");
                 return NULL;
             }
             return NULL;
@@ -195,6 +208,8 @@ STATE *first_pass_evaluate_binary( NODE *parent,
 
         // This is the fast pass - so don't assign, just return the name in
         // case there is an initialisation which needs it
+        // TODO this needs to return a param struct in all cases - both single and
+        // multiple initialisation
         return left_operand;
 
       case ',':
@@ -215,9 +230,14 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         left_operand->param->next = right_operand->param;
         return left_operand;
 
+      case ';':
+        printf("Processing multiple statements!\n");
+        return new_fn_body_state(operator);
+
+
       default:
         printf("Unknown binary operator!\n");
-        abort();
+        return NULL;
     }
 }
 
@@ -236,22 +256,26 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
     if (node->type == LEAF)
     {
         printf("Evaluate output: ");
-
         // TODO make print_leaf less confusing and painful
         print_leaf(node->left, 0);
+
         TOKEN *t = (TOKEN *)node->left;
-        if (node->type == CONSTANT)
+        if (t->type == CONSTANT)
         {
             // Int state for both types and numbers
+            //printf("Found leaf: %d\n", t->value);
             return new_int_state(t->value);
         }
-        else if (node->type == STRING_LITERAL)
+        // TODO merge these final two conditions unless a reason not to emerges
+        else if (t->type == STRING_LITERAL)
         {
+            //printf("Found leaf: %s\n", t->lexeme);
             return new_var_name_state(t->lexeme);
         }
         else
         {
-            return NULL;
+            //printf("Found leaf: %s\n", t->lexeme);
+            return new_var_name_state(t->lexeme);
         }
     }
 

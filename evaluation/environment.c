@@ -3,9 +3,6 @@
 #include <stdbool.h>
 #include "environment.h"
 
-// State maps locations to values
-STATE *state; // TODO remove?
-
 void print_env(ENV *env)
 {
     ENV *current = env;
@@ -49,6 +46,7 @@ void _add_env(ENV *env, FRAME *frame)
     ENV *frame_var = frame->variable;
     env->next = frame_var;
     frame->variable = env;
+    printf("Storing variable \"%s\"\n", env->name);
 }
 
 /*
@@ -60,8 +58,7 @@ void _add_env(ENV *env, FRAME *frame)
  */
 ENV *lookup_var(char *name, int type, FRAME *frame)
 {
-    printf("Name: %s\n", name);
-    printf("Checking there is any env\n");
+    printf("Looking up variable \"%s\"...", name);
 
     ENV *frame_var = frame->variable;
 
@@ -69,14 +66,15 @@ ENV *lookup_var(char *name, int type, FRAME *frame)
     while (frame_var)
     {
         // Mapping found
-        if (str_eq(name, frame_var->name))
+        if (str_eq(name, frame_var->name) && type == frame_var->type)
         {
+            printf("Found!\n");
             return frame_var;
         }
         // Still looking
         frame_var = frame_var->next;
     }
-    printf("Variable name lookup failed!\n");
+    printf("Not found!\n");
     return NULL;
 }
 
@@ -91,10 +89,11 @@ ENV *new_env(char *name, int type, STATE *state)
     int name_length = strlen(name);
 
     new_env->name = malloc(name_length * sizeof(char));
-    strncpy(new_env->name, name, name_length);
-    printf("Name: %s, var->name: %s\n", name, new_env->name);
+    strcpy(new_env->name, name);
     new_env->type = type;
     new_env->state = state;
+
+    printf("New var created: Name: %s, var->name: \"%s\"\n", name, new_env->name);
 
     return new_env;
 }
@@ -119,7 +118,14 @@ STATE *new_var_name_state(char *name)
     int name_length = strlen(name);
 
     state->var_name = malloc(name_length * sizeof(char));
-    strncpy(state->var_name, name, name_length);
+    strcpy(state->var_name, name);
+    return state;
+}
+
+STATE *new_fn_body_state(NODE *body)
+{
+    STATE *state = malloc(sizeof(STATE));
+    state->fn_body = body;
     return state;
 }
 
@@ -160,10 +166,14 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
     if (var && var->type == type)
     {
         var->state = value;
+        if (type == INT_TYPE)
+        {
+            printf("Assigned %d to variable \"%s\"!\n", value->value, name);
+        }
     }
     else
     {
-        printf("Error: Assigning to uninitialised variable, check type!");
+        printf("Error: Assigning to uninitialised variable, check type!\n");
         abort();
     }
     return var;
@@ -179,9 +189,12 @@ FRAME *new_frame(FRAME *parent, PARAM *params, ENV *variables)
     new_frame->parent = parent;
 
     // Add frame as child of parent
-    FRAME *child = parent->child;
-    parent->child = new_frame;
-    new_frame->sibling = child;
+    if (parent)
+    {
+        FRAME *child = parent->child;
+        parent->child = new_frame;
+        new_frame->sibling = child;
+    }
 
     new_frame->param = params;
     new_frame->variable = variables;
@@ -191,12 +204,6 @@ FRAME *new_frame(FRAME *parent, PARAM *params, ENV *variables)
 /* Init some globals, or whatever else */
 void init_environment(void)
 {
-    gbl_frame = malloc(sizeof(FRAME));
-
-    // Test code
-    init_var("testvar", INT_TYPE, gbl_frame);
-
-    STATE *state = new_int_state(42);
-    assign_var("testvar", INT_TYPE, state, gbl_frame);
+    gbl_frame = new_frame(NULL, NULL, NULL);
 }
 

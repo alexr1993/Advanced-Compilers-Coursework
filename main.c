@@ -69,10 +69,12 @@ void interpret_source(void)
         //      as assign.
         //      Also not sure if this will work for functions
         //
-        printf("Starting first pass evaluation\n");
+        printf("\n\nStarting first pass evaluation\n");
+        printf("==============================\n\n");
         evaluate(tree, NULL, gbl_frame, true); // Option 1
 
-        printf("Entering evaluate\n");
+        printf("\n\nEntering evaluate\n");
+        printf("=================\n\n");
 
         // Call eval with fn main, passing global env
         NODE *output = evaluate(tree, NULL, gbl_frame, false);
@@ -134,7 +136,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/closure.c", "r");
+    yyin = fopen("tests/test_source/variables1.c", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

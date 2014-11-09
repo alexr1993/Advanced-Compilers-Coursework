@@ -20,6 +20,28 @@ START_TEST (environment)
 {
     init_environment();
     ck_assert_ptr_ne(gbl_frame, NULL);
+
+    char *testvar = "testvar";
+
+    // int variable test
+    init_var(testvar, INT_TYPE, gbl_frame);
+
+    STATE *state = new_int_state(42);
+    assign_var(testvar, INT_TYPE, state, gbl_frame);
+
+    ck_assert_int_eq(
+        42,
+        lookup_var("testvar", INT_TYPE, gbl_frame)->state->value
+    );
+
+    // fn variable test
+    init_var(testvar, FN_TYPE, gbl_frame);
+
+    state = new_fn_state(new_function(
+        INT_TYPE,
+        gbl_frame,
+        NULL,
+        "testvar"));
 }
 END_TEST
 
