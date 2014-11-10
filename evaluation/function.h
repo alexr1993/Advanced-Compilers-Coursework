@@ -8,6 +8,7 @@
 struct ENV;
 struct FRAME;
 struct PARAM;
+union STATE;
 
 typedef struct function
 {
@@ -21,4 +22,8 @@ function *new_function( int return_type,
                         struct FRAME *scope,
                         NODE *body,
                         char *name   );
+
+void *bind_args(struct function *fn, struct ENV *args);
+union STATE *call(char *name, struct FRAME *frame, struct ENV *args);
+
 #endif

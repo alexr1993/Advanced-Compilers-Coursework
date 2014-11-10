@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "environment.h"
+#include "param.h"
 
 #include "../analysis/C.tab.h"
 #include "../analysis/nodes.h"
@@ -73,9 +74,22 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         printf("Processing multiple statements\n");
         return right_operand;
 
+      case 'F':
+        printf("Processing function signature\n");
+        if (str_eq(left_operand->var_name, "main"))
+        {
+            if (frame != gbl_frame)
+            {
+                printf("Main found not in global frame, something's wrong!\n");
+                printf("Exiting!\n");
+                exit(1);
+            }
+            call("main", frame, NULL);
+        }
+
       default:
-        printf("Unknown binary operator!\n");
-        abort();
+        printf("Unactionable binary operator!\n");
+        return NULL;
     }
 }
 
@@ -180,7 +194,7 @@ STATE *first_pass_evaluate_binary( NODE *parent,
 
                 while (temp)
                 {
-                    init_var(temp->name, left_operand->value, frame);
+                    init_var(temp->name, INT_TYPE, frame);
                     temp = temp->next;
                 }
             }
@@ -208,9 +222,9 @@ STATE *first_pass_evaluate_binary( NODE *parent,
 
         // This is the fast pass - so don't assign, just return the name in
         // case there is an initialisation which needs it
-        // TODO this needs to return a param struct in all cases - both single and
-        // multiple initialisation
-        return left_operand;
+        // Assume only ints can be in assignments
+
+        return new_param_state(new_param(left_operand->var_name, INT_TYPE));
 
       case ',':
         printf("Processing multiple initialisations\n");

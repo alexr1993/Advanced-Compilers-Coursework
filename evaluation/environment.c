@@ -60,21 +60,31 @@ ENV *lookup_var(char *name, int type, FRAME *frame)
 {
     printf("Looking up variable \"%s\"...", name);
 
-    ENV *frame_var = frame->variable;
-
-    /* Find the env mapping with the given name */
-    while (frame_var)
+    while (frame)
     {
-        // Mapping found
-        if (str_eq(name, frame_var->name) && type == frame_var->type)
+        ENV *frame_var = frame->variable;
+
+        /* Find the env mapping with the given name */
+        while (frame_var)
         {
-            printf("Found!\n");
-            return frame_var;
+            // Mapping found
+            if (str_eq(name, frame_var->name) && type == frame_var->type)
+            {
+                printf("Found!\n");
+                return frame_var;
+            }
+            // Still looking
+            frame_var = frame_var->next;
         }
-        // Still looking
-        frame_var = frame_var->next;
+        printf("Not found, attempting to look in parent frame!\n");
+        printf("Current frame: \n");
+        print_frame(frame);
+
+        frame = frame->parent;
     }
-    printf("Not found!\n");
+
+    printf("Variable lookup failed!\n");
+
     return NULL;
 }
 
@@ -126,6 +136,13 @@ STATE *new_fn_body_state(NODE *body)
 {
     STATE *state = malloc(sizeof(STATE));
     state->fn_body = body;
+    return state;
+}
+
+STATE *new_param_state(PARAM *param)
+{
+    STATE *state = malloc(sizeof(STATE));
+    state->param = param;
     return state;
 }
 

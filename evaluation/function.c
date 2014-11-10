@@ -1,3 +1,4 @@
+#include "environment.h"
 #include "function.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,9 +44,10 @@ void register_function( int return_type,
  * Assigns params to given args list (for function call)
  *
  */
-/*
-int *bind_args(function *fn, ENV *args)
+
+void *bind_args(function *fn, ENV *args)
 {
+    /*
     PARAM *current_param = fn->params;
     ENV *current_arg = args;
 
@@ -71,6 +73,14 @@ int *bind_args(function *fn, ENV *args)
         abort();
     }
     return 0;
-
-}
 */
+    return 0;
+}
+
+STATE *call(char *name, FRAME *frame, ENV *args)
+{
+    function *function = lookup_var(name, FN_TYPE, frame)->state->function;
+    bind_args(function, args);
+    return evaluate(function->body);
+}
+

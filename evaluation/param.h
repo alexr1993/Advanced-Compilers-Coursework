@@ -11,4 +11,6 @@ typedef struct PARAM
     struct PARAM *next;
 } PARAM;
 
+PARAM *new_param(char *name, int type);
+
 #endif
