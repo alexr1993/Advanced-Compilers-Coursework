@@ -73,16 +73,12 @@ void interpret_source(void)
         printf("==============================\n\n");
         evaluate(tree, NULL, gbl_frame, true); // Option 1
 
-        printf("\n\nEntering evaluate\n");
-        printf("=================\n\n");
+        printf("\n\nExecuting\n");
+        printf("=========\n\n");
 
-        // Call eval with fn main, passing global env
-        NODE *output = evaluate(tree, NULL, gbl_frame, false);
-        printf("--------------------------------------------\n");
-        if (output && output->left)
-        {
-            print_leaf(output->left, 0);
-        }
+        STATE *return_status = call("main", gbl_frame, NULL);
+        printf("\n\n----------Interpretation Complete----------\n\n");
+        printf("%d\n\n", return_status->value);
     }
     // start interactive session
     while (false) // TODO change to true when implemented
@@ -136,7 +132,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/variables1.c", "r");
+    yyin = fopen("tests/test_source/functions.cmm", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

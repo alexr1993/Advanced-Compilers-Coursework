@@ -16,13 +16,20 @@ extern TOKEN *void_token;
  * Supported unary operators: -, return
  *
  */
-STATE *evaluate_unary(NODE *operator, STATE *operand)
+STATE *evaluate_unary(NODE *operator, STATE *operand, FRAME *frame)
 {
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case RETURN:
         printf("Processing return operator\n");
+
+        if (operand->var_name)
+        {
+            // TODO infer return type from function sig
+            ENV *var = lookup_var(operand->var_name, INT_TYPE, frame);
+            return var->state;
+        }
         return operand;
       /* The only unary operator that makes it through the parses is RETURN
        * This seems to be a bug with the prewritten code (in C.y)
@@ -74,18 +81,10 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         printf("Processing multiple statements\n");
         return right_operand;
 
-      case 'F':
-        printf("Processing function signature\n");
-        if (str_eq(left_operand->var_name, "main"))
-        {
-            if (frame != gbl_frame)
-            {
-                printf("Main found not in global frame, something's wrong!\n");
-                printf("Exiting!\n");
-                exit(1);
-            }
-            call("main", frame, NULL);
-        }
+      case APPLY:
+        // lookup_var(left_operand->var_name);
+        // return call(fn, right_operand)
+        break;
 
       default:
         printf("Unactionable binary operator!\n");
@@ -144,13 +143,27 @@ STATE *first_pass_evaluate_binary( NODE *parent,
             params = right_operand->param;
         }
 
+        // Create function struct
         FRAME *func_frame = new_frame(frame, params, NULL);
 
-        // Function still has no retrun type or body (hence 0 and NULL)
-        return new_fn_state( new_function( 0,
+        STATE *fn_state = new_fn_state( new_function( 0,
                                            func_frame,
                                            NULL,
                                            left_operand->var_name ));
+
+        // TODO remove if not necessary
+        // if (str_eq(left_operand->var_name, "main"))
+        // {
+        //     if (frame != gbl_frame)
+        //     {
+        //         printf("Main found not in global frame, something's wrong!\n");
+        //         printf("Exiting!\n");
+        //         exit(1);
+        //     }
+        //     main = fn_state;
+        // }
+        // Function still has no retrun type or body (hence 0 and NULL)
+        return fn_state;
 
       case '~':
         printf("Processing initialisation\n");
@@ -176,7 +189,7 @@ STATE *first_pass_evaluate_binary( NODE *parent,
             printf("Processing param declaration\n"); // Return param
 
             // Set the type of the param(s) declared
-            while (temp)
+            while (temp != NULL)
             {
                 // FN_TYPE or INT_TYPE
                 temp->type = left_operand->value;
@@ -286,7 +299,7 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
             //printf("Found leaf: %s\n", t->lexeme);
             return new_var_name_state(t->lexeme);
         }
-        else
+        else // variable?
         {
             //printf("Found leaf: %s\n", t->lexeme);
             return new_var_name_state(t->lexeme);
@@ -299,7 +312,8 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         print_branch(node);
         // evaluate unary operator with operant node->left
         return evaluate_unary( node,
-                               evaluate(node->left, node, frame, is_first_pass) );
+                               evaluate(node->left, node, frame, is_first_pass),
+                               frame );
     }
 
     /* Recursive case:

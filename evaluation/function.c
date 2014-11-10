@@ -1,5 +1,7 @@
 #include "environment.h"
+#include "evaluate.h"
 #include "function.h"
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -81,6 +83,6 @@ STATE *call(char *name, FRAME *frame, ENV *args)
 {
     function *function = lookup_var(name, FN_TYPE, frame)->state->function;
     bind_args(function, args);
-    return evaluate(function->body);
+    return evaluate(function->body, NULL, frame, false);
 }
 

@@ -6,14 +6,16 @@
 void print_env(ENV *env)
 {
     ENV *current = env;
-    printf("VARIABLES CURRENTLY IN ENVIRONMENT\n");
+    if (!current) printf("    Frame contains no variables!");
+
     while (current)
     {
+        printf("    Printing variable...\n");
         char * type;
         if (current->type == INT_TYPE) type = "INT";
         else type = "FN";
 
-        printf("Name: %s, Type: %s", current->name, type);
+        printf("    Name: %s, Type: %s", current->name, type);
 
         if  (current->type == INT_TYPE)
         {
@@ -22,6 +24,7 @@ void print_env(ENV *env)
         current = current->next;
         printf("\n");
     }
+    printf("\n");
 }
 
 /*
@@ -29,13 +32,15 @@ void print_env(ENV *env)
  */
 void print_frame(FRAME *frame)
 {
+    printf("Printing frame...\n\n");
     print_env(frame->variable);
 
     FRAME *child = frame->child;
+
     while (child)
     {
-        print_frame(child);
-        child = child->sibling;
+       print_frame(child);
+       child = child->sibling;
     }
 }
 
@@ -202,6 +207,7 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
  */
 FRAME *new_frame(FRAME *parent, PARAM *params, ENV *variables)
 {
+    printf("Creating new frame!\n");
     FRAME *new_frame = malloc(sizeof(FRAME));
     new_frame->parent = parent;
 
