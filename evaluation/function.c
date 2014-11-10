@@ -46,43 +46,43 @@ void register_function( int return_type,
  * Assigns params to given args list (for function call)
  *
  */
-
 void *bind_args(function *fn, ENV *args)
 {
-    /*
-    PARAM *current_param = fn->params;
+    PARAM *current_param = fn->scope->param;
     ENV *current_arg = args;
 
     while (current_param && current_arg)
     {
-        if (current_param->type == current_arg->type)
+        if (current_param->type != current_arg->type)
         {
-            // Params should be init at compile time, so assign now
-            // TODO check this is mem safe
-            // current_param->state = current_arg->state;
+            printf("Argument passing type error!\n");
+            exit(1);
         }
-        else
-        {
-            perror("Argument passing error!\n");
-            abort();
-        }
+        current_arg->name = current_param->name;
+
         current_param = current_param->next;
         current_arg   = current_arg->next;
     }
     if (current_param || current_arg)
     {
         perror("Arguments and Params lists do not match!\n");
-        abort();
+        exit(1);
     }
-    return 0;
-*/
+
+    // All good, bind the args
+    ENV *vars = fn->scope->variable;
+    args->next = vars;
+    fn->scope->variable = args;
     return 0;
 }
 
 STATE *call(char *name, FRAME *frame, ENV *args)
 {
     function *function = lookup_var(name, FN_TYPE, frame)->state->function;
-    bind_args(function, args);
-    return evaluate(function->body, NULL, frame, false);
+    if (args)
+    {
+        bind_args(function, args);
+    }
+    return evaluate(function->body, NULL, function->scope, false);
 }
 

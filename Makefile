@@ -15,10 +15,10 @@ CC = gcc
 
 all:	mycc
 
-clean: cleantests
+clean:
 	rm ${ANALOBJS} ${EVALOBJS} ${OBJS}
 
-mycc:	tests ${ANALOBJS} ${EVALOBJS} ${OBJS}
+mycc:	 ${ANALOBJS} ${EVALOBJS} ${OBJS}
 	${CC} -g -o mycc ${ANALOBJS} ${EVALOBJS} ${OBJS}
 	rm ${OBJS}
 
@@ -45,7 +45,3 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 
 tests: ${ANALOBJS} ${EVALOBJS} ${TESTOBJS}
 	${CC} -g -o run_tests ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} `pkg-config --cflags --libs check`
-
-cleantests:
-	rm tests/tests.o
-

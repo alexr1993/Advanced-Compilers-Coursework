@@ -22,6 +22,7 @@ typedef union STATE
     struct PARAM *param;
     char *var_name; // only used for variable/function names
     NODE *fn_body;
+    struct ENV *env;
 } STATE;
 
 // Stores name -> state mappings, AKA a binding
@@ -49,13 +50,14 @@ ENV *lookup_var(char *name, int type, FRAME *frame);
 ENV *init_var(char *name, int type, FRAME *frame);
 ENV *assign_var(char *name, int type, STATE *value, FRAME *frame);
 
-ENV *new_env_mapping(char *name, int *location);
+ENV *new_env(char *name, int type, union STATE *state);
 
 STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 STATE *new_var_name_state(char *name);
 STATE *new_fn_body_state(NODE *body);
 STATE *new_param_state(struct PARAM *param);
+STATE *new_env_state(struct ENV *env);
 
 FRAME *new_frame(FRAME *parent, struct PARAM *params, ENV *variables);
 

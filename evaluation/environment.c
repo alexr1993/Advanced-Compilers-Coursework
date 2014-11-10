@@ -103,8 +103,15 @@ ENV *new_env(char *name, int type, STATE *state)
     ENV *new_env = malloc(sizeof(ENV));
     int name_length = strlen(name);
 
-    new_env->name = malloc(name_length * sizeof(char));
-    strcpy(new_env->name, name);
+    if (name)
+    {
+        new_env->name = malloc(name_length * sizeof(char));
+        strcpy(new_env->name, name);
+    }
+    else
+    {
+        new_env->name = NULL;
+    }
     new_env->type = type;
     new_env->state = state;
 
@@ -148,6 +155,13 @@ STATE *new_param_state(PARAM *param)
 {
     STATE *state = malloc(sizeof(STATE));
     state->param = param;
+    return state;
+}
+
+STATE *new_env_state(ENV *env)
+{
+    STATE *state = malloc(sizeof(STATE));
+    state->env = env;
     return state;
 }
 

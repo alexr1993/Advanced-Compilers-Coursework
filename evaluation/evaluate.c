@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "environment.h"
+#include "function.h"
 #include "param.h"
 
 #include "../analysis/C.tab.h"
@@ -16,14 +17,18 @@ extern TOKEN *void_token;
  * Supported unary operators: -, return
  *
  */
-STATE *evaluate_unary(NODE *operator, STATE *operand, FRAME *frame)
+STATE *evaluate_unary(NODE *operator, STATE *operand, FRAME *frame,
+                      bool is_first_pass                           )
 {
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case RETURN:
         printf("Processing return operator\n");
-
+        if (is_first_pass)
+        {
+            return NULL;
+        }
         if (operand->var_name)
         {
             // TODO infer return type from function sig
@@ -50,14 +55,37 @@ STATE *evaluate_unary(NODE *operator, STATE *operand, FRAME *frame)
 STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
                         STATE *right_operand,  FRAME *frame         )
 {
+
     // TODO add type checking
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case '+':
         printf("Processing add\n");
-        printf("Output: %d\n", left_operand->value + right_operand->value);
-        return new_int_state(left_operand->value + right_operand->value);
+
+        int a, b;
+
+        if (left_operand->value)
+        {
+            printf("LEFT OPERAND: %d\n", left_operand->value);
+            a = left_operand->value;
+        }
+        else
+        {
+            a = lookup_var(left_operand->var_name, INT_TYPE, frame)
+                    ->state->value;
+        }
+        if (right_operand->value)
+        {
+            b = right_operand->value;
+        }
+        else
+        {
+            b = lookup_var(right_operand->var_name, INT_TYPE, frame)
+                    ->state->value;
+        }
+        printf("Output: %d\n", a + b);
+        return new_int_state(a + b);
 
       case '=':
         /* Should return the lvalue, only for ints */
@@ -82,9 +110,9 @@ STATE *evaluate_binary( NODE *operator,        STATE *left_operand,
         return right_operand;
 
       case APPLY:
-        // lookup_var(left_operand->var_name);
-        // return call(fn, right_operand)
-        break;
+        printf("Processing function application\n");
+        printf("Calling function \"%s\"\n", left_operand->var_name);
+        return call(left_operand->var_name, frame, right_operand->env);
 
       default:
         printf("Unactionable binary operator!\n");
@@ -138,15 +166,22 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         printf("Frame created for function \"%s\"\n", left_operand->var_name);
 
         PARAM *params = NULL;
-        if (right_operand && right_operand->param)
+        if (right_operand && str_eq(right_operand->var_name, "void"))
         {
+        }
+        else if (right_operand && right_operand->param)
+        {
+            printf("Param(s) detected for function \"%s\"\n",
+                   left_operand->var_name                     );
+
             params = right_operand->param;
         }
 
         // Create function struct
         FRAME *func_frame = new_frame(frame, params, NULL);
 
-        STATE *fn_state = new_fn_state( new_function( 0,
+        STATE *fn_state = new_fn_state( new_function(
+                                           0,
                                            func_frame,
                                            NULL,
                                            left_operand->var_name ));
@@ -167,6 +202,12 @@ STATE *first_pass_evaluate_binary( NODE *parent,
 
       case '~':
         printf("Processing initialisation\n");
+
+        // No operands mean ~ is holding two fn definitions together
+        if (!left_operand && !right_operand)
+        {
+            return NULL;
+        }
         // This is either used for declaring variables, paramaters or
         // *multiple* functions
         //
@@ -181,22 +222,44 @@ STATE *first_pass_evaluate_binary( NODE *parent,
         // Left operand: type
         // Right operand: param (with no type)
         // Returns: Param (return type never used in var inits)
+
+        // Single param declarations will have a var name passed in
+        if (right_operand->var_name)
+        {
+            char *name = right_operand->var_name;
+            right_operand->param = new_param(name, 0);
+        }
+
         PARAM *param = right_operand->param;
         PARAM *temp  = param;
 
+        // Expect a chain of params with no type
         if (parent->type == 'F')
         {
-            printf("Processing param declaration\n"); // Return param
+            printf("Processing param declaration"); // Return param
 
             // Set the type of the param(s) declared
             while (temp != NULL)
             {
                 // FN_TYPE or INT_TYPE
-                temp->type = left_operand->value;
+                //
+                if (str_eq(left_operand->var_name, "int"))
+                {
+                    printf("Of type int...");
+                    temp->type = INT_TYPE;
+                }
+                else
+                {
+                    printf("Of type fn...");
+                    temp->type = FN_TYPE;
+                }
+
+                printf("Called \"%s\"\n", temp->name);
                 temp = temp->next;
             }
             return right_operand;
         }
+        // Expect chain of params to be used for initing vars
         else
         {
             printf("Processing variable declaration..."); // Return nothing
@@ -215,12 +278,6 @@ STATE *first_pass_evaluate_binary( NODE *parent,
             {
                 printf("Of type function!\n");
                 // init function variable - not yet supported
-                return NULL;
-            }
-            else
-            {
-                // Multifunction initialisation, just return
-                printf("Multiple function initialisation!\n");
                 return NULL;
             }
             return NULL;
@@ -289,6 +346,16 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         TOKEN *t = (TOKEN *)node->left;
         if (t->type == CONSTANT)
         {
+            // Apply must accept env as in other cases it may be a list
+            if (parent->type == APPLY)
+            {
+                // No name until bound to function frame
+                ENV *env = new_env("temp",
+                                    INT_TYPE,
+                                    new_int_state(t->value));
+
+                return new_env_state(env);
+            }
             // Int state for both types and numbers
             //printf("Found leaf: %d\n", t->value);
             return new_int_state(t->value);
@@ -313,7 +380,8 @@ STATE *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         // evaluate unary operator with operant node->left
         return evaluate_unary( node,
                                evaluate(node->left, node, frame, is_first_pass),
-                               frame );
+                               frame,
+                               is_first_pass );
     }
 
     /* Recursive case:
