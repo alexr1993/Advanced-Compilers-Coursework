@@ -13,14 +13,13 @@ SRCS = util.c main.c
 
 CC = gcc
 
-all:	mycc
+all:	mycc tests
 
 clean:
 	rm ${ANALOBJS} ${EVALOBJS} ${OBJS}
 
 mycc:	 ${ANALOBJS} ${EVALOBJS} ${OBJS}
 	${CC} -g -o mycc ${ANALOBJS} ${EVALOBJS} ${OBJS}
-	rm ${OBJS}
 
 # Generate lexical analyser with flex
 lex.yy.c: analysis/C.flex
