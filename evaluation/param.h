@@ -8,7 +8,6 @@ typedef struct PARAM
 {
     char *name;
     int  type;
-    struct PARAM *next;
 } PARAM;
 
 PARAM *new_param(char *name, int type);

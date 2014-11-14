@@ -11,6 +11,7 @@
 #define NODE_TYPE 3
 #define ENV_TYPE  4
 #define PARAM_TYPE 5
+#define NO_TYPE 999
 
 struct function;
 struct PARAM;
@@ -42,7 +43,7 @@ typedef struct ENV
 typedef struct FRAME
 {
     struct ENV *variable;
-    struct PARAM *param;
+    struct ENV *param;
     struct FRAME *parent;
     struct FRAME *child;
     struct FRAME *sibling;
@@ -63,8 +64,8 @@ STATE *new_fn_body_state(NODE *body);
 STATE *new_param_state(struct PARAM *param);
 STATE *new_env_state(struct ENV *env);
 
-FRAME *new_frame(FRAME *parent, struct PARAM *params, ENV *variables);
+FRAME *new_frame(FRAME *parent, struct ENV *params, ENV *variables);
 
 void init_environment();
-void print_environment(void);
+void print_frame(FRAME *frame);
 #endif

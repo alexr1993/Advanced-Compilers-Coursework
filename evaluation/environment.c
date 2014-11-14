@@ -212,7 +212,7 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
  * Create new frame and attack it correctly to its parent
  *
  */
-FRAME *new_frame(FRAME *parent, PARAM *params, ENV *variables)
+FRAME *new_frame(FRAME *parent, ENV *params, ENV *variables)
 {
     printf("Creating new frame!\n");
     FRAME *new_frame = malloc(sizeof(FRAME));

@@ -48,17 +48,22 @@ void register_function( int return_type,
  */
 void *bind_args(function *fn, ENV *args)
 {
-    PARAM *current_param = fn->scope->param;
+    ENV *current_param = fn->scope->param;
     ENV *current_arg = args;
 
     while (current_param && current_arg)
     {
-        if (current_param->type != current_arg->type)
+        printf("param type: %d, arg type: %d, arg value: %d\n",
+                current_param->state->param->type,
+                current_arg->type,
+                current_arg->state->value                       );
+
+        if (current_param->state->param->type != current_arg->type)
         {
             printf("Argument passing type error!\n");
             exit(1);
         }
-        current_arg->name = current_param->name;
+        current_arg->name = current_param->state->param->name;
 
         current_param = current_param->next;
         current_arg   = current_arg->next;
@@ -73,6 +78,7 @@ void *bind_args(function *fn, ENV *args)
     ENV *vars = fn->scope->variable;
     args->next = vars;
     fn->scope->variable = args;
+    print_frame(fn->scope);
     return 0;
 }
 

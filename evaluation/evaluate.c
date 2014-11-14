@@ -14,8 +14,8 @@
 extern TOKEN *void_token;
 ENV *add(ENV *left_operand, ENV *right_operand, FRAME *frame);
 
-STATE *processFnParamsandName(
-    STATE *left_operand, STATE *right_operand, FRAME *frame );
+ENV *processFnParamsandName(
+    ENV *left_operand, ENV *right_operand, FRAME *frame );
 
 ENV *declareVariables( NODE *parent,       ENV *left_operand,
                        ENV *right_operand, FRAME *frame       );
@@ -36,7 +36,7 @@ ENV *evaluate_unary(NODE *operator, ENV *operand, FRAME *frame,
         {
             return NULL;
         }
-        if (operand->state->var_name)
+        if (operand->type == STR_TYPE)
         {
             // TODO infer return type from function sig
             ENV *var = lookup_var(operand->state->var_name, INT_TYPE, frame);
@@ -95,7 +95,13 @@ ENV *evaluate_binary( NODE *operator,      ENV *left_operand,
       case APPLY:
         printf("Processing function application\n");
         printf("Calling function \"%s\"\n", left_operand->state->var_name);
-        return call(left_operand->state->var_name, frame, right_operand);
+        printf("First arg: name \"%s\", type \"%d\", value \"%d\"\n",
+               right_operand->state->env->name, // FIXME this is nonsense
+               right_operand->state->env->type,
+               right_operand->state->env->state->value);
+        return call(left_operand->state->var_name,
+                    frame,
+                    right_operand->state->env);
 
       default:
         printf("Unactionable binary operator!\n");
@@ -138,21 +144,22 @@ ENV *first_pass_evaluate_binary( NODE *parent,
         right_operand->state->function->return_type = left_operand->state->value;
         return right_operand;
 
-
-      case 'F':
-        printf("Processing function name and params\n");
-        return new_env("", FN_TYPE, processFnParamsandName(
-                                          left_operand->state,
-                                          right_operand->state,
-                                          frame)
-               );
-
       case '~':
         printf("Processing initialisation\n");
+        printf("Returning %p\n", left_operand);
         return declareVariables( parent,
                                  left_operand,
                                  right_operand,
                                  frame          );
+
+      case 'F':
+        printf("Processing function name and params\n");
+        // Left operand: function name
+        // Right operand: Param
+        // Returns: Function state
+       return processFnParamsandName(     left_operand,
+                                          right_operand,
+                                          frame);
 
       case '=':
         // Left operand: var_name
@@ -165,10 +172,9 @@ ENV *first_pass_evaluate_binary( NODE *parent,
         // case there is an initialisation which needs it
         // Assume only ints can be in assignments
 
-        return new_env("",
-                       PARAM_TYPE,
-                       new_param_state(
-                          new_param(left_operand->state->var_name, INT_TYPE)));
+        return new_env( left_operand->state->var_name,
+                        INT_TYPE,
+                        NULL                           );
 
       case ',':
         printf("Processing multiple initialisations\n");
@@ -180,12 +186,14 @@ ENV *first_pass_evaluate_binary( NODE *parent,
         // assignment or another comma
         //
         // Parameter Usage:
-        // Left operand is always an initialisation, right operand is either an
-        // assignment or another initialisation
+        // Left operand is always an initialisation, right operand is either
+        // another initialisation or a comma
         //
         // Left operand: param
         // right operand: param
-        left_operand->state->param->next = right_operand->state->param;
+        //
+        // TODO deal with initialisation with no value
+        left_operand->next = right_operand;
         return left_operand;
 
       case ';':
@@ -213,7 +221,7 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
      */
     if (node->type == LEAF)
     {
-        printf("Evaluate output: ");
+        printf("Processing Leaf: ");
         // TODO make print_leaf less confusing and painful
         print_leaf(node->left, 0);
 
@@ -224,11 +232,11 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
             if (parent->type == APPLY)
             {
                 // No name until bound to function frame
-                ENV *env = new_env("temp",
+                ENV *env = new_env("",
                                     INT_TYPE,
                                     new_int_state(t->value));
 
-                return new_env("", ENV_TYPE, new_env_state(env));
+                return new_env("", INT_TYPE, new_env_state(env));
             }
             // Int state for both types and numbers
             //printf("Found leaf: %d\n", t->value);
@@ -270,12 +278,11 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
 
         if (is_first_pass)
         {
-            first_pass_evaluate_binary( parent,
+            return first_pass_evaluate_binary( parent,
                                         node,
                                         left_operand,
                                         right_operand,
                                         frame          );
-            return NULL;
         }
         else
         {
@@ -323,38 +330,39 @@ ENV *add(ENV *left_operand, ENV *right_operand, FRAME *frame)
 
 }
 
-STATE *processFnParamsandName( STATE *left_operand,
-                               STATE *right_operand,
+/*
+ * Creates function variable with the name and parameters supplied,
+ * Body and return type are left blank, they are processed later
+ */
+ENV *processFnParamsandName(   ENV *function_name,
+                               ENV *params,
                                FRAME *frame          )
 {
-    // Left operand: function name
-    // Right operand: Param
-    // Returns: Function state
+
+    char *name = function_name->state->var_name;
 
     // Create new frame for function and populate it with params
-    printf("Frame created for function \"%s\"\n", left_operand->var_name);
+    printf( "Creating frame for function \"%s\"\n", name );
 
-    PARAM *params = NULL;
-    if (right_operand && str_eq(right_operand->var_name, "void"))
+    // If "void" is not given, assume params
+    if (params->type == PARAM_TYPE)
     {
-    }
-    else if (right_operand && right_operand->param)
-    {
-        printf("Param(s) detected for function \"%s\"\n",
-               left_operand->var_name                     );
-
-        params = right_operand->param;
+        printf("Param(s) detected for function \"%s\"\n", name );
+        printf("Param 1: name \"%s\", type \"%d\"\n",
+            params->state->param->name, params->state->param->type);
     }
 
-    // Create function struct
+    // Create frame for function and give it the params
     FRAME *func_frame = new_frame(frame, params, NULL);
 
+    // Create function struct
     STATE *fn_state = new_fn_state( new_function(
                                        0,
                                        func_frame,
                                        NULL,
-                                       left_operand->var_name ));
-    return fn_state;
+                                       name ));
+
+    return new_env("", FN_TYPE, fn_state);
 }
 
 ENV *declareVariables( NODE *parent,
@@ -384,19 +392,32 @@ ENV *declareVariables( NODE *parent,
     // Returns: Param (return type never used in var inits)
 
     // Single param declarations will have a var name passed in
-    if (right_operand->type == STR_TYPE)
-    {
-        char *name = right_operand->state->var_name;
-        // Potentially bad mem management, create a new var instead?
-        right_operand->state->param = new_param(name, 0);
-    }
 
-    PARAM *temp = right_operand->state->param;
 
     // Expect a chain of params with no type
     if (parent->type == 'F')
     {
         printf("Processing param declaration\n"); // Return param
+
+        ENV *param;
+
+        // Single params arrive as just a string, give it a struct
+        if (right_operand->type == STR_TYPE)
+        {
+            printf("1 Param given\n");
+            char *name = right_operand->state->var_name;
+            param = new_env( "",
+                             PARAM_TYPE,
+                             new_param_state(new_param(name, NO_TYPE))
+                           );
+        }
+        // Multiple params will have been packaged already
+        else
+        {
+            printf("Multiple params given\n");
+            param = right_operand;
+        }
+        ENV *temp = param;
 
         // Set the type of the param(s) declared
         while (temp)
@@ -405,24 +426,27 @@ ENV *declareVariables( NODE *parent,
             if (str_eq(left_operand->state->var_name, "int"))
             {
                 printf("Of type int...");
-                temp->type = INT_TYPE;
+                temp->state->param->type = INT_TYPE;
             }
             else
             {
                 printf("Of type fn...");
-                temp->type = FN_TYPE;
+                temp->state->param->type = FN_TYPE;
             }
 
-            printf("Called \"%s\"\n", temp->name);
+            printf("Called \"%s\"\n", temp->state->param->name);
             temp = temp->next;
         }
         // Params have now had their type set
-        return right_operand;
+        printf("Param: %s\n", param->state->param->name);
+        return param;
     }
     // Expect chain of params to be used for initing vars
     // This section does not need to return anything
     else
     {
+        ENV *temp = right_operand;
+
         printf("Processing variable declaration..."); // Return nothing
         if (str_eq(left_operand->state->var_name, "int"))
         {
