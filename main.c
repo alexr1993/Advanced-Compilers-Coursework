@@ -76,7 +76,7 @@ void interpret_source(void)
         printf("\n\nExecuting\n");
         printf("=========\n\n");
 
-        STATE *return_status = call("main", gbl_frame, NULL);
+        STATE *return_status = call("main", gbl_frame, NULL)->state;
         printf("\n\n----------Interpretation Complete----------\n\n");
         printf("%d\n\n", return_status->value);
     }

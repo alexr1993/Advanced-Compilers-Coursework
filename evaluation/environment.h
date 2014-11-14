@@ -5,8 +5,12 @@
 #include "param.h"
 #include "../util.h"
 
-#define INT_TYPE 0
-#define FN_TYPE  1
+#define INT_TYPE  0
+#define FN_TYPE   1
+#define STR_TYPE  2
+#define NODE_TYPE 3
+#define ENV_TYPE  4
+#define PARAM_TYPE 5
 
 struct function;
 struct PARAM;

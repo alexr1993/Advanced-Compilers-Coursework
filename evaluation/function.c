@@ -76,7 +76,7 @@ void *bind_args(function *fn, ENV *args)
     return 0;
 }
 
-STATE *call(char *name, FRAME *frame, ENV *args)
+ENV *call(char *name, FRAME *frame, ENV *args)
 {
     function *function = lookup_var(name, FN_TYPE, frame)->state->function;
     if (args)
