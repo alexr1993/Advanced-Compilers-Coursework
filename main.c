@@ -132,7 +132,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/functions.cmm", "r");
+    yyin = fopen("tests/test_source/if.cmm", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

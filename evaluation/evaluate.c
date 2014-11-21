@@ -36,12 +36,15 @@ ENV *evaluate_unary(NODE *operator, ENV *operand, FRAME *frame,
         {
             return NULL;
         }
+        // Return parameterised with a lexeme
         if (operand->type == STR_TYPE)
         {
             // TODO infer return type from function sig
             ENV *var = lookup_var(operand->state->var_name, INT_TYPE, frame);
+            var->is_return = true;
             return var;
         }
+        operand->is_return = true;
         return operand;
       /* The only unary operator that makes it through the parses is RETURN
        * This seems to be a bug with the prewritten code (in C.y)
@@ -102,6 +105,13 @@ ENV *evaluate_binary( NODE *operator,      ENV *left_operand,
         return call(left_operand->state->var_name,
                     frame,
                     right_operand->state->env);
+
+      case IF:
+        // Only gets called to check condition before preceding
+        // return the truthiness of the condition
+        printf("Processing if statement\n");
+        printf("boolean value: %d\n", left_operand->state->value);
+        return left_operand;
 
       default:
         printf("Unactionable binary operator!\n");
@@ -273,7 +283,35 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
     {
         print_branch(node);
         ENV *left_operand  = evaluate(node->left, node, frame, is_first_pass);
-        ENV *right_operand = evaluate(node->right, node, frame, is_first_pass);
+        ENV *right_operand = NULL;
+
+        if (is_first_pass)
+        {
+            right_operand = evaluate(node->right, node, frame, is_first_pass);
+        }
+        /* At runtime we don't always want to execute the children */
+        else
+        {
+            switch (node->type)
+            {
+              case 'D':
+                right_operand = NULL;
+                break;
+
+              case IF:
+                if (left_operand->state->value != 0)
+                {
+                    right_operand
+                        = evaluate(node->right, node, frame, is_first_pass);
+                }
+              break;
+
+              default:
+                right_operand
+                    = evaluate(node->right, node, frame, is_first_pass);
+                break;
+            }
+        }
         //print_tree(right_operand);
 
         if (is_first_pass)
@@ -286,6 +324,15 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         }
         else
         {
+            /* Handle return statement which can appear anywhere */
+            if (left_operand->is_return)
+            {
+                return left_operand;
+            }
+            if (right_operand->is_return)
+            {
+                return right_operand;
+            }
             return evaluate_binary( node,
                                     left_operand,
                                     right_operand,
@@ -329,6 +376,12 @@ ENV *add(ENV *left_operand, ENV *right_operand, FRAME *frame)
     return new_env("", INT_TYPE, new_int_state(a + b));
 
 }
+
+/****************************************************************************
+ *                                                                          *
+ *                          HELPER FUNCTIONS                                *
+ *                                                                          *
+ ****************************************************************************/
 
 /*
  * Creates function variable with the name and parameters supplied,

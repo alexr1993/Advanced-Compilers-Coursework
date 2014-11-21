@@ -107,6 +107,7 @@ ENV *new_env(char *name, int type, STATE *state)
     strcpy(new_env->name, name);
     new_env->type = type;
     new_env->state = state;
+    new_env->is_return = false;
 
     printf("New var created: Name: %s, var->name: \"%s\"\n", name, new_env->name);
 

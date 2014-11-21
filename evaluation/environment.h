@@ -1,6 +1,7 @@
 #ifndef __ENVIRONMENT_H
 #define __ENVIRONMENT_H
 
+#include "stdbool.h"
 #include "function.h"
 #include "param.h"
 #include "../util.h"
@@ -36,6 +37,7 @@ typedef struct ENV
     char *name;
     int type;
     STATE *state;
+    bool is_return;
     struct ENV *next;
 } ENV;
 
