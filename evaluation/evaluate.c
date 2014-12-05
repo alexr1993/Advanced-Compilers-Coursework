@@ -1,17 +1,8 @@
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include "evaluate.h"
 
-#include "environment.h"
-#include "function.h"
-#include "param.h"
+#include "util.h"
+#include "common/operations.h"
 
-#include "../analysis/C.tab.h"
-#include "../analysis/nodes.h"
-#include "../analysis/token.h"
-#include "../util.h"
-
-extern TOKEN *void_token;
 ENV *add(ENV *left_operand, ENV *right_operand, FRAME *frame);
 
 ENV *processFnParamsandName(
@@ -24,15 +15,14 @@ ENV *declareVariables( NODE *parent,       ENV *left_operand,
  * Supported unary operators: -, return
  *
  */
-ENV *evaluate_unary(NODE *operator, ENV *operand, FRAME *frame,
-                      bool is_first_pass                           )
+ENV *evaluate_unary(NODE *operator, ENV *operand, FRAME *frame, int eval_mode )
 {
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
     {
       case RETURN:
         printf("Processing return operator\n");
-        if (is_first_pass)
+        if (eval_mode == FIRST_PASS)
         {
             return NULL;
         }
@@ -65,7 +55,6 @@ ENV *evaluate_unary(NODE *operator, ENV *operand, FRAME *frame,
 ENV *evaluate_binary( NODE *operator,      ENV *left_operand,
                       ENV *right_operand,  FRAME *frame       )
 {
-
     // TODO add type checking
     printf("operator: %s\n", named(operator->type));
     switch (operator->type)
@@ -131,18 +120,7 @@ ENV *first_pass_evaluate_binary( NODE *parent,
     {
       case 'D':
         printf("Processing fn definition\n");
-        // Left operand: function struct
-        // Right operand: body of function
-        // Returns: Nothing
-
-        // Set body of function
-        function *fn = left_operand->state->function;
-        fn->body = operator->right;
-
-        // Store function in frame
-        init_var(fn->name, FN_TYPE, frame);
-        assign_var(fn->name, FN_TYPE, left_operand->state, frame);
-        return NULL;
+        return NULL;// D(parent, operator, left_operand, right_operand, frame, FIRST_PASS);
 
       case 'd':
         printf("Processing function signature\n");
@@ -223,9 +201,9 @@ ENV *first_pass_evaluate_binary( NODE *parent,
  * Simply returns leaves
  *
  */
-ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
+ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, int eval_mode)
 {
-    /* Base case:
+    /* Base case: HANDLE LEAVES
      *
      * return if self evaluating node, leaves *should* be
      */
@@ -265,29 +243,26 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         }
     }
 
-    /* Recursive case: Evaluate unary operator    */
+    /* Recursive case: Evaluate unary */
     else if (!node->right)
     {
         print_branch(node);
         // evaluate unary operator with operant node->left
         return evaluate_unary( node,
-                               evaluate(node->left, node, frame, is_first_pass),
+                               evaluate(node->left, node, frame, eval_mode),
                                frame,
-                               is_first_pass );
+                               eval_mode );
     }
-    /* Recursive case:
-     *
-     * Evaluate binary operator if both children are leaves
-     */
+    /* Recursive case: Evaluate binary */
     else
     {
         print_branch(node);
-        ENV *left_operand  = evaluate(node->left, node, frame, is_first_pass);
+        ENV *left_operand  = evaluate(node->left, node, frame, eval_mode);
         ENV *right_operand = NULL;
 
-        if (is_first_pass)
+        if (eval_mode == FIRST_PASS)
         {
-            right_operand = evaluate(node->right, node, frame, is_first_pass);
+            right_operand = evaluate(node->right, node, frame, eval_mode);
         }
         /* At runtime we don't always want to execute the children */
         else
@@ -302,19 +277,17 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
                 if (left_operand->state->value != 0)
                 {
                     right_operand
-                        = evaluate(node->right, node, frame, is_first_pass);
+                        = evaluate(node->right, node, frame, eval_mode);
                 }
               break;
 
               default:
                 right_operand
-                    = evaluate(node->right, node, frame, is_first_pass);
+                    = evaluate(node->right, node, frame, eval_mode);
                 break;
             }
         }
-        //print_tree(right_operand);
-
-        if (is_first_pass)
+        if (eval_mode == FIRST_PASS)
         {
             return first_pass_evaluate_binary( parent,
                                         node,
@@ -325,11 +298,11 @@ ENV *evaluate (NODE *node, NODE *parent, FRAME *frame, bool is_first_pass)
         else
         {
             /* Handle return statement which can appear anywhere */
-            if (left_operand->is_return)
+            if (left_operand && left_operand->is_return)
             {
                 return left_operand;
             }
-            if (right_operand->is_return)
+            if (right_operand && right_operand->is_return)
             {
                 return right_operand;
             }

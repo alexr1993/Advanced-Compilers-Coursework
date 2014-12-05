@@ -1,10 +1,10 @@
 #ifndef __ENVIRONMENT_H
 #define __ENVIRONMENT_H
 
-#include "stdbool.h"
+#include <stdbool.h>
 #include "function.h"
 #include "param.h"
-#include "../util.h"
+#include "util.h"
 
 #define INT_TYPE  0
 #define FN_TYPE   1

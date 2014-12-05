@@ -57,7 +57,7 @@ Suite *evaluate_suite(void)
     /* Core test case */
     tc_core = tcase_create("Core");
 
-    tcase_add_test(tc_core, interpret);
+    //tcase_add_test(tc_core, interpret);
     tcase_add_test(tc_core, environment);
     suite_add_tcase(s, tc_core);
 

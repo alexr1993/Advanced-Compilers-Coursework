@@ -89,6 +89,6 @@ ENV *call(char *name, FRAME *frame, ENV *args)
     {
         bind_args(function, args);
     }
-    return evaluate(function->body, NULL, function->scope, false);
+    return evaluate(function->body, NULL, function->scope, EVAL);
 }
 

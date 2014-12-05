@@ -8,6 +8,7 @@
 #include "analysis/token.h"
 #include "evaluation/environment.h"
 #include "evaluation/evaluate.h"
+#include "generation/tac.h"
 #include "util.h"
 
 extern int yydebug;
@@ -33,60 +34,33 @@ void translate_to_TAC()
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
-    //evaluate(tree);
+    evaluate(tree, NULL, gbl_frame, TAC);
     return;
 }
 
 /* Translate three address code to MIPS */
-void translate_to_MIPS()
-{
+void translate_to_MIPS() {
     return;
 }
 
 /* Basic evaluation of parse tree */
 void interpret_source(void)
 {
-    if (yyin)
-    {
-        init_symbtable();
-        yyparse();
-        NODE *tree = ans;
-        print_tree(tree);
+    init_symbtable();
+    yyparse();
+    NODE *tree = ans;
+    print_tree(tree);
 
-        // TODO process contents of tree to populate global env
-        //
-        // This can be done by:
-        //  1. Backpatching (but no idea how to implement)
-        //
-        //  2. First pass to get vars
-        //      Issue is if you init env here then there can be weird
-        //      situations where
-        //      variables can be used before being initialised as initialisations are
-        //      done on the first pass
-        //
-        //  3. Don't do it
-        //      You must use forward declarations, and can't init at the same time
-        //      as assign.
-        //      Also not sure if this will work for functions
-        //
-        printf("\n\nStarting first pass evaluation\n");
-        printf("==============================\n\n");
-        evaluate(tree, NULL, gbl_frame, true); // Option 1
+    printf("\n\nStarting first pass evaluation\n");
+    printf("==============================\n\n");
+    evaluate(tree, NULL, gbl_frame, FIRST_PASS); // Option 1
 
-        printf("\n\nExecuting\n");
-        printf("=========\n\n");
+    printf("\n\nExecuting\n");
+    printf("=========\n\n");
 
-        STATE *return_status = call("main", gbl_frame, NULL)->state;
-        printf("\n\n----------Interpretation Complete----------\n\n");
-        printf("%d\n\n", return_status->value);
-    }
-    // start interactive session
-    while (false) // TODO change to true when implemented
-    {
-        //char *command = prompt(); // accept input one expression at a time
-        //evaluate(command);
-    }
-    return;
+    STATE *return_status = call("main", gbl_frame, NULL)->state;
+    printf("\n\n----------Interpretation Complete----------\n\n");
+    printf("%d\n\n", return_status->value);
 }
 
 /* Interpret --C program */
@@ -99,7 +73,7 @@ int main ( int argc, char *argv[] )
     init_environment();
 
     // Determine translation requested
-    while ((c = getopt(argc, argv, "a:df")) != -1)
+    while ((c = getopt(argc, argv, "a:df:")) != -1)
     {
         switch (c)
         {
@@ -118,6 +92,7 @@ int main ( int argc, char *argv[] )
 
             case 'f':
                 yyin = fopen(optarg, "r");
+                printf("%s", optarg);
                 if (!yyin)
                 {
                     printf("Invalid input file path.\n");
@@ -132,7 +107,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    yyin = fopen("tests/test_source/if.cmm", "r");
+    if (!yyin) yyin = fopen("tests/test_source/if.cmm", "r");
 
     /* Translate */
     if ( str_eq(action, "") )
