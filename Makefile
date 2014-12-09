@@ -19,7 +19,7 @@ CC = gcc
 all:	mycc tests
 
 clean:
-	rm ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}
+	rm ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS} ${TESTOBJS} mycc
 
 mycc:	 ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}
 	${CC} -g -o mycc -I . ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}

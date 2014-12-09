@@ -1,7 +1,7 @@
 #include <check.h>
 #include <stdlib.h>
 
-#include "../evaluation/environment.h"
+#include "evaluation/environment.h"
 #include "test_source/basic_arithmetic.h"
 
 extern FRAME *gbl_frame;

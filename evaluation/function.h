@@ -2,7 +2,7 @@
 #define __FUNCTION_H
 
 #include "environment.h"
-#include "../analysis/nodes.h"
+#include "analysis/nodes.h"
 #include "param.h"
 
 struct ENV;
