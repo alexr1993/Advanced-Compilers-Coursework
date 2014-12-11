@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "nodes.h"
 #include "C.tab.h"
-
+extern int counter;
 NODE* make_node(int t, NODE* left, NODE* right)
 {
     NODE *a = (NODE*)malloc(sizeof(NODE));
@@ -13,6 +13,9 @@ NODE* make_node(int t, NODE* left, NODE* right)
     a->type = t;
     a->left = left;
     a->right = right;
+
+    printf("(%d)", counter);
+    counter++;
     return a;
 }
 
@@ -27,5 +30,7 @@ NODE* make_leaf(TOKEN* l)
     a->type = LEAF;
     a->left = (NODE*)l;
     a->right = NULL;
+    printf("(%d)", counter);
+    counter++;
     return a;
 }

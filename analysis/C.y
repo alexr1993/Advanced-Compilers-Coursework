@@ -4,6 +4,10 @@
 #define YYDEBUG 1
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
 NODE *ans;
+int counter = 1;
+
+int yyerror(char *s);
+int yylex();
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL
@@ -43,15 +47,6 @@ argument_expression_list
 
 unary_expression
 	: postfix_expression		{ $$ = $1; }
-	| unary_operator unary_expression { $$ = make_node((int)$1, $2, NULL); }
-	;
-
-unary_operator
-	: '&'		{ $$ = $1; }
-	| '*'		{ $$ = $1; }
-	| '+'		{ $$ = $1; }
-	| '-'		{ $$ = $1; }
-	| '!'		{ $$ = $1; }
 	;
 
 multiplicative_expression
@@ -140,8 +135,7 @@ type_specifier
 	;
 
 declarator
-	: pointer direct_declarator	{ $$ = make_node('~', $1, $2); }
-	| direct_declarator		{ $$ = $1; }
+	:  direct_declarator		{ $$ = $1; }
 	;
 
 direct_declarator
@@ -150,11 +144,6 @@ direct_declarator
         | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' ')'                { $$ = make_node('F', $1, NULL); }
-	;
-
-pointer
-	: '*'                   { $$ = (NODE*)1; }
-	| '*' pointer           { $$ = (NODE*)((int)$2+1); }
 	;
 
 parameter_list
@@ -176,9 +165,7 @@ identifier_list
 	;
 
 abstract_declarator
-	: pointer		        { $$ = $1; }
-	| direct_abstract_declarator    { $$ = $1; }
-	| pointer direct_abstract_declarator { $$ = make_node('G', $1, $2); }
+	:  direct_abstract_declarator    { $$ = $1; }
 	;
 
 direct_abstract_declarator
@@ -243,8 +230,7 @@ translation_unit
 	;
 
 external_declaration
-	: function_definition            { $$ = $1; }
-	| declaration                    { $$ = $1; }
+	:  declaration                    { $$ = $1; }
 	;
 
 function_definition
@@ -261,10 +247,10 @@ function_definition
 
 extern char yytext[];
 extern int column;
-
 int yyerror(char *s)
 {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
+    return 0;
 }
 

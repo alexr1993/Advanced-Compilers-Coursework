@@ -12,7 +12,7 @@
 #include "util.h"
 
 extern int yydebug;
-extern NODE *yyparse (void);
+extern int yyparse (void);
 extern NODE *ans;
 extern void init_symbtable (void);
 extern FRAME *gbl_frame;
