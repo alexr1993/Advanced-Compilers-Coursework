@@ -9,15 +9,14 @@ ANALOBJS = analysis/lex.yy.o analysis/C.tab.o \
 ANALSRCS = analysis/lex.yy.c analysis/C.tab.c \
            analysis/symbol_table.c analysis/nodes.c
 
-COMMOBJS = common/operations.o
-COMMSRCS = common/operations.o
+COMMOBJS = util.o common/operations.o
+COMMSRCS = main.c common/operations.co
 
 TESTOBJS = tests/tests.o
 TESTSRCS = tests/tests.c
 
-OBJS = util.o main.o
-SRCS = util.c main.c
-
+OBJS = main.o
+SRCS = main.c
 CC = gcc
 
 all:	mycc tests
@@ -50,7 +49,6 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 	tar cvfz mycc.tgz symbol_table.c nodes.c util.c main.c Makefile C.flex C.y \
 		nodes.h token.h
 
-tests: ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} ${COMMOBJS} ${OBJS}
+tests: ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} ${COMMOBJS}
 	${CC} -g -o run_tests ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} ${COMMOBJS} \
-                          ${OBJS}\
     `pkg-config --cflags --libs check`
