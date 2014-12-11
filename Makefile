@@ -23,7 +23,7 @@ all:	mycc tests
 
 clean:
 	rm ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS} ${TESTOBJS} \
-       mycc analysis/C.tab.* analysis/lex.yy.c
+       mycc analysis/C.tab.* analysis/lex.yy.c runtests
 
 mycc:	 ${ANALSRCS} ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}
 	${CC} -g -o mycc -I . ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}

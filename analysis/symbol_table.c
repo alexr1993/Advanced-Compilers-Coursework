@@ -39,21 +39,30 @@ int hash(char *s)
     return (0x7fffffff&h) % HASH_SIZE;
 }
 
+/*
+ * Looks up the input string, returning a token if it's in the symbol table
+ *
+ * Otherwise it creates a token and insert it
+ */
 TOKEN* lookup_token(char *s)
 {
     int	h = hash(s);
     TOKEN *a = symbtable[h];
     TOKEN *ans;
-/*     printf("\nLookup: %s\n", s); */
+
+    /* Return token for s if it exists */
+    printf("\nSYMBOL TABLE: Lookup: \"%s\"\n", s);
     while (a!=NULL) {
       if (strcmp(a->lexeme, s)==0) return a;
       a = a->next;
     }
+
+    /* If not create and insert a token for s */
     ans = new_token(IDENTIFIER);
     ans->lexeme = (char*)malloc(1+strlen(s));
     strcpy(ans->lexeme, s);
     ans->next = symbtable[h];
     symbtable[h] = ans;
-/*     printf(" stored at %p\n", ans); */
+    printf("SYMBOL TABLE: \"%s\" stored at %p\n", s, ans);
     return ans;
 }

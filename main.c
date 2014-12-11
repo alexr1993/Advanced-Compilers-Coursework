@@ -50,7 +50,7 @@ void interpret_source(void)
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
-
+/*
     printf("\n\nStarting first pass evaluation\n");
     printf("==============================\n\n");
     evaluate(tree, NULL, gbl_frame, FIRST_PASS); // Option 1
@@ -61,6 +61,7 @@ void interpret_source(void)
     STATE *return_status = call("main", gbl_frame, NULL)->state;
     printf("\n\n----------Interpretation Complete----------\n\n");
     printf("%d\n\n", return_status->value);
+*/
 }
 
 /* Interpret --C program */
@@ -92,7 +93,6 @@ int main ( int argc, char *argv[] )
 
             case 'f':
                 yyin = fopen(optarg, "r");
-                printf("%s", optarg);
                 if (!yyin)
                 {
                     printf("Invalid input file path.\n");
