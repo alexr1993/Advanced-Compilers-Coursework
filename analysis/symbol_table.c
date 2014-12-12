@@ -1,5 +1,5 @@
 /*
- * Adapted from 
+ * Adapted from
  * CM20029 Coursework Assignment 1
  * Tom Crick
  * cs1tc@bath.ac.uk

@@ -107,7 +107,7 @@ declaration
 
 declaration_specifiers
 	: storage_class_specifier		{ $$ = $1; }
-	| storage_class_specifier declaration_specifiers { 
+	| storage_class_specifier declaration_specifiers {
                                                   $$ = make_node('~', $1, $2); }
 	| type_specifier	        	{ $$ = $1; }
 	| type_specifier declaration_specifiers { $$ = make_node('~', $1, $2); }
@@ -141,7 +141,7 @@ declarator
 direct_declarator
 	: IDENTIFIER		{ $$ = make_leaf(lasttok); }
 	| '(' declarator ')'	{ $$ = $2; }
-        | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
+    | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' ')'                { $$ = make_node('F', $1, NULL); }
 	;
@@ -160,8 +160,7 @@ parameter_declaration
 identifier_list
 	: IDENTIFIER                    { $$ = make_leaf(lasttok); }
 	| identifier_list ',' IDENTIFIER {
-                                          $$ = make_node(',', $1,
-                                                              make_leaf(lasttok)); }
+         $$ = make_node(',', $1, make_leaf(lasttok)); }
 	;
 
 abstract_declarator
@@ -209,7 +208,7 @@ expression_statement
 selection_statement
 	: IF '(' expression ')' statement { $$ = make_node(IF, $3, $5); }
 	| IF '(' expression ')' statement ELSE statement
-                                          { $$ = make_node(IF, $3,
+                                      { $$ = make_node(IF, $3,
                                                         make_node(ELSE, $5, $7)); }
 	;
 
@@ -221,7 +220,7 @@ jump_statement
 	: CONTINUE ';'                  { $$ = make_node(CONTINUE, NULL, NULL); }
 	| BREAK ';'                     { $$ = make_node(BREAK, NULL, NULL); }
 	| RETURN ';'	                { $$ = make_node(RETURN, NULL, NULL); }
-	| RETURN expression ';'		{ $$ = make_node(RETURN, $2, NULL); }
+	| RETURN expression ';'		    { $$ = make_node(RETURN, $2, NULL); }
 	;
 
 translation_unit

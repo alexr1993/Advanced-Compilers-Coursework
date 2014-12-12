@@ -1,6 +1,7 @@
 #ifndef __ENVIRONMENT_H
 #define __ENVIRONMENT_H
 
+typedef struct node NODE;
 #include <stdbool.h>
 #include "function.h"
 #include "param.h"

@@ -1,6 +1,7 @@
 #ifndef __NODES_H
 #define __NODES_H
 
+typedef struct TOKEN TOKEN;
 #include "token.h"
 
 typedef struct node {
