@@ -1,22 +1,33 @@
 ## TODO Clean up all the repitition in this file
-EVALOBJS = evaluation/param.o evaluation/function.o \
-           evaluation/environment.o evaluation/evaluate.o
-EVALSRCS = evaluation/param.c evaluation/function.c \
-           evaluation/environment.c evaluation/evaluate.c
+EVALOBJS = evaluation/param.o \
+           evaluation/function.o \
+           evaluation/environment.o \
+           evaluation/evaluate.o
+EVALSRCS = evaluation/param.c \
+           evaluation/function.c \
+           evaluation/environment.c \
+           evaluation/evaluate.c
 
-ANALOBJS = analysis/lex.yy.o analysis/C.tab.o \
-           analysis/symbol_table.o analysis/nodes.o
-ANALSRCS = analysis/lex.yy.c analysis/C.tab.c \
-           analysis/symbol_table.c analysis/nodes.c
+ANALOBJS = analysis/lex.yy.o \
+           analysis/C.tab.o \
+           analysis/symbol_table.o \
+           analysis/nodes.o
+ANALSRCS = analysis/lex.yy.c \
+           analysis/C.tab.c \
+           analysis/symbol_table.c \
+           analysis/nodes.c
 
-COMMOBJS = util.o common/operations.o
-COMMSRCS = main.c common/operations.co
+COMMOBJS = util.o \
+           common/operations.o
+COMMSRCS = main.c \
+           common/operations.co
 
 TESTOBJS = tests/tests.o
 TESTSRCS = tests/tests.c
 
 OBJS = main.o
 SRCS = main.c
+
 CC = gcc
 
 all:	mycc tests
