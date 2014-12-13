@@ -20,9 +20,19 @@ typedef struct TOKEN
   FRAME        *frame;
 } TOKEN;
 
+struct token_stack {
+  int size;
+  TOKEN *top;
+};
+struct token_stack *ts;
+
 TOKEN* new_token(int);
 TOKEN *make_string(char *s);
 TOKEN *make_int(char *s);
 TOKEN *make_identifier(char *s);
+
+void init_token_stack();
 void print_token(TOKEN *t);
+TOKEN *pop();
+void push(TOKEN *);
 #endif

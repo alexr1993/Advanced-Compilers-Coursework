@@ -16,7 +16,7 @@ NODE* make_node(int t, NODE* left, NODE* right)
     a->left = left;
     a->right = right;
 
-    printf("(%d)", counter);
+    //printf("(%d)", counter);
     counter++;
     return a;
 }
@@ -32,7 +32,7 @@ NODE* make_leaf(TOKEN* l)
     a->type = LEAF;
     a->left = (NODE*)l;
     a->right = NULL;
-    printf("(%d)", counter);
+    //printf("(%d)", counter);
     counter++;
     return a;
 }

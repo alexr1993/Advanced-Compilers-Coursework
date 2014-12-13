@@ -213,9 +213,8 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
  * Create new frame and attack it correctly to its parent
  *
  */
-FRAME *new_frame(FRAME *parent, ENV *params, ENV *variables)
+FRAME *new_frame(FRAME *parent)
 {
-    printf("Creating new frame!\n");
     FRAME *new_frame = malloc(sizeof(FRAME));
     new_frame->parent = parent;
 
@@ -226,15 +225,13 @@ FRAME *new_frame(FRAME *parent, ENV *params, ENV *variables)
         parent->child = new_frame;
         new_frame->sibling = child;
     }
-
-    new_frame->param = params;
-    new_frame->variable = variables;
+    new_frame->symbols = new_symbtable();
     return new_frame;
 }
 
 /* Init some globals, or whatever else */
 void init_environment(void)
 {
-    gbl_frame = new_frame(NULL, NULL, NULL);
+    gbl_frame = new_frame(NULL);
 }
 

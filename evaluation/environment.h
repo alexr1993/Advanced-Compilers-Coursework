@@ -6,6 +6,8 @@ typedef struct node NODE;
 #include "function.h"
 #include "param.h"
 #include "util.h"
+#include "analysis/token.h"
+#include "analysis/symbol_table.h"
 
 #define INT_TYPE  0
 #define FN_TYPE   1
@@ -50,6 +52,7 @@ typedef struct FRAME
     struct FRAME *parent;
     struct FRAME *child;
     struct FRAME *sibling;
+    TOKEN **symbols;
 } FRAME;
 
 struct FRAME *gbl_frame;
@@ -67,7 +70,7 @@ STATE *new_fn_body_state(NODE *body);
 STATE *new_param_state(struct PARAM *param);
 STATE *new_env_state(struct ENV *env);
 
-FRAME *new_frame(FRAME *parent, struct ENV *params, ENV *variables);
+FRAME *new_frame(FRAME *parent);
 
 void init_environment();
 void print_frame(FRAME *frame);

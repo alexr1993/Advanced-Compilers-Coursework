@@ -1,9 +1,15 @@
 %{
+#include <stdio.h>
+
 #include "nodes.h"
 #include "util.h"
+#include "evaluation/environment.h"
+
 #define YYSTYPE NODE*
 #define YYDEBUG 1
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
+int V;
+
 NODE *ans;
 int counter = 1;
 
@@ -12,6 +18,9 @@ int yylex();
 
 void add_type_info(NODE *l, NODE *r);
 void create_frame(NODE *n);
+
+extern FRAME *gbl_frame;
+FRAME *current_frame;
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL
@@ -104,7 +113,10 @@ expression
 
 declaration
 	: declaration_specifiers ';'		{ $$ = $1; }
-	| function_definition			{ $$ = $1; }
+	| function_definition {
+        create_frame($1);
+        $$ = $1;
+      }
 	| declaration_specifiers init_declarator_list ';' {
       $$ = make_node('~', $1, $2);
       add_type_info($1, $2);
@@ -241,23 +253,18 @@ external_declaration
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement {
         $$ = make_node('D', make_node('d', $1, make_node('e', $2, $3)), $4);
-        create_frame($$);
       }
 	| declaration_specifiers declarator compound_statement  {
         $$ = make_node('D', make_node('d', $1, $2), $3);
-        create_frame($$);
       }
 	| declarator declaration_list compound_statement  {
         $$ = make_node('D', make_node('d', $1, $2), $3);
-        create_frame($$);
       }
 	| declarator compound_statement {
         $$ = make_node('D', $1, $2);
-        create_frame($$);
       }
-        ;
+    ;
 %%
-#include <stdio.h>
 
 extern char yytext[];
 extern int column;
@@ -268,7 +275,7 @@ int yyerror(char *s) {
 }
 
 void add_type_info(NODE *l, NODE *r) {
-    printf("Adding type info to declared variables!\n");
+    printf("\nAdding type info to declared variables!\n");
     char *type = get_token(l)->lexeme;
     printf("Type is %s!\n", type);
 
@@ -276,6 +283,9 @@ void add_type_info(NODE *l, NODE *r) {
     //variable->type = "int";
 }
 
+/* Creates a child frame with it's own symbtable */
 void create_frame(NODE *n) {
-    printf("Creating new frame!\n");
+    if (V) printf("\nCreating new frame!\n");
+    if (current_frame == NULL) current_frame = gbl_frame;
+    FRAME *frame = new_frame(current_frame);
 }

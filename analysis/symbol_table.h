@@ -2,11 +2,8 @@
 #define __SYMBOL_TABLE_H
 
 #include "token.h"
-#include "C.tab.h"
 
-static TOKEN** symbtable;
-
-void init_symbtable(void);
-TOKEN* lookup_token(char *s);
+TOKEN **new_symbtable();
+TOKEN* lookup_token(char *s, TOKEN **symbtable);
 
 #endif

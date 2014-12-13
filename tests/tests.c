@@ -1,12 +1,17 @@
 #include <check.h>
 #include <stdlib.h>
 
+#include "analysis/token.h"
 #include "analysis/symbol_table.h"
 #include "evaluation/environment.h"
 #include "test_source/basic_arithmetic.h"
 
 extern FRAME *gbl_frame;
-extern TOKEN **symbtable;
+extern struct token_stack *ts;
+
+/*
+ * Unit Tests
+ */
 
 //START_TEST (interpret) {
   /*
@@ -17,42 +22,43 @@ extern TOKEN **symbtable;
 //} END_TEST
 
 
-START_TEST (symboltable) {
-  init_symbtable();
-
+// Check token lookup works
+START_TEST(basic_frame) {
+  init_environment();
   // Token should only by newly_created on it's first lookup
-  TOKEN *t = lookup_token("variable");
+  TOKEN *t = lookup_token("variable", gbl_frame->symbols);
   ck_assert_int_eq(1, t->newly_created);
 
-  t = lookup_token("variable");
+  t = lookup_token("variable", gbl_frame->symbols);
   ck_assert_int_eq(0, t->newly_created);
 } END_TEST
 
-START_TEST (environment) {
+// Check frames nest correctly
+START_TEST(parent_frame) {
   init_environment();
-  char *testvar = "testvar";
 
-  // int variable test
-  init_var(testvar, INT_TYPE, gbl_frame);
-
-  STATE *state = new_int_state(42);
-  assign_var(testvar, INT_TYPE, state, gbl_frame);
+  FRAME *current = new_frame(gbl_frame);
 
   ck_assert_int_eq(
-    42,
-    lookup_var("testvar", INT_TYPE, gbl_frame)->state->value
+    (int)current->parent, (int)gbl_frame
   );
-
-  // fn variable test
-  init_var(testvar, FN_TYPE, gbl_frame);
-
-  state = new_fn_state(new_function(
-    INT_TYPE,
-    gbl_frame,
-    NULL,
-    "testvar"));
 } END_TEST
 
+START_TEST(token_stack) {
+  init_token_stack();
+
+  TOKEN *t = make_identifier("myvar");
+  push(t);
+
+  TOKEN *t2 = make_identifier("myvar2");
+  push(t2);
+
+  ck_assert_int_eq(ts->size, 2);
+} END_TEST
+
+/*
+ * Test Suite Setup
+ */
 Suite *evaluate_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -62,9 +68,9 @@ Suite *evaluate_suite(void) {
   /* Core test case */
   tc_core = tcase_create("Core");
 
-  //tcase_add_test(tc_core, interpret);
-  tcase_add_test(tc_core, symboltable);
-  //tcase_add_test(tc_core, environment);
+  tcase_add_test(tc_core, basic_frame);
+  tcase_add_test(tc_core, parent_frame);
+  tcase_add_test(tc_core, token_stack);
   suite_add_tcase(s, tc_core);
 
   return s;

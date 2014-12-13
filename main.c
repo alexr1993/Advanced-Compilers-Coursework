@@ -6,6 +6,7 @@
 
 #include "analysis/nodes.h"
 #include "analysis/token.h"
+#include "analysis/C.tab.h"
 #include "evaluation/environment.h"
 #include "evaluation/evaluate.h"
 #include "generation/tac.h"
@@ -14,9 +15,8 @@
 extern int yydebug;
 extern int yyparse (void);
 extern NODE *ans;
-extern void init_symbtable (void);
 extern FRAME *gbl_frame;
-
+extern int V;
 FILE *yyin;
 
 /* Read input from user to evaluate */
@@ -30,7 +30,6 @@ char *prompt (void)
 /* Translate source to three address code */
 void translate_to_TAC()
 {
-    init_symbtable();
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
@@ -46,7 +45,6 @@ void translate_to_MIPS() {
 /* Basic evaluation of parse tree */
 void interpret_source(void)
 {
-    init_symbtable();
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
@@ -70,8 +68,9 @@ int main ( int argc, char *argv[] )
     int c         = 0;
     int len;
     char *action  = "";
-
+    V = 1; // Verbose
     init_environment();
+    init_token_stack();
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:df:")) != -1)

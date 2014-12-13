@@ -11,22 +11,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "token.h"
 #include "C.tab.h"
 
-static TOKEN** symbtable;
+#include "symbol_table.h"
+
 #define HASH_SIZE (1000)
 TOKEN *int_token, *void_token, *function_token;
 
-void init_symbtable(void)
+TOKEN **new_symbtable()
 {
-    symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
+    TOKEN **symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
     int_token = new_token(INT);
     int_token->lexeme = "int";
     function_token = new_token(FUNCTION);
     function_token->lexeme = "function";
     void_token = new_token(VOID);
     void_token->lexeme = "void";
+    return symbtable;
 }
 
 // Return index of Identifier in symbol table
@@ -44,7 +45,7 @@ int hash(char *s)
  *
  * Otherwise it creates a token and insert it
  */
-TOKEN* lookup_token(char *s)
+TOKEN* lookup_token(char *s, TOKEN **symbtable)
 {
     int	h = hash(s);
     TOKEN *a = symbtable[h];

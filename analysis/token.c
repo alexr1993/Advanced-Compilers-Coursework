@@ -63,3 +63,27 @@ void print_token(TOKEN *t) {
             t->lexeme,
             t->newly_created ? "yes" : "no");
 }
+
+/* The token stack is useful for populating frames during parsing */
+
+void init_token_stack() {
+    ts = malloc(sizeof(struct token_stack));
+}
+
+void push(TOKEN *t) {
+  if (ts->size == 0) {
+    ts->top = t;
+  } else {
+    t->next = ts->top;
+    ts->top = t;
+  }
+  ts->size++;
+}
+
+TOKEN *pop() {
+  TOKEN *rtn = ts->top;
+  ts->top = ts->top->next;
+  rtn->next = NULL;
+  ts->size--;
+  return rtn;
+}
