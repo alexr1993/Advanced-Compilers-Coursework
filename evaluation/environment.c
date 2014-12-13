@@ -235,3 +235,9 @@ void init_environment(void)
     gbl_frame = new_frame(NULL);
 }
 
+VARIABLE *new_var(int type, STATE *state) {
+  VARIABLE *var = malloc(sizeof(VARIABLE));
+  var->type = type;
+  var->state = state;
+  return var;
+}

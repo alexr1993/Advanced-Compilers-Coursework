@@ -19,6 +19,8 @@ int yylex();
 
 void add_type_info(NODE *l, NODE *r);
 void create_frame(NODE *n);
+void set_current_type(NODE *);
+int current_type;
 
 extern FRAME *gbl_frame;
 FRAME *current_frame;
@@ -128,7 +130,7 @@ declaration_specifiers
 	: storage_class_specifier		{ $$ = $1; }
 	| storage_class_specifier declaration_specifiers {
                                                   $$ = make_node('~', $1, $2); }
-	| type_specifier	        	{ $$ = $1; }
+	| type_specifier { $$ = $1; set_current_type($1); }
 	| type_specifier declaration_specifiers { $$ = make_node('~', $1, $2); }
 	;
 
@@ -290,9 +292,24 @@ void create_frame(NODE *n) {
 
     print_token_stack();
 
+    /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
     while (t != NULL) {
+        // Initialise the variable state
+        t->var = new_var(current_type, new_int_state(0));
+        // Add token to symbtable
         enter_token(t, current_frame->symbols);
         t = pop();
+    }
+}
+
+/* Set the type of the declaration subtree in order to determine the type
+   of the identifiers found in it */
+void set_current_type(NODE *leaf) {
+    TOKEN *t = (TOKEN *)leaf->left;
+    if (str_eq(t->lexeme, "int")) {
+        current_type = INT_TYPE;
+    } else {
+        current_type = FN_TYPE;
     }
 }

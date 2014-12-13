@@ -39,18 +39,14 @@ TOKEN *make_identifier(char *s)
     return ans;
 }
 
+/* The type of the token is not the type of the value which identifiers
+ * point to */
 char *type_to_str(int type) {
   switch(type) {
     case STRING_LITERAL:
       return "STRING_LITERAL";
     case CONSTANT:
       return "CONSTANT";
-    case INT:
-      return "INT";
-    case FUNCTION:
-      return "FUNCTION";
-    case VOID:
-      return "VOID";
     case IDENTIFIER:
       return "IDENTIFIER";
     default:

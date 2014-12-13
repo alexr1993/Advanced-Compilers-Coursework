@@ -44,6 +44,11 @@ typedef struct ENV
     struct ENV *next;
 } ENV;
 
+typedef struct VARIABLE {
+  int type;
+  STATE *state;
+} VARIABLE;
+
 // Stack frames, provides lookup (lexical scope)
 typedef struct FRAME
 {
@@ -72,6 +77,7 @@ STATE *new_env_state(struct ENV *env);
 
 FRAME *new_frame(FRAME *parent);
 
+VARIABLE *new_var(int type, STATE *state);
 void init_environment();
 void print_frame(FRAME *frame);
 #endif

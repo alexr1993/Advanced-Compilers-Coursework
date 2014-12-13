@@ -1,8 +1,8 @@
 #ifndef __TOKEN_H
 #define __TOKEN_H
 
-typedef union STATE STATE;
 typedef struct FRAME FRAME;
+typedef struct VARIABLE VARIABLE;
 #include "evaluation/environment.h"
 
 #define TRUE 1
@@ -14,7 +14,7 @@ typedef struct TOKEN
   int           type; // Use tokens to store type info when walking down the tree
   char          *lexeme;
   int           value;
-  STATE         *state;
+  VARIABLE      *var;
   struct TOKEN  *next;
   int           newly_created;
   FRAME        *frame;
