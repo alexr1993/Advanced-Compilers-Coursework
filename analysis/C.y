@@ -11,6 +11,7 @@ int yyerror(char *s);
 int yylex();
 
 void add_type_info(NODE *l, NODE *r);
+void create_frame(NODE *n);
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL
@@ -239,12 +240,21 @@ external_declaration
 
 function_definition
 	: declaration_specifiers declarator declaration_list compound_statement {
-          $$ = make_node('D', make_node('d', $1, make_node('e', $2, $3)), $4); }
+        $$ = make_node('D', make_node('d', $1, make_node('e', $2, $3)), $4);
+        create_frame($$);
+      }
 	| declaration_specifiers declarator compound_statement  {
-          $$ = make_node('D', make_node('d', $1, $2), $3); }
+        $$ = make_node('D', make_node('d', $1, $2), $3);
+        create_frame($$);
+      }
 	| declarator declaration_list compound_statement  {
-          $$ = make_node('D', make_node('d', $1, $2), $3); }
-	| declarator compound_statement { $$ = make_node('D', $1, $2); }
+        $$ = make_node('D', make_node('d', $1, $2), $3);
+        create_frame($$);
+      }
+	| declarator compound_statement {
+        $$ = make_node('D', $1, $2);
+        create_frame($$);
+      }
         ;
 %%
 #include <stdio.h>
@@ -264,4 +274,8 @@ void add_type_info(NODE *l, NODE *r) {
 
     //set_subtree_type(type);
     //variable->type = "int";
+}
+
+void create_frame(NODE *n) {
+    printf("Creating new frame!\n");
 }
