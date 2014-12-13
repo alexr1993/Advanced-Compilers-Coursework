@@ -40,6 +40,14 @@ int hash(char *s)
     return (0x7fffffff&h) % HASH_SIZE;
 }
 
+/* Enter token at the start of the chain */
+void enter_token(TOKEN *t, TOKEN **symbtable)
+{
+    int h = hash(t->lexeme);
+    t->next = symbtable[h];
+    symbtable[h] = t;
+}
+
 /*
  * Looks up the input string, returning a token if it's in the symbol table
  *
@@ -64,11 +72,9 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable)
 
     /* If not create and insert a token for s */
     ans = make_identifier(s);
-
-    /* Put new token at the front of the symbtable chain */
-    ans->next = symbtable[h];
-    symbtable[h] = ans;
+    enter_token(ans, symbtable);
     printf("SYMBOL TABLE: \"%s\" stored at %p\n", s, ans);
     print_token(ans);
     return ans;
 }
+

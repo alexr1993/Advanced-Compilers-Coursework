@@ -8,10 +8,11 @@
 #define YYSTYPE NODE*
 #define YYDEBUG 1
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
-int V;
+extern char yytext[];
+extern int column;
 
 NODE *ans;
-int counter = 1;
+int V, counter = 1;
 
 int yyerror(char *s);
 int yylex();
@@ -39,7 +40,7 @@ goal    :  translation_unit { ans = $$ = $1;}
         ;
 
 primary_expression
-	: IDENTIFIER 			{ $$ = make_leaf(lasttok); }
+	: IDENTIFIER { $$ = make_leaf(lasttok); }
 	| CONSTANT 			{ $$ = make_leaf(lasttok); }
 	| STRING_LITERAL 		{ $$ = make_leaf(lasttok); }
 	| '(' expression ')' 		{ $$ = $2; }
@@ -157,7 +158,7 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER		{ $$ = make_leaf(lasttok); }
+	: IDENTIFIER		{ $$ = make_leaf(lasttok); push(lasttok) }
 	| '(' declarator ')'	{ $$ = $2; }
     | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
@@ -266,8 +267,6 @@ function_definition
     ;
 %%
 
-extern char yytext[];
-extern int column;
 int yyerror(char *s) {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
@@ -288,4 +287,12 @@ void create_frame(NODE *n) {
     if (V) printf("\nCreating new frame!\n");
     if (current_frame == NULL) current_frame = gbl_frame;
     FRAME *frame = new_frame(current_frame);
+
+    print_token_stack();
+
+    TOKEN *t = pop();
+    while (t != NULL) {
+        enter_token(t, current_frame->symbols);
+        t = pop();
+    }
 }

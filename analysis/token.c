@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "token.h"
+extern int V;
 
 TOKEN *new_token(int type)
 {
@@ -70,6 +71,7 @@ void init_token_stack() {
     ts = malloc(sizeof(struct token_stack));
 }
 
+/* Push down the token stack */
 void push(TOKEN *t) {
   if (ts->size == 0) {
     ts->top = t;
@@ -78,12 +80,25 @@ void push(TOKEN *t) {
     ts->top = t;
   }
   ts->size++;
+  if (V) printf("\nTOKEN push\n");
 }
 
+/* Return the top of the token stack */
 TOKEN *pop() {
+  if (ts->size == 0) return NULL;
   TOKEN *rtn = ts->top;
   ts->top = ts->top->next;
   rtn->next = NULL;
   ts->size--;
+  if (V) printf("\nTOKEN pop\n");
   return rtn;
+}
+
+void print_token_stack() {
+  TOKEN *t = ts->top;
+
+  while (t != NULL) {
+    print_token(t);
+    t = t->next;
+  }
 }

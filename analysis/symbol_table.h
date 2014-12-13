@@ -5,5 +5,5 @@
 
 TOKEN **new_symbtable();
 TOKEN* lookup_token(char *s, TOKEN **symbtable);
-
+void enter_token(TOKEN *t, TOKEN **symbtable);
 #endif
