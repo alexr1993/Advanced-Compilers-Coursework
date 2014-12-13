@@ -12,7 +12,6 @@ IS			(u|U|l|L)*
 #include <stdlib.h>
 #include "token.h"
 TOKEN* make_string(char*);
-extern TOKEN* lookup_token(char*);
 TOKEN* make_int(char*);
 TOKEN* lasttok;
 
@@ -35,7 +34,7 @@ void comment(void);
 "void"			{ count(); return(VOID); }
 "while"			{ count(); return(WHILE); }
 
-{L}({L}|{D})*		{ count(); lasttok = lookup_token(yytext);
+{L}({L}|{D})*		{ count(); lasttok = make_identifier(yytext);
                           return(IDENTIFIER); }
 
 {D}+{IS}?		{ count(); lasttok = make_int(yytext);return(CONSTANT); }
@@ -110,29 +109,4 @@ void count()
 			column++;
 
 	ECHO;
-}
-
-
-TOKEN *new_token(int type)
-{
-    TOKEN *ans = (TOKEN*)malloc(sizeof(TOKEN));
-    ans->type = type;
-    return ans;
-}
-
-TOKEN *make_string(char *s)
-{
-    TOKEN *ans = new_token(STRING_LITERAL);
-    int len = strlen(s);
-    ans->lexeme = (char*)calloc(1, len-1);
-    strncpy(ans->lexeme, s+1, len-2);
-    return ans;
-}
-
-TOKEN *make_int(char *s)
-{
-    int n = *s!='\'' ? atoi(s) : *(s+1);
-    TOKEN *ans = new_token(CONSTANT);
-    ans->value = n;
-    return ans;
 }

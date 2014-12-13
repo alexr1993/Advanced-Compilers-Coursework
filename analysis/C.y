@@ -1,5 +1,6 @@
 %{
 #include "nodes.h"
+#include "util.h"
 #define YYSTYPE NODE*
 #define YYDEBUG 1
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
@@ -8,6 +9,8 @@ int counter = 1;
 
 int yyerror(char *s);
 int yylex();
+
+void add_type_info(NODE *l, NODE *r);
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL
@@ -102,7 +105,9 @@ declaration
 	: declaration_specifiers ';'		{ $$ = $1; }
 	| function_definition			{ $$ = $1; }
 	| declaration_specifiers init_declarator_list ';' {
-                                                  $$ = make_node('~', $1, $2); }
+      $$ = make_node('~', $1, $2);
+      add_type_info($1, $2);
+    }
 	;
 
 declaration_specifiers
@@ -246,10 +251,17 @@ function_definition
 
 extern char yytext[];
 extern int column;
-int yyerror(char *s)
-{
+int yyerror(char *s) {
 	fflush(stdout);
 	printf("\n%*s\n%*s\n", column, "^", column, s);
     return 0;
 }
 
+void add_type_info(NODE *l, NODE *r) {
+    printf("Adding type info to declared variables!\n");
+    char *type = get_token(l)->lexeme;
+    printf("Type is %s!\n", type);
+
+    //set_subtree_type(type);
+    //variable->type = "int";
+}

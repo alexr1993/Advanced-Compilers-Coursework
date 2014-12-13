@@ -2,6 +2,7 @@
 #define __TOKEN_H
 
 typedef union STATE STATE;
+typedef struct FRAME FRAME;
 #include "evaluation/environment.h"
 
 #define TRUE 1
@@ -15,8 +16,13 @@ typedef struct TOKEN
   int           value;
   STATE         *state;
   struct TOKEN  *next;
+  int           newly_created;
+  FRAME        *frame;
 } TOKEN;
 
-extern TOKEN* new_token(int);
-
+TOKEN* new_token(int);
+TOKEN *make_string(char *s);
+TOKEN *make_int(char *s);
+TOKEN *make_identifier(char *s);
+void print_token(TOKEN *t);
 #endif

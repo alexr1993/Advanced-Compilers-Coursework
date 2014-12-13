@@ -11,11 +11,13 @@ EVALSRCS = evaluation/param.c \
 ANALOBJS = analysis/lex.yy.o \
            analysis/C.tab.o \
            analysis/symbol_table.o \
-           analysis/nodes.o
+           analysis/nodes.o \
+  		   analysis/token.o
 ANALSRCS = analysis/lex.yy.c \
            analysis/C.tab.c \
            analysis/symbol_table.c \
-           analysis/nodes.c
+           analysis/nodes.c \
+           analysis/token.c
 
 COMMOBJS = util.o \
            common/operations.o

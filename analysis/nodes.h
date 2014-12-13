@@ -12,5 +12,6 @@ typedef struct node {
 
 NODE* make_leaf(TOKEN*);
 NODE* make_node(int, NODE*, NODE*);
-
+int is_leaf(NODE *node);
+TOKEN *get_token(NODE *node);
 #endif

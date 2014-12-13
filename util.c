@@ -4,6 +4,7 @@
 #include "analysis/C.tab.h"
 #include <string.h>
 
+/* Prints string representation of input node type */
 char *named(int t)
 {
     //printf("Op type: %d\n", t);
@@ -57,6 +58,7 @@ char *named(int t)
     }
 }
 
+/* Prints string representation of node's token's type */
 void print_leaf(NODE *tree, int level)
 {
     TOKEN *t = (TOKEN *)tree;

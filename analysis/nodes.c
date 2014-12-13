@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "nodes.h"
 #include "C.tab.h"
+#include "token.h"
+
+#include "nodes.h"
 extern int counter;
 NODE* make_node(int t, NODE* left, NODE* right)
 {
@@ -33,4 +35,20 @@ NODE* make_leaf(TOKEN* l)
     printf("(%d)", counter);
     counter++;
     return a;
+}
+
+int is_leaf(NODE *node)
+{
+    return node->type == LEAF;
+}
+
+/* Leaf type nodes store a token as their left child */
+TOKEN *get_token(NODE *node)
+{
+    if (is_leaf(node)) {
+        return (TOKEN *)node->left;
+    }
+    else {
+        return NULL;
+    }
 }
