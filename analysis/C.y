@@ -23,6 +23,7 @@ void populate_gbl_frame(NODE *);
 void set_current_type(NODE *);
 char *name_from_fn_def(NODE *);
 void bond_with_children(NODE *n, FRAME *f);
+void register_frame_pointers(FRAME *parent, FRAME *child);
 
 extern FRAME *gbl_frame;
 FRAME *parent_frame;
@@ -281,6 +282,7 @@ void create_frame(NODE *n) {
     if (V) printf("\nCreating new frame!\n");
 
     FRAME *frame = new_frame(NULL, name_from_fn_def(n));
+
     n->frame = frame;
     bond_with_children(n, frame);
     /* Process every identifier that was found on the subtree */
@@ -302,6 +304,9 @@ void create_frame(NODE *n) {
     // the current token is the function which owns this frame
     new_var(FN_TYPE, t, gbl_frame);
     push(t); // let enclosing frames find this fn
+
+    // By default frames will consider the gbl_frame their parent
+    register_frame_pointers(gbl_frame, frame);
 }
 
 void populate_gbl_frame(NODE *n) {
@@ -311,8 +316,7 @@ void populate_gbl_frame(NODE *n) {
         enter_token(t, gbl_frame->symbols);
         t = pop();
     }
-    //bond_with_children(n, gbl_frame);
-    if (V) print_frame(gbl_frame);
+    bond_with_children(n, gbl_frame);
 }
 
 /* Set the type of the declaration subtree in order to determine the type
@@ -338,12 +342,16 @@ void bond_with_children(NODE *n, FRAME *f) {
     NODE *D = n->next_D;
     while (D != NULL) {
         FRAME *child = D->frame;
-        child->parent = f;
-        child->sibling = f->child;
-        f->child = child;
-        if (V) print_frame(child);
+        register_frame_pointers(f, child);
         D = D->next_D;
     }
     // These frames have now been bonded
     n->next_D = NULL;
+}
+
+void register_frame_pointers(FRAME *parent, FRAME *child) {
+    child->parent = parent;
+    child->sibling = parent->child;
+    parent->child = child;
+    if (V) print_frame(child);
 }
