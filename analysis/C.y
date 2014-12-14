@@ -22,6 +22,7 @@ void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
 void set_current_type(NODE *);
 char *name_from_fn_def(NODE *);
+void bond_with_children(NODE *n, FRAME *f);
 
 extern FRAME *gbl_frame;
 FRAME *parent_frame;
@@ -279,12 +280,9 @@ int yyerror(char *s) {
 void create_frame(NODE *n) {
     if (V) printf("\nCreating new frame!\n");
 
-    FRAME *frame = gbl_frame; // Take ownership of current gbl frame
-
-    frame->proc_id = name_from_fn_def(n);
-    frame->parent = new_frame(NULL, "gbl_frame");
-    gbl_frame = frame->parent;
-
+    FRAME *frame = new_frame(NULL, name_from_fn_def(n));
+    n->frame = frame;
+    bond_with_children(n, frame);
     /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
     VARIABLE *v;
@@ -304,7 +302,6 @@ void create_frame(NODE *n) {
     // the current token is the function which owns this frame
     new_var(FN_TYPE, t, gbl_frame);
     push(t); // let enclosing frames find this fn
-    if (V) print_frame(frame);
 }
 
 void populate_gbl_frame(NODE *n) {
@@ -314,6 +311,7 @@ void populate_gbl_frame(NODE *n) {
         enter_token(t, gbl_frame->symbols);
         t = pop();
     }
+    //bond_with_children(n, gbl_frame);
     if (V) print_frame(gbl_frame);
 }
 
@@ -333,4 +331,19 @@ void set_current_type(NODE *leaf) {
 char *name_from_fn_def(NODE *D) {
     TOKEN *t = (TOKEN *)D->left->right->left->left;
     return t->lexeme;
+}
+
+/* Find nodes indicating frame starts and establish pointers between them */
+void bond_with_children(NODE *n, FRAME *f) {
+    NODE *D = n->next_D;
+    while (D != NULL) {
+        FRAME *child = D->frame;
+        child->parent = f;
+        child->sibling = f->child;
+        f->child = child;
+        if (V) print_frame(child);
+        D = D->next_D;
+    }
+    // These frames have now been bonded
+    n->next_D = NULL;
 }

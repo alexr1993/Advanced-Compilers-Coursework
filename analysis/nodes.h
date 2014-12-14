@@ -3,11 +3,14 @@
 
 typedef struct TOKEN TOKEN;
 #include "token.h"
+#include "environment.h"
 
 typedef struct node {
   int          type;
   struct node *left;
   struct node *right;
+  struct node *next_D;
+  FRAME *frame;
 } NODE;
 
 NODE* make_leaf(TOKEN*);

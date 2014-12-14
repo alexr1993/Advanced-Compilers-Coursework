@@ -260,7 +260,7 @@ FRAME *new_frame(FRAME *parent, char *proc_id)
 /* Init some globals, or whatever else */
 void init_environment(void)
 {
-  gbl_frame = new_frame(NULL, "global");
+  gbl_frame = new_frame(NULL, "gbl_frame");
 }
 
 VARIABLE *new_var(int type, TOKEN *t, FRAME *frame) {

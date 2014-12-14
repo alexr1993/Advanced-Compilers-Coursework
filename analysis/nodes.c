@@ -5,6 +5,8 @@
 
 #include "nodes.h"
 extern int counter;
+void append_next_D(NODE *n, NODE *next_D);
+
 NODE* make_node(int t, NODE* left, NODE* right)
 {
     NODE *a = (NODE*)malloc(sizeof(NODE));
@@ -15,6 +17,22 @@ NODE* make_node(int t, NODE* left, NODE* right)
     a->type = t;
     a->left = left;
     a->right = right;
+
+    /* Keep a track of D nodes in the subtree (marking start of frames) */
+
+    // If either left or right are 'D's put them first
+    if (left != NULL) {
+        if ((char)left->type == 'D') {
+            append_next_D(a, left);
+        }
+        append_next_D(a, left->next_D);
+    }
+    if (right != NULL) {
+        if ((char)right->type == 'D') {
+            append_next_D(a, right);
+        }
+        append_next_D(a, right->next_D);
+    }
 
     //printf("(%d)", counter);
     counter++;
@@ -32,6 +50,7 @@ NODE* make_leaf(TOKEN* l)
     a->type = LEAF;
     a->left = (NODE*)l;
     a->right = NULL;
+    a->next_D = NULL;
     //printf("(%d)", counter);
     counter++;
     return a;
@@ -51,4 +70,11 @@ TOKEN *get_token(NODE *node)
     else {
         return NULL;
     }
+}
+
+void append_next_D(NODE *n, NODE *next_D)
+{
+    NODE *end = n;
+    while (end->next_D != NULL) end = end->next_D;
+    end->next_D = next_D;
 }
