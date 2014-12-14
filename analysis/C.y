@@ -322,7 +322,7 @@ void populate_gbl_frame(NODE *n) {
 /* Set the type of the declaration subtree in order to determine the type
    of the identifiers found in it */
 void set_current_type(NODE *leaf) {
-    TOKEN *t = (TOKEN *)leaf->left;
+    TOKEN *t = get_token(leaf);
     if (str_eq(t->lexeme, "int")) {
        current_type = INT_TYPE;
     } else {
@@ -333,7 +333,7 @@ void set_current_type(NODE *leaf) {
 /* Fetches the name of the function given the 'D' node (the fns definition)
  */
 char *name_from_fn_def(NODE *D) {
-    TOKEN *t = (TOKEN *)D->left->right->left->left;
+    TOKEN *t = get_token(D->left->right->left);
     return t->lexeme;
 }
 

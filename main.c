@@ -46,6 +46,8 @@ void translate_to_MIPS() {
 void interpret_source(void)
 {
     yyparse();
+    printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
+    print_environment(gbl_frame);
     NODE *tree = ans;
     print_tree(tree);
 /*

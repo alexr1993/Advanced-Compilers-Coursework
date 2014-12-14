@@ -3,29 +3,6 @@
 #include <stdbool.h>
 #include "environment.h"
 
-void print_env(ENV *env)
-{
-  ENV *current = env;
-  if (!current) printf("    Frame contains no variables!");
-
-  while (current)
-  {
-    printf("  Printing variable...\n");
-    char * type;
-    if (current->type == INT_TYPE) type = "INT";
-    else type = "FN";
-
-    printf("  Name: %s, Type: %s", current->name, type);
-
-    if  (current->type == INT_TYPE)
-    {
-      printf(", Value: %d", current->state->value);
-    }
-    current = current->next;
-    printf("\n");
-  }
-  printf("\n");
-}
 
 char *data_type_to_str(int type) {
   switch(type) {
@@ -69,6 +46,17 @@ void print_frame(FRAME *frame)
            frame->parent->proc_id);
   }
   print_symbtable(frame->symbols, true);
+}
+
+/* Prints subtree of frame */
+void print_environment(FRAME *f) {
+  print_frame(f);
+  FRAME *child = f->child;
+
+  while (child != NULL) {
+    print_environment(child);
+    child = child->sibling;
+  }
 }
 
  /* Adds env mapping to the environment */

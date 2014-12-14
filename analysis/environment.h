@@ -85,4 +85,5 @@ VARIABLE *new_var(int type, TOKEN *t, FRAME *frame);
 void init_environment();
 void print_frame(FRAME *frame);
 void print_var(VARIABLE *var);
+void print_environment(FRAME *frame);
 #endif
