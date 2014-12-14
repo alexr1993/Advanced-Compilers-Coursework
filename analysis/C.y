@@ -1,5 +1,6 @@
 %{
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "nodes.h"
 #include "util.h"
@@ -12,17 +13,18 @@ extern char yytext[];
 extern int column;
 
 NODE *ans;
-int V, counter = 1;
+int V, counter = 1, current_type;
 
 int yyerror(char *s);
 int yylex();
 
-void create_frame(NODE *n);
+void create_frame(NODE *);
+void populate_gbl_frame(NODE *);
 void set_current_type(NODE *);
-int current_type;
+char *name_from_fn_def(NODE *);
 
 extern FRAME *gbl_frame;
-FRAME *current_frame;
+FRAME *parent_frame;
 %}
 
 %token IDENTIFIER CONSTANT STRING_LITERAL
@@ -37,7 +39,7 @@ FRAME *current_frame;
 %start goal
 %%
 
-goal    :  translation_unit { ans = $$ = $1;}
+goal    :  translation_unit { ans = $$ = $1; populate_gbl_frame($1); }
         ;
 
 primary_expression
@@ -276,22 +278,43 @@ int yyerror(char *s) {
 /* Creates a child frame with it's own symbtable */
 void create_frame(NODE *n) {
     if (V) printf("\nCreating new frame!\n");
-    if (current_frame == NULL) current_frame = gbl_frame;
-    FRAME *frame = new_frame(current_frame);
 
-    print_token_stack();
+    FRAME *frame = gbl_frame; // Take ownership of current gbl frame
+
+    frame->proc_id = name_from_fn_def(n);
+    frame->parent = new_frame(NULL, "gbl_frame");
+    gbl_frame = frame->parent;
 
     /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
-    while (t != NULL) {
-        // Initialise the variable state
-        t->var = new_var(current_type, new_int_state(0));
-        // Add token to symbtable
+    VARIABLE *v;
+    // Keep adding tokens to frame's symbol table until we reach the
+    // enclosing function
+    while (!str_eq(t->lexeme, frame->proc_id)) {
+        // TODO what to do with FN_TYPE declarations?
+        if (current_type == INT_TYPE) {
+            // Initialise the variable state
+            v = new_var(current_type, t, frame);
+            t->var = v;
+            // Add token to symbtable
+        }
         enter_token(t, frame->symbols);
         t = pop();
     }
-    printf("PRINTING SYMBTABLE\n");
-    print_symbtable(frame->symbols);
+    // the current token is the function which owns this frame
+    new_var(FN_TYPE, t, gbl_frame);
+    push(t); // let enclosing frames find this fn
+    if (V) print_frame(frame);
+}
+
+void populate_gbl_frame(NODE *n) {
+    if (V) printf("Populating gbl frame!\n");
+    TOKEN *t = pop();
+    while (t != NULL) {
+        enter_token(t, gbl_frame->symbols);
+        t = pop();
+    }
+    if (V) print_frame(gbl_frame);
 }
 
 /* Set the type of the declaration subtree in order to determine the type
@@ -299,8 +322,15 @@ void create_frame(NODE *n) {
 void set_current_type(NODE *leaf) {
     TOKEN *t = (TOKEN *)leaf->left;
     if (str_eq(t->lexeme, "int")) {
-        current_type = INT_TYPE;
+       current_type = INT_TYPE;
     } else {
         current_type = FN_TYPE;
     }
+}
+
+/* Fetches the name of the function given the 'D' node (the fns definition)
+ */
+char *name_from_fn_def(NODE *D) {
+    TOKEN *t = (TOKEN *)D->left->right->left->left;
+    return t->lexeme;
 }

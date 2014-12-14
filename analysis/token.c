@@ -55,9 +55,9 @@ char *type_to_str(int type) {
 }
 
 void print_token(TOKEN *t) {
-    printf("TOKEN type: %s, lexeme: \"%s\", new? %s\n",
-            type_to_str(t->type),
+    printf("TOKEN \"%s\" (lexeme), type: %s, new? %s\n",
             t->lexeme,
+            type_to_str(t->type),
             t->newly_created ? "yes" : "no");
 }
 
@@ -65,6 +65,8 @@ void print_token(TOKEN *t) {
 
 void init_token_stack() {
     ts = malloc(sizeof(struct token_stack));
+    ts->size = 0;
+    ts->top = NULL;
 }
 
 /* Push down the token stack */
@@ -76,7 +78,6 @@ void push(TOKEN *t) {
     ts->top = t;
   }
   ts->size++;
-  if (V) printf("\nTOKEN push\n");
 }
 
 /* Return the top of the token stack */
@@ -86,15 +87,16 @@ TOKEN *pop() {
   ts->top = ts->top->next;
   rtn->next = NULL;
   ts->size--;
-  if (V) printf("\nTOKEN pop\n");
   return rtn;
 }
 
 void print_token_stack() {
   TOKEN *t = ts->top;
-
+  printf("TOKEN STACK CONTENTS\n");
+  printf("========================================\n");
   while (t != NULL) {
     print_token(t);
     t = t->next;
   }
+  printf("========================================\n");
 }

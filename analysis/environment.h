@@ -61,6 +61,7 @@ typedef struct FRAME
     struct FRAME *child;
     struct FRAME *sibling;
     TOKEN **symbols;
+    char *proc_id; // name of enclosing procedure
 } FRAME;
 
 struct FRAME *gbl_frame;
@@ -78,9 +79,10 @@ STATE *new_fn_body_state(NODE *body);
 STATE *new_param_state(struct PARAM *param);
 STATE *new_env_state(struct ENV *env);
 
-FRAME *new_frame(FRAME *parent);
+FRAME *new_frame(FRAME *parent, char *proc_id);
 
-VARIABLE *new_var(int type, STATE *state);
+VARIABLE *new_var(int type, TOKEN *t, FRAME *frame);
 void init_environment();
 void print_frame(FRAME *frame);
+void print_var(VARIABLE *var);
 #endif

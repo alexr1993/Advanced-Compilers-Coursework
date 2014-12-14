@@ -106,7 +106,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    if (!yyin) yyin = fopen("tests/test_source/if.cmm", "r");
+    if (!yyin) yyin = fopen("tests/test_source/awkward_declarations.c", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

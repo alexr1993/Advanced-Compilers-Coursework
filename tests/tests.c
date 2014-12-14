@@ -37,7 +37,7 @@ START_TEST(basic_frame) {
 START_TEST(parent_frame) {
   init_environment();
 
-  FRAME *current = new_frame(gbl_frame);
+  FRAME *current = new_frame(gbl_frame, "testframe");
 
   ck_assert_int_eq(
     (int)current->parent, (int)gbl_frame

@@ -379,7 +379,7 @@ ENV *processFnParamsandName(   ENV *function_name,
     }
 
     // Create frame for function and give it the params
-    FRAME *func_frame = new_frame(frame);
+    FRAME *func_frame = new_frame(frame, "blear");
 
     // Create function struct
     STATE *fn_state = new_fn_state( new_function(
