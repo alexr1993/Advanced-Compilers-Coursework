@@ -3,7 +3,7 @@
 
 #include "nodes.h"
 #include "util.h"
-#include "evaluation/environment.h"
+#include "environment.h"
 
 #define YYSTYPE NODE*
 #define YYDEBUG 1
@@ -17,7 +17,6 @@ int V, counter = 1;
 int yyerror(char *s);
 int yylex();
 
-void add_type_info(NODE *l, NODE *r);
 void create_frame(NODE *n);
 void set_current_type(NODE *);
 int current_type;
@@ -122,7 +121,6 @@ declaration
       }
 	| declaration_specifiers init_declarator_list ';' {
       $$ = make_node('~', $1, $2);
-      add_type_info($1, $2);
     }
 	;
 
@@ -160,7 +158,7 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER		{ $$ = make_leaf(lasttok); push(lasttok) }
+	: IDENTIFIER		{ $$ = make_leaf(lasttok); push(lasttok); }
 	| '(' declarator ')'	{ $$ = $2; }
     | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
@@ -275,15 +273,6 @@ int yyerror(char *s) {
     return 0;
 }
 
-void add_type_info(NODE *l, NODE *r) {
-    printf("\nAdding type info to declared variables!\n");
-    char *type = get_token(l)->lexeme;
-    printf("Type is %s!\n", type);
-
-    //set_subtree_type(type);
-    //variable->type = "int";
-}
-
 /* Creates a child frame with it's own symbtable */
 void create_frame(NODE *n) {
     if (V) printf("\nCreating new frame!\n");
@@ -298,9 +287,11 @@ void create_frame(NODE *n) {
         // Initialise the variable state
         t->var = new_var(current_type, new_int_state(0));
         // Add token to symbtable
-        enter_token(t, current_frame->symbols);
+        enter_token(t, frame->symbols);
         t = pop();
     }
+    printf("PRINTING SYMBTABLE\n");
+    print_symbtable(frame->symbols);
 }
 
 /* Set the type of the declaration subtree in order to determine the type

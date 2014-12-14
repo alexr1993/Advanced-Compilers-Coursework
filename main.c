@@ -7,7 +7,7 @@
 #include "analysis/nodes.h"
 #include "analysis/token.h"
 #include "analysis/C.tab.h"
-#include "evaluation/environment.h"
+#include "analysis/environment.h"
 #include "evaluation/evaluate.h"
 #include "generation/tac.h"
 #include "util.h"

@@ -3,7 +3,7 @@
 
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
-#include "evaluation/environment.h"
+#include "analysis/environment.h"
 #include "test_source/basic_arithmetic.h"
 
 extern FRAME *gbl_frame;

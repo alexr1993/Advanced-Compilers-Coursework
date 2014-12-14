@@ -1,9 +1,10 @@
-#include "environment.h"
-#include "evaluate.h"
 #include "function.h"
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "evaluate.h"
 
 function *new_function( int return_type,
                         FRAME *scope,

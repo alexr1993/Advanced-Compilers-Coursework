@@ -3,11 +3,14 @@
 
 typedef struct node NODE;
 #include <stdbool.h>
-#include "function.h"
-#include "param.h"
+
 #include "util.h"
+
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
+
+#include "evaluation/function.h"
+#include "evaluation/param.h"
 
 #define INT_TYPE  0
 #define FN_TYPE   1

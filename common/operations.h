@@ -6,10 +6,10 @@
 #include <stdlib.h>
 
 #include "evaluation/evaluate.h"
-#include "evaluation/environment.h"
 #include "evaluation/function.h"
 #include "evaluation/param.h"
 
+#include "analysis/environment.h"
 #include "analysis/C.tab.h"
 #include "analysis/nodes.h"
 #include "analysis/token.h"

@@ -1,7 +1,7 @@
 #ifndef __FUNCTION_H
 #define __FUNCTION_H
 
-#include "environment.h"
+#include "analysis/environment.h"
 #include "analysis/nodes.h"
 #include "param.h"
 

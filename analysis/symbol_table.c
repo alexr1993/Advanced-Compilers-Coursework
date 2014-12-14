@@ -18,34 +18,31 @@
 #define HASH_SIZE (1000)
 TOKEN *int_token, *void_token, *function_token;
 
-TOKEN **new_symbtable()
-{
-    TOKEN **symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
-    int_token = new_token(INT);
-    int_token->lexeme = "int";
-    function_token = new_token(FUNCTION);
-    function_token->lexeme = "function";
-    void_token = new_token(VOID);
-    void_token->lexeme = "void";
-    return symbtable;
+TOKEN **new_symbtable() {
+  TOKEN **symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
+  int_token = new_token(INT);
+  int_token->lexeme = "int";
+  function_token = new_token(FUNCTION);
+  function_token->lexeme = "function";
+  void_token = new_token(VOID);
+  void_token->lexeme = "void";
+  return symbtable;
 }
 
 // Return index of Identifier in symbol table
-int hash(char *s)
-{
-    int h = 0;
-    while (*s != '\0') {
-      h = (h<<4) ^ *s++;
-    }
-    return (0x7fffffff&h) % HASH_SIZE;
+int hash(char *s) {
+  int h = 0;
+  while (*s != '\0') {
+    h = (h<<4) ^ *s++;
+  }
+  return (0x7fffffff&h) % HASH_SIZE;
 }
 
 /* Enter token at the start of the chain */
-void enter_token(TOKEN *t, TOKEN **symbtable)
-{
-    int h = hash(t->lexeme);
-    t->next = symbtable[h];
-    symbtable[h] = t;
+void enter_token(TOKEN *t, TOKEN **symbtable) {
+  int h = hash(t->lexeme);
+  t->next = symbtable[h];
+  symbtable[h] = t;
 }
 
 /*
@@ -53,28 +50,35 @@ void enter_token(TOKEN *t, TOKEN **symbtable)
  *
  * Otherwise it creates a token and insert it
  */
-TOKEN* lookup_token(char *s, TOKEN **symbtable)
-{
-    int	h = hash(s);
-    TOKEN *a = symbtable[h];
-    TOKEN *ans;
+TOKEN* lookup_token(char *s, TOKEN **symbtable) {
+  int	h = hash(s);
+  TOKEN *a = symbtable[h];
+  TOKEN *ans;
 
-    /* Return token for s if it exists */
-    printf("\nSYMBOL TABLE: Lookup: \"%s\"\n", s);
-    while (a!=NULL) {
-      if (strcmp(a->lexeme, s)==0) {
-        a->newly_created = false;
-        print_token(a);
-        return a;
-      }
-      a = a->next;
+  /* Return token for s if it exists */
+  printf("\nSYMBOL TABLE: Lookup: \"%s\"\n", s);
+  while (a!=NULL) {
+    if (strcmp(a->lexeme, s)==0) {
+      a->newly_created = false;
+      print_token(a);
+      return a;
     }
+    a = a->next;
+  }
 
-    /* If not create and insert a token for s */
-    ans = make_identifier(s);
-    enter_token(ans, symbtable);
-    printf("SYMBOL TABLE: \"%s\" stored at %p\n", s, ans);
-    print_token(ans);
-    return ans;
+  /* If not create and insert a token for s */
+  ans = make_identifier(s);
+  enter_token(ans, symbtable);
+  printf("SYMBOL TABLE: \"%s\" stored at %p\n", s, ans);
+  print_token(ans);
+  return ans;
 }
 
+void print_symbtable(TOKEN **symbtable) {
+  int i;
+  for (i = 0; i < HASH_SIZE; i++) {
+    if (symbtable[i] != NULL) {
+      print_token(symbtable[i]);
+    }
+  }
+}

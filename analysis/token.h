@@ -3,7 +3,7 @@
 
 typedef struct FRAME FRAME;
 typedef struct VARIABLE VARIABLE;
-#include "evaluation/environment.h"
+#include "environment.h"
 
 #define TRUE 1
 #define FALSE 0
