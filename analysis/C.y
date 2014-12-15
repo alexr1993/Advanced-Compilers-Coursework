@@ -22,7 +22,7 @@ void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
 void set_current_type(NODE *);
 char *name_from_fn_def(NODE *);
-void bond_with_children(NODE *n, FRAME *f);
+void bond_with_children(NODE *n, bool root);
 void register_frame_pointers(FRAME *parent, FRAME *child);
 
 extern FRAME *gbl_frame;
@@ -279,12 +279,11 @@ int yyerror(char *s) {
 
 /* Creates a child frame with it's own symbtable */
 void create_frame(NODE *n) {
-    if (V) printf("\nCreating new frame!\n");
 
     FRAME *frame = new_frame(NULL, name_from_fn_def(n));
 
     n->frame = frame;
-    bond_with_children(n, frame);
+    bond_with_children(n, false);
     /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
     VARIABLE *v;
@@ -306,7 +305,7 @@ void create_frame(NODE *n) {
     push(t); // let enclosing frames find this fn
 
     // By default frames will consider the gbl_frame their parent
-    register_frame_pointers(gbl_frame, frame);
+    //register_frame_pointers(gbl_frame, frame);
 }
 
 void populate_gbl_frame(NODE *n) {
@@ -316,7 +315,7 @@ void populate_gbl_frame(NODE *n) {
         enter_token(t, gbl_frame->symbols);
         t = pop();
     }
-    bond_with_children(n, gbl_frame);
+    bond_with_children(n, true);
 }
 
 /* Set the type of the declaration subtree in order to determine the type
@@ -338,11 +337,18 @@ char *name_from_fn_def(NODE *D) {
 }
 
 /* Find nodes indicating frame starts and establish pointers between them */
-void bond_with_children(NODE *n, FRAME *f) {
-    NODE *D = n->next_D;
+void bond_with_children(NODE *n, bool root) {
+    NODE *D;
+    if (root && (char)n->type == 'D') {
+        D = n;
+    } else {
+        D = n->next_D;
+    }
     while (D != NULL) {
+        printf("Next 'D' child in subtree:\n");
+        print_node(D);
         FRAME *child = D->frame;
-        register_frame_pointers(f, child);
+        register_frame_pointers(root ? gbl_frame : n->frame, child);
         D = D->next_D;
     }
     // These frames have now been bonded
@@ -353,5 +359,8 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
     child->parent = parent;
     child->sibling = parent->child;
     parent->child = child;
-    if (V) print_frame(child);
+    if (V) printf("Registered \"%s\" as the parent parent of child \"%s\"\n",
+                  parent->proc_id, child->proc_id);
+    if (V) print_frame(parent);
 }
+

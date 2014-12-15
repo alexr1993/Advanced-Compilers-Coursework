@@ -3,6 +3,7 @@
 #include <stdbool.h>
 #include "environment.h"
 
+extern int V;
 
 char *data_type_to_str(int type) {
   switch(type) {
@@ -18,9 +19,11 @@ char *data_type_to_str(int type) {
 void print_state(STATE *s, int type) {
   switch(type) {
    case INT_TYPE:
-    printf("%d\n", s->value);
+    printf("state: %d\n", s->value);
+    break;
    case FN_TYPE:
-    printf("function_state\n");
+    printf("state: function_state\n");
+    break;
   }
 }
 
@@ -230,6 +233,7 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
  */
 FRAME *new_frame(FRAME *parent, char *proc_id)
 {
+  if (V) printf("\nCreating new frame \"%s\"\n", proc_id);
   FRAME *new_frame = malloc(sizeof(FRAME));
   new_frame->parent = parent;
 

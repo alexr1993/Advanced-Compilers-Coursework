@@ -78,3 +78,12 @@ void append_next_D(NODE *n, NODE *next_D)
     while (end->next_D != NULL) end = end->next_D;
     end->next_D = next_D;
 }
+
+void print_node(NODE *node)
+{
+    printf("NODE %c Left: %p, Right: %p, next_D: %p\n",
+           (char)node->type,
+           node->left,
+           node->right,
+           node->next_D);
+}
