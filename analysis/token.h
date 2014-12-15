@@ -17,7 +17,7 @@ typedef struct TOKEN
   VARIABLE      *var;
   struct TOKEN  *next;
   int           newly_created;
-  FRAME        *frame;
+  int data_type; // For IDENTIFIERS
 } TOKEN;
 
 struct token_stack {

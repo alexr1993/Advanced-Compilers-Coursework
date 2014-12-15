@@ -20,9 +20,8 @@ int yylex();
 
 void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
-void set_current_type(NODE *);
 char *name_from_fn_def(NODE *);
-void bond_with_children(NODE *n, bool root);
+void bond_with_children(NODE *n, bool is_gbl);
 void register_frame_pointers(FRAME *parent, FRAME *child);
 
 extern FRAME *gbl_frame;
@@ -120,6 +119,7 @@ expression
 declaration
 	: declaration_specifiers ';'		{ $$ = $1; }
 	| function_definition {
+        current_type = FN_TYPE;
         create_frame($1);
         $$ = $1;
       }
@@ -132,7 +132,11 @@ declaration_specifiers
 	: storage_class_specifier		{ $$ = $1; }
 	| storage_class_specifier declaration_specifiers {
                                                   $$ = make_node('~', $1, $2); }
-	| type_specifier { $$ = $1; set_current_type($1); }
+	| type_specifier {
+        $$ = $1;
+        if (get_token($1) == int_token) current_type = INT_TYPE;
+        if (get_token($1) == function_token) current_type = FN_TYPE;
+       }
 	| type_specifier declaration_specifiers { $$ = make_node('~', $1, $2); }
 	;
 
@@ -162,7 +166,10 @@ declarator
 	;
 
 direct_declarator
-	: IDENTIFIER		{ $$ = make_leaf(lasttok); push(lasttok); }
+	: IDENTIFIER		{
+      $$ = make_leaf(lasttok);
+      lasttok->data_type = current_type;
+      push(lasttok); }
 	| '(' declarator ')'	{ $$ = $2; }
     | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
 	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
@@ -195,7 +202,8 @@ direct_abstract_declarator
 	| '(' ')'    { $$ = NULL; }
 	| '(' parameter_list ')'    { $$ = $2; }
 	| direct_abstract_declarator '(' ')'    { $$ = make_node(APPLY, $1, NULL); }
-	| direct_abstract_declarator '(' parameter_list ')'   { $$ = make_node(APPLY, $1, $3); }
+	| direct_abstract_declarator '(' parameter_list ')' {
+        $$ = make_node(APPLY, $1, $3); }
 	;
 
 statement
@@ -230,9 +238,8 @@ expression_statement
 
 selection_statement
 	: IF '(' expression ')' statement { $$ = make_node(IF, $3, $5); }
-	| IF '(' expression ')' statement ELSE statement
-                                      { $$ = make_node(IF, $3,
-                                                        make_node(ELSE, $5, $7)); }
+	| IF '(' expression ')' statement ELSE statement {
+        $$ = make_node(IF, $3, make_node(ELSE, $5, $7)); }
 	;
 
 iteration_statement
@@ -277,56 +284,38 @@ int yyerror(char *s) {
     return 0;
 }
 
-/* Creates a child frame with it's own symbtable */
+/* Creates a frame using a 'D' node */
 void create_frame(NODE *n) {
-
     FRAME *frame = new_frame(NULL, name_from_fn_def(n));
 
     n->frame = frame;
     bond_with_children(n, false);
     /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
-    VARIABLE *v;
-    // Keep adding tokens to frame's symbol table until we reach the
-    // enclosing function
+
+    // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
-        // TODO what to do with FN_TYPE declarations?
-        if (current_type == INT_TYPE) {
-            // Initialise the variable state
-            v = new_var(current_type, t, frame);
-            t->var = v;
-            // Add token to symbtable
-        }
+        t->var = new_var(t->data_type, t, frame);
+
+        // Add token to symbtable
         enter_token(t, frame->symbols);
         t = pop();
     }
     // the current token is the function which owns this frame
-    new_var(FN_TYPE, t, gbl_frame);
+    t->data_type = FN_TYPE;
     push(t); // let enclosing frames find this fn
-
-    // By default frames will consider the gbl_frame their parent
-    //register_frame_pointers(gbl_frame, frame);
 }
 
 void populate_gbl_frame(NODE *n) {
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
+        t->var = new_var(t->data_type, t, gbl_frame);
         enter_token(t, gbl_frame->symbols);
+
         t = pop();
     }
     bond_with_children(n, true);
-}
-
-/* Set the type of the declaration subtree in order to determine the type
-   of the identifiers found in it */
-void set_current_type(NODE *leaf) {
-    TOKEN *t = get_token(leaf);
-    if (str_eq(t->lexeme, "int")) {
-       current_type = INT_TYPE;
-    } else {
-        current_type = FN_TYPE;
-    }
 }
 
 /* Fetches the name of the function given the 'D' node (the fns definition)
@@ -337,18 +326,18 @@ char *name_from_fn_def(NODE *D) {
 }
 
 /* Find nodes indicating frame starts and establish pointers between them */
-void bond_with_children(NODE *n, bool root) {
+void bond_with_children(NODE *n, bool is_gbl) {
     NODE *D;
-    if (root && (char)n->type == 'D') {
+    // Binding a tree with root 'D' with the global frame is an edge case
+    if (is_gbl && (char)n->type == 'D') {
         D = n;
     } else {
         D = n->next_D;
     }
     while (D != NULL) {
-        printf("Next 'D' child in subtree:\n");
-        print_node(D);
+        if (V) printf("Next 'D' child in subtree:\n");
         FRAME *child = D->frame;
-        register_frame_pointers(root ? gbl_frame : n->frame, child);
+        register_frame_pointers(is_gbl ? gbl_frame : n->frame, child);
         D = D->next_D;
     }
     // These frames have now been bonded

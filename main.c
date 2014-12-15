@@ -50,18 +50,6 @@ void interpret_source(void)
     print_environment(gbl_frame);
     NODE *tree = ans;
     print_tree(tree);
-/*
-    printf("\n\nStarting first pass evaluation\n");
-    printf("==============================\n\n");
-    evaluate(tree, NULL, gbl_frame, FIRST_PASS); // Option 1
-
-    printf("\n\nExecuting\n");
-    printf("=========\n\n");
-
-    STATE *return_status = call("main", gbl_frame, NULL)->state;
-    printf("\n\n----------Interpretation Complete----------\n\n");
-    printf("%d\n\n", return_status->value);
-*/
 }
 
 /* Interpret --C program */
@@ -70,7 +58,7 @@ int main ( int argc, char *argv[] )
     int c         = 0;
     int len;
     char *action  = "";
-    V = 1; // Verbose
+    V = 0; //1; // Verbose
     init_environment();
     init_token_stack();
 

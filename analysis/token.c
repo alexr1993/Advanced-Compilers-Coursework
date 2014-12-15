@@ -1,8 +1,9 @@
 #include <stdio.h>
-#include "C.tab.h"
 #include <string.h>
 #include <stdlib.h>
 
+#include "environment.h"
+#include "C.tab.h"
 #include "token.h"
 extern int V;
 
@@ -55,10 +56,10 @@ char *type_to_str(int type) {
 }
 
 void print_token(TOKEN *t) {
-    printf("TOKEN \"%s\" (lexeme), type: %s, new? %s\n",
+    printf("TOKEN \"%s\" (lexeme), type: %s, data_type: %s\n",
             t->lexeme,
             type_to_str(t->type),
-            t->newly_created ? "yes" : "no");
+            data_type_to_str(t->data_type));
 }
 
 /* The token stack is useful for populating frames during parsing */

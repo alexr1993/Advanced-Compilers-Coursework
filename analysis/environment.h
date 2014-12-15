@@ -86,4 +86,5 @@ void init_environment();
 void print_frame(FRAME *frame);
 void print_var(VARIABLE *var);
 void print_environment(FRAME *frame);
+char *data_type_to_str(int type);
 #endif
