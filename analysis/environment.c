@@ -62,16 +62,6 @@ void print_environment(FRAME *f) {
   }
 }
 
- /* Adds env mapping to the environment */
-void _add_env(ENV *env, FRAME *frame)
-{
-  // Insert env at the front of the frames variable list
-  ENV *frame_var = frame->variable;
-  env->next = frame_var;
-  frame->variable = env;
-  printf("Storing variable \"%s\"\n", env->name);
-}
-
 /*
  * Finds and returns the env mapping with the given name and type
  *
@@ -111,27 +101,6 @@ ENV *lookup_var(char *name, int type, FRAME *frame)
   return NULL;
 }
 
-/*
- * Returns new env sruct
- *
- */
-ENV *new_env(char *name, int type, STATE *state)
-{
-  // Init env mapping
-  ENV *new_env = malloc(sizeof(ENV));
-  int name_length = strlen(name);
-
-  new_env->name = malloc(name_length * sizeof(char));
-  strcpy(new_env->name, name);
-  new_env->type = type;
-  new_env->state = state;
-  new_env->is_return = false;
-
-  printf("New var created: Name: %s, var->name: \"%s\"\n", name, new_env->name);
-
-  return new_env;
-}
-
 STATE *new_int_state(int value)
 {
   STATE *state = malloc(sizeof(STATE));
@@ -144,66 +113,6 @@ STATE *new_fn_state(function *function)
   STATE *state = malloc(sizeof(STATE));
   state->function = function;
   return state;
-}
-
-STATE *new_var_name_state(char *name)
-{
-  STATE *state = malloc(sizeof(STATE));
-  int name_length = strlen(name);
-
-  state->var_name = malloc(name_length * sizeof(char));
-  strcpy(state->var_name, name);
-  return state;
-}
-
-STATE *new_fn_body_state(NODE *body)
-{
-  STATE *state = malloc(sizeof(STATE));
-  state->fn_body = body;
-  return state;
-}
-
-STATE *new_param_state(PARAM *param)
-{
-  STATE *state = malloc(sizeof(STATE));
-  state->param = param;
-  return state;
-}
-
-STATE *new_env_state(ENV *env)
-{
-  STATE *state = malloc(sizeof(STATE));
-  state->env = env;
-  return state;
-}
-
-/* Attempts to store new variable, initialised to default values */
-ENV *init_var(char *name, int type, FRAME *frame)
-{
-  // Check for collision
-  if (lookup_var(name, type, frame))
-  {
-    printf("Attempted to initialise variable twice!\n");
-    abort();
-  }
-
-  // Init union type (the state)
-  STATE *new_state = NULL;
-
-  if (type == INT_TYPE)
-  {
-    new_state = new_int_state(0);
-  }
-  else if (type == FN_TYPE)
-  {
-    new_state = new_fn_state( new_function(0, NULL, NULL, NULL) );
-  }
-
-  // Init env mapping
-  ENV *new_var = new_env(name, type, new_state);
-  _add_env(new_var, frame);
-
-  return new_var;
 }
 
 /* Sets the state of the variable */
