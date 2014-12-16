@@ -27,13 +27,13 @@ void print_state(STATE *s, int type) {
   }
 }
 
-void print_var(VARIABLE *var) {
-  if (!var) {
-    printf("VARIABLE not initialised\n");
+void print_val(VALUE *val) {
+  if (!val) {
+    printf("VALUE not initialised\n");
     return;
   }
-  printf("VARIABLE type: %s, ", data_type_to_str(var->type));
-  print_state(var->state, var->type);
+  printf("VALUE type: %s, ", data_type_to_str(val->type));
+  print_state(val->state, val->type);
 }
 
 /*
@@ -65,29 +65,29 @@ void print_environment(FRAME *f) {
 /*
  * Finds and returns the env mapping with the given name and type
  *
- * Checks given env first, then recursive looks at parent until var
+ * Checks given env first, then recursive looks at parent until val
  * is found
  *
  */
-ENV *lookup_var(char *name, int type, FRAME *frame)
+ENV *lookup_val(char *name, int type, FRAME *frame)
 {
   printf("Looking up variable \"%s\"...", name);
 
   while (frame)
   {
-    ENV *frame_var = frame->variable;
+    ENV *frame_val = frame->variable;
 
     /* Find the env mapping with the given name */
-    while (frame_var)
+    while (frame_val)
     {
       // Mapping found
-      if (str_eq(name, frame_var->name) && type == frame_var->type)
+      if (str_eq(name, frame_val->name) && type == frame_val->type)
       {
         printf("Found!\n");
-        return frame_var;
+        return frame_val;
       }
       // Still looking
-      frame_var = frame_var->next;
+      frame_val = frame_val->next;
     }
     printf("Not found, attempting to look in parent frame!\n");
     printf("Current frame: \n");
@@ -116,13 +116,13 @@ STATE *new_fn_state(function *function)
 }
 
 /* Sets the state of the variable */
-ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
+ENV *assign_val(char *name, int type, STATE* value, FRAME *frame)
 {
-  ENV *var = lookup_var(name, type, frame);
+  ENV *val = lookup_val(name, type, frame);
 
-  if (var && var->type == type)
+  if (val && val->type == type)
   {
-    var->state = value;
+    val->state = value;
     if (type == INT_TYPE)
     {
       printf("Assigned %d to variable \"%s\"!\n", value->value, name);
@@ -133,7 +133,7 @@ ENV *assign_var(char *name, int type, STATE* value, FRAME *frame)
     printf("Error: Assigning to uninitialised variable, check type!\n");
     abort();
   }
-  return var;
+  return val;
 }
 
 /*
@@ -158,7 +158,7 @@ FRAME *new_frame(FRAME *parent, char *proc_id)
   return new_frame;
 }
 
-VARIABLE *new_var(int type, TOKEN *t, FRAME *frame) {
+VALUE *new_val(int type, TOKEN *t, FRAME *frame) {
   STATE *s;
   switch(type) {
    case INT_TYPE:
@@ -172,10 +172,10 @@ VARIABLE *new_var(int type, TOKEN *t, FRAME *frame) {
     exit(-1);
   }
 
-  VARIABLE *var = malloc(sizeof(VARIABLE));
-  var->type = type;
-  var->state = s;
-  return var;
+  VALUE *val = malloc(sizeof(VALUE));
+  val->type = type;
+  val->state = s;
+  return val;
 }
 
 /*

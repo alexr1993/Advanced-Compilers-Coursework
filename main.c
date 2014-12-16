@@ -8,14 +8,18 @@
 #include "analysis/token.h"
 #include "analysis/C.tab.h"
 #include "analysis/environment.h"
-#include "generation/tac.h"
+
+#include "synthesis/evaluate.h"
+#include "synthesis/interpret.h"
+#include "synthesis/tac.h"
+
 #include "util.h"
 
 extern int yydebug;
 extern int yyparse();
 extern NODE *ans;
 extern FRAME *gbl_frame;
-extern int V;
+extern int V, v;
 FILE *yyin;
 
 /* Read input from user to evaluate */
@@ -44,11 +48,10 @@ void translate_to_MIPS() {
 /* Basic evaluation of parse tree */
 void interpret_source(void)
 {
+    if (v) printf("Starting parse + semantic analysis\n");
     yyparse();
-    printf("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n");
-    print_environment(gbl_frame);
     NODE *tree = ans;
-    print_tree(tree);
+    //print_tree(tree);
 }
 
 /* Interpret --C program */
@@ -58,6 +61,7 @@ int main ( int argc, char *argv[] )
     int len;
     char *action  = "";
     V = 0; //1; // Verbose
+    v = 1;
     init_environment();
 
     // Determine translation requested
@@ -79,7 +83,7 @@ int main ( int argc, char *argv[] )
                 break;
 
             case 'f':
-                set_input_file(yyin);
+                set_input_file(optarg);
                 if (!yyin)
                 {
                     printf("Invalid input file path.\n");

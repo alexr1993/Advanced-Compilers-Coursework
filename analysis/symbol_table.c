@@ -68,9 +68,9 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
   return ans;
 }
 
-void print_symbtable(TOKEN **symbtable, bool should_print_var) {
+void print_symbtable(TOKEN **symbtable, bool should_print_val) {
   int i;
-  if (!should_print_var) printf("SYMBOL TABLE\n");
+  if (!should_print_val) printf("SYMBOL TABLE\n");
   printf("===============================================================\n");
   TOKEN *current;
   for (i = 0; i < HASH_SIZE; i++) {
@@ -79,9 +79,9 @@ void print_symbtable(TOKEN **symbtable, bool should_print_var) {
       current = symbtable[i];
       while(current) {
         print_token(current);
-        if (should_print_var) {
+        if (should_print_val) {
           printf("  ");
-          print_var(current->var);
+          print_val(current->val);
         }
         current = current->next;
       }

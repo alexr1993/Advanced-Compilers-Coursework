@@ -86,7 +86,7 @@ void *bind_args(function *fn, ENV *args)
 /* Returns the evaluation of it's node, after binding arguments */
 void call(char *name, FRAME *frame, ENV *args)
 {
-    function *function = lookup_var(name, FN_TYPE, frame)->state->function;
+    function *function = NULL; //lookup
     if (args)
     {
         bind_args(function, args);

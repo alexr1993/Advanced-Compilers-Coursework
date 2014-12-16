@@ -14,7 +14,7 @@ extern char yytext[];
 extern int column;
 
 NODE *ans;
-int V, counter = 1, current_type;
+int V, v, counter = 1, current_type;
 
 int yyerror(char *s);
 int yylex();
@@ -300,7 +300,7 @@ void create_frame(NODE *n) {
 
     // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
-        t->var = new_var(t->data_type, t, frame);
+        t->val = new_val(t->data_type, t, frame);
 
         // Add token to symbtable
         enter_token(t, frame->symbols);
@@ -318,7 +318,7 @@ void populate_gbl_frame(NODE *n) {
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
-        t->var = new_var(t->data_type, t, gbl_frame);
+        t->val = new_val(t->data_type, t, gbl_frame);
         enter_token(t, gbl_frame->symbols);
 
         t = pop();

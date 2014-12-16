@@ -2,7 +2,7 @@
 #define __TOKEN_H
 
 typedef struct FRAME FRAME;
-typedef struct VARIABLE VARIABLE;
+typedef struct VALUE VALUE;
 #include "environment.h"
 
 #define TRUE 1
@@ -15,7 +15,7 @@ typedef struct TOKEN
   int           type; // Type of lexical token (IDENTIFIER | CONSTANT ... )
   char          *lexeme;
   int           value;
-  VARIABLE      *var;
+  VALUE         *val;
   struct TOKEN  *next;
   int           newly_created;
   int data_type; // For IDENTIFIERS only

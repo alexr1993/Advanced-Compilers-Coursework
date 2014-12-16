@@ -1,10 +1,15 @@
 ## TODO Clean up all the repitition in this file
-EVALOBJS = evaluation/param.o \
-           evaluation/function.o \
-           #evaluation/evaluate.o
-EVALSRCS = evaluation/param.c \
-           evaluation/function.c \
-           #evaluation/evaluate.c
+SYNTHOBJS = evaluation/param.o \
+            evaluation/function.o \
+            synthesis/interpret.o \
+            synthesis/tac.o \
+            synthesis/mips.o \
+
+SYNTHSRCS = evaluation/param.c \
+            evaluation/function.c \
+            synthesis/interpret.c \
+            synthesis/tac.c \
+            synthesis/mips.c \
 
 ANALOBJS = analysis/lex.yy.o \
            analysis/C.tab.o \
@@ -35,11 +40,11 @@ CC = gcc
 all:	mycc tests
 
 clean:
-	rm ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS} ${TESTOBJS} \
+	rm ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS} ${TESTOBJS} \
        mycc analysis/C.tab.* analysis/lex.yy.c run_tests
 
-mycc:	 ${ANALSRCS} ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}
-	${CC} -g -o mycc -I . ${ANALOBJS} ${EVALOBJS} ${OBJS} ${COMMOBJS}
+mycc:	 ${ANALSRCS} ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS}
+	${CC} -g -o mycc -I . ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS}
 
 # Generate lexical analyser with flex
 analysis/lex.yy.c: analysis/C.flex
@@ -54,7 +59,7 @@ analysis/C.tab.c:	analysis/C.y
 
 # FIXME
 depend:
-	${CC} -M $(ANALSRCS) $(EVALSRCS) $(SRCS)$(COMMOBJS) > .deps
+	${CC} -M $(ANALSRCS) $(SYNTHSRCS) $(SRCS)$(COMMOBJS) > .deps
 	cat Makefile .deps > makefile
 
 # FIXME
@@ -62,6 +67,6 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 	tar cvfz mycc.tgz symbol_table.c nodes.c util.c main.c Makefile C.flex C.y \
 		nodes.h token.h
 
-tests: ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} ${COMMOBJS}
-	${CC} -g -o run_tests ${ANALOBJS} ${EVALOBJS} ${TESTOBJS} ${COMMOBJS} \
+tests: ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
+	${CC} -g -o run_tests ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS} \
     `pkg-config --cflags --libs check`

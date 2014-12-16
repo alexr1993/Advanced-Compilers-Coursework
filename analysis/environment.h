@@ -2,6 +2,7 @@
 #define __ENVIRONMENT_H
 
 typedef struct node NODE;
+
 #include <stdbool.h>
 
 #include "util.h"
@@ -43,10 +44,10 @@ typedef struct ENV
     struct ENV *next;
 } ENV;
 
-typedef struct VARIABLE {
+typedef struct VALUE {
   int type;
   STATE *state;
-} VARIABLE;
+} VALUE;
 
 // Stack frames, provides lookup (lexical scope)
 typedef struct FRAME
@@ -62,9 +63,9 @@ typedef struct FRAME
 
 struct FRAME *gbl_frame;
 
-ENV *lookup_var(char *name, int type, FRAME *frame);
-ENV *init_var(char *name, int type, FRAME *frame);
-ENV *assign_var(char *name, int type, STATE *value, FRAME *frame);
+ENV *lookup_val(char *name, int type, FRAME *frame);
+ENV *init_val(char *name, int type, FRAME *frame);
+ENV *assign_val(char *name, int type, STATE *value, FRAME *frame);
 
 ENV *new_env(char *name, int type, union STATE *state);
 
@@ -77,9 +78,9 @@ STATE *new_env_state(struct ENV *env);
 
 FRAME *new_frame(FRAME *parent, char *proc_id);
 
-VARIABLE *new_var(int type, TOKEN *t, FRAME *frame);
+VALUE *new_val(int type, TOKEN *t, FRAME *frame);
 void print_frame(FRAME *frame);
-void print_var(VARIABLE *var);
+void print_val(VALUE *val);
 void print_environment(FRAME *frame);
 char *data_type_to_str(int type);
 void init_environment();

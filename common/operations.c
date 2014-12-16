@@ -21,7 +21,7 @@ void D_first_pass(NODE *operator, ENV *left_operand, FRAME *frame) {
   fn->body = operator->right;
   // Store function in frame
   //init_var(fn->name, FN_TYPE, frame);
-  assign_var(fn->name, FN_TYPE, left_operand->state, frame);
+  //assign_var(fn->name, FN_TYPE, left_operand->state, frame);
 }
 
 /* Function definition symbol implementation */
