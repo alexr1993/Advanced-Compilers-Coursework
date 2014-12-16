@@ -314,7 +314,6 @@ void create_frame(NODE *n) {
  * Registers the remaining tokens on the token stack with the global frame
  */
 void populate_gbl_frame(NODE *n) {
-    init_environment();
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
@@ -372,6 +371,7 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
  * Define commonly used variables for parsing
  */
 void init_environment() {
+  gbl_frame = new_frame(NULL, "gbl_frame");
   int_token = new_token(INT);
   int_token->lexeme = "int";
   function_token = new_token(FUNCTION);
@@ -380,5 +380,4 @@ void init_environment() {
   void_token->lexeme = "void";
 
   init_token_stack();
-  gbl_frame = new_frame(NULL, "gbl_frame");
 }
