@@ -286,7 +286,9 @@ int yyerror(char *s) {
     return 0;
 }
 
-/* Creates a frame using a 'D' node */
+/*
+ * Creates a frame using a 'D' node
+ */
 void create_frame(NODE *n) {
     FRAME *frame = new_frame(NULL, name_from_fn_def(n));
 
@@ -324,14 +326,17 @@ void populate_gbl_frame(NODE *n) {
     bond_with_children(n, true);
 }
 
-/* Fetches the name of the function given the 'D' node (the fns definition)
+/*
+ * Fetches the name of the function given the 'D' node (the fns definition)
  */
 char *name_from_fn_def(NODE *D) {
     TOKEN *t = get_token(D->left->right->left);
     return t->lexeme;
 }
 
-/* Find nodes indicating frame starts and establish pointers between them */
+/*
+ * Find nodes indicating frame starts and establish pointers between them
+ */
 void bond_with_children(NODE *n, bool is_gbl) {
     NODE *D;
     // Binding a tree with root 'D' with the global frame is an edge case
@@ -350,6 +355,10 @@ void bond_with_children(NODE *n, bool is_gbl) {
     n->next_D = NULL;
 }
 
+/*
+ * Adds references from the child frame to the parent and vice versa
+ * Child is insert as the first child of it's parent
+ */
 void register_frame_pointers(FRAME *parent, FRAME *child) {
     child->parent = parent;
     child->sibling = parent->child;
@@ -359,6 +368,9 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
     if (V) print_frame(parent);
 }
 
+/*
+ * Define commonly used variables for parsing
+ */
 void init_environment() {
   int_token = new_token(INT);
   int_token->lexeme = "int";
