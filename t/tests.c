@@ -4,7 +4,6 @@
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
 #include "analysis/environment.h"
-#include "test_source/basic_arithmetic.h"
 
 extern FRAME *gbl_frame;
 extern struct token_stack *ts;
@@ -22,7 +21,7 @@ extern struct token_stack *ts;
 //} END_TEST
 
 
-// Check token lookup works
+/* Check token lookup works */
 START_TEST(basic_frame) {
   init_environment();
   // Token should only by newly_created on it's first lookup
@@ -33,7 +32,7 @@ START_TEST(basic_frame) {
   ck_assert_int_eq(0, t->newly_created);
 } END_TEST
 
-// Check frames nest correctly
+/* Check frames nest correctly */
 START_TEST(parent_frame) {
   init_environment();
 

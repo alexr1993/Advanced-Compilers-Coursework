@@ -24,8 +24,8 @@ COMMOBJS = util.o \
 COMMSRCS = main.c \
            common/operations.co
 
-TESTOBJS = tests/tests.o
-TESTSRCS = tests/tests.c
+TESTOBJS = t/tests.o
+TESTSRCS = t/tests.c
 
 OBJS = main.o
 SRCS = main.c
