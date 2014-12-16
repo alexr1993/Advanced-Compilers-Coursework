@@ -1,5 +1,6 @@
 #include <check.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
@@ -7,18 +8,7 @@
 
 extern FRAME *gbl_frame;
 extern struct token_stack *ts;
-
-/*
- * Unit Tests
- */
-
-//START_TEST (interpret) {
-  /*
-  ck_assert_str_eq(
-    interpret(basic_addition()),
-    "8");
-  */
-//} END_TEST
+FILE *yyin;
 
 
 /* Check token lookup works */
@@ -43,6 +33,7 @@ START_TEST(parent_frame) {
   );
 } END_TEST
 
+/* Check basic stack operations */
 START_TEST(token_stack) {
   init_token_stack();
 
@@ -53,6 +44,14 @@ START_TEST(token_stack) {
   push(t2);
 
   ck_assert_int_eq(ts->size, 2);
+} END_TEST
+
+/* Check frame structure using C-- source code */
+START_TEST(frames) {
+  init_environment();
+  yyin = fopen("t/src/awkward_declarations.cmm", "r");
+  yyparse();
+
 } END_TEST
 
 /*

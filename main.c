@@ -13,7 +13,6 @@
 
 extern int yydebug;
 extern int yyparse();
-extern void init_environment();
 extern NODE *ans;
 extern FRAME *gbl_frame;
 extern int V;
@@ -95,7 +94,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    if (!yyin) yyin = fopen("tests/test_source/awkward_declarations.c", "r");
+    if (!yyin) yyin = fopen("t/src/awkward_declarations.cmm", "r");
 
     /* Translate */
     if ( str_eq(action, "") )

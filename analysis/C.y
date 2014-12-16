@@ -19,7 +19,6 @@ int yyerror(char *s);
 int yylex();
 
 /* Construction of environment */
-void init_environment();
 void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
 char *name_from_fn_def(NODE *);
@@ -365,19 +364,4 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
     if (V) printf("Registered \"%s\" as the parent parent of child \"%s\"\n",
                   parent->proc_id, child->proc_id);
     if (V) print_frame(parent);
-}
-
-/*
- * Define commonly used variables for parsing
- */
-void init_environment() {
-  gbl_frame = new_frame(NULL, "gbl_frame");
-  int_token = new_token(INT);
-  int_token->lexeme = "int";
-  function_token = new_token(FUNCTION);
-  function_token->lexeme = "function";
-  void_token = new_token(VOID);
-  void_token->lexeme = "void";
-
-  init_token_stack();
 }

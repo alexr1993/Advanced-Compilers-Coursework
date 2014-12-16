@@ -6,6 +6,7 @@ typedef struct node NODE;
 
 #include "util.h"
 
+#include "C.tab.h"
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
 
@@ -86,4 +87,5 @@ void print_frame(FRAME *frame);
 void print_var(VARIABLE *var);
 void print_environment(FRAME *frame);
 char *data_type_to_str(int type);
+void init_environment();
 #endif
