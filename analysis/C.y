@@ -15,7 +15,6 @@ extern char yytext[];
 extern int column;
 extern FRAME *gbl_frame;
 
-
 NODE *ans;
 
 int V, v, counter = 1, current_type;
@@ -23,7 +22,6 @@ int V, v, counter = 1, current_type;
 int yyerror(char *s);
 int yylex();
 
-DECLARATION_TYPE current_declaration;
 
 /* Functions for construction of environment */
 void create_frame(NODE *);
@@ -174,15 +172,16 @@ direct_declarator
 	: IDENTIFIER		{
       $$ = make_leaf(lasttok);
       lasttok->data_type = current_type;
-      lasttok->declaration_type = current_declaration;
       push(lasttok);
     }
 	| '(' declarator ')'	{ $$ = $2; }
     | direct_declarator '(' parameter_list ')' {
         $$ = make_node('F', $1, $3);
+        mark_params();
       }
 	| direct_declarator '(' identifier_list ')'{
         $$ = make_node('F', $1, $3);
+        mark_params();
       }
 	| direct_declarator '(' ')' {
         $$ = make_node('F', $1, NULL);
@@ -197,11 +196,9 @@ parameter_list
 parameter_declaration
 	: declaration_specifiers declarator {
         $$ = make_node('~', $1, $2);
-        current_declaration = PARAMETER;
       }
 	| declaration_specifiers abstract_declarator {
         $$ = make_node('~', $1, $2);
-        current_declaration = PARAMETER;
       }
 	| declaration_specifiers	{ $$ = $1; }
 	;
@@ -284,7 +281,6 @@ external_declaration
 function_definition
 	:  declaration_specifiers declarator compound_statement  {
         $$ = make_node('D', make_node('d', $1, $2), $3);
-        current_declaration = VARIABLE;
       }
 	;
 %%
@@ -312,12 +308,17 @@ void create_frame(NODE *n) {
     // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
         t->val = new_val(t->data_type, t, frame);
+        // Parameter Identifiers have already been marked
+        if (t->declaration_type != PARAMETER) {
+            t->declaration_type = VARIABLE;
+        }
         enter_token(t, frame->symbols);
 
         t = pop();
     }
     // the current token is the function which owns this frame
     t->data_type = FN_TYPE;
+    t->declaration_type = VARIABLE;
 
     push(t); // let enclosing frames find this fn
 }

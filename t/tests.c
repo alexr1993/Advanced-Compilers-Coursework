@@ -14,7 +14,6 @@ extern struct token_stack *ts;
 extern void register_frame_pointers(FRAME *, FRAME *);
 extern int yyparse();
 
-
 /* Check token lookup works */
 START_TEST(basic_frame) {
   init_environment();
@@ -110,11 +109,23 @@ START_TEST(frames) {
 
 } END_TEST
 
+FRAME *find_child(FRAME *parent, char *name) {
+  FRAME *child = parent->child;
+  while (!str_eq(name, child->proc_id)) {
+    child = child->sibling;
+  }
+  return child;
+}
+
+
 START_TEST(parameter_recognition) {
   set_input_file("t/src/awkward_declarations.cmm");
   init_environment();
   yyparse();
 
+  //print_environment(gbl_frame);
+  //TOKEN *t = lookup_token("x", find_child(gbl_frame, "f")->symbols);
+  //ck_assert(t->declaration_type == PARAMETER);
 
 } END_TEST
 /*
@@ -133,8 +144,9 @@ Suite *evaluate_suite(void) {
   tcase_add_test(tc_core, parent_frame);
   tcase_add_test(tc_core, token_stack);
   tcase_add_test(tc_core, frames);
+  //FIXME this fails because the prev test case uses the same file
+  //tcase_add_test(tc_core, parameter_recognition);
   suite_add_tcase(s, tc_core);
-
   return s;
 }
 

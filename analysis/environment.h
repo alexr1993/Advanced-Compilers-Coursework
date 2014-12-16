@@ -54,6 +54,10 @@ typedef struct function {
 
 FRAME *gbl_frame;
 
+/* Modifiers */
+VALUE *get_val(char *name, FRAME *frame);
+void set_val(char *name, STATE* state, FRAME *frame);
+
 /* Environment construction */
 void init_environment();
 VALUE *new_val(int type, TOKEN *t, FRAME *frame);

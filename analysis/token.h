@@ -45,4 +45,6 @@ void print_token(TOKEN *t);
 TOKEN *pop();
 void push(TOKEN *);
 void print_token_stack();
+
+void mark_params();
 #endif

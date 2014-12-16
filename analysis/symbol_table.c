@@ -16,6 +16,9 @@
 #include "symbol_table.h"
 
 #define HASH_SIZE (1000)
+
+extern int V, v;
+
 TOKEN *int_token, *void_token, *function_token;
 
 TOKEN **new_symbtable() {
@@ -54,7 +57,8 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
   while (a!=NULL) {
     if (strcmp(a->lexeme, s)==0) {
       a->newly_created = false;
-      print_token(a);
+      if (V) printf("Token found!\n");
+      if (V) print_token(a);
       return a;
     }
     a = a->next;

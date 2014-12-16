@@ -5,22 +5,18 @@
 
 extern int V;
 
-/*
- * Finds and returns the env mapping with the given name and type
- *
- * Checks given env first, then recursive looks at parent until val
- * is found
- *
- */
-VALUE *lookup_val(char *name, int type, FRAME *frame) {
+/****************************************************************************
+ * MODIFIERS
+ ****************************************************************************/
+
+VALUE *get_val(char *name, FRAME *frame) {
   printf("Looking up variable \"%s\"...", name);
-  return NULL;
+  return lookup_token(name, frame->symbols)->val;
 }
 
 /* Sets the state of the variable */
-VALUE *assign_val(char *name, int type, STATE* state, FRAME *frame) {
-  VALUE *val = lookup_val(name, type, frame);
-  return val;
+void set_val(char *name, STATE* state, FRAME *frame) {
+  get_val(name, frame)->state = state;
 }
 
 /****************************************************************************
@@ -39,17 +35,12 @@ STATE *new_fn_state(function *function) {
   return state;
 }
 
-/*
- * Create new frame and attack it correctly to its parent
- *
- */
-FRAME *new_frame(char *proc_id)
-{
+FRAME *new_frame(char *proc_id) {
   if (V) printf("\nCreating new frame \"%s\"\n", proc_id);
   FRAME *frame = malloc(sizeof(FRAME));
 
   frame->symbols = new_symbtable();
-  frame->proc_id = proc_id; // Should be token's lexeme
+  frame->proc_id = proc_id; // Should be the original token's lexeme
   frame->child   = NULL;
   frame->sibling = NULL;
   return frame;
@@ -91,9 +82,7 @@ VALUE *new_val(int type, TOKEN *t, FRAME *frame) {
   return val;
 }
 
-/*
- * Define commonly used variables for parsing
- */
+/* Define commonly used variables for parsing */
 void init_environment() {
   gbl_frame = new_frame("gbl_frame");
 

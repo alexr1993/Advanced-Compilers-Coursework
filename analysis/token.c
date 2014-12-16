@@ -102,3 +102,13 @@ void print_token_stack() {
   }
   printf("========================================\n");
 }
+
+/* Sets all of the tokens in the stack as parameter identifiers */
+void mark_params() {
+    TOKEN *t = ts->top;
+    while (t != NULL) {
+        t->declaration_type = PARAMETER;
+        t = t->next;
+    }
+}
+
