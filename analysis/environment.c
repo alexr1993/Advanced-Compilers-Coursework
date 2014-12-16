@@ -183,6 +183,7 @@ VARIABLE *new_var(int type, TOKEN *t, FRAME *frame) {
  */
 void init_environment() {
   gbl_frame = new_frame(NULL, "gbl_frame");
+
   int_token = new_token(INT);
   int_token->lexeme = "int";
   function_token = new_token(FUNCTION);

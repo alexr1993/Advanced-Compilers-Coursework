@@ -62,11 +62,51 @@ void check_frames(FRAME *parent) {
 
 /* Check frame structure using C-- source code */
 START_TEST(frames) {
-  init_environment();
+  printf("\nclosure.cmm\n");
+  printf("===========\n");
   set_input_file("t/src/closure.cmm");
+  init_environment();
   yyparse();
-
+  print_environment(gbl_frame);
   check_frames(gbl_frame);
+
+  ck_assert_str_eq(gbl_frame->child->proc_id, "cplus");
+  ck_assert_str_eq(gbl_frame->child->child->proc_id, "cplusa");
+
+  printf("\nawkward_declarations.cmm\n");
+  printf("===========\n");
+  set_input_file("t/src/awkward_declarations.cmm");
+  init_environment();
+  yyparse();
+  print_environment(gbl_frame);
+  check_frames(gbl_frame);
+
+  // It's possible that these will be the other way roudn
+  ck_assert_str_eq(gbl_frame->child->proc_id, "main");
+  ck_assert_str_eq(gbl_frame->child->sibling->proc_id, "g");
+
+  printf("\nnested_subroutine.cmm\n");
+  printf("===========\n");
+  set_input_file("t/src/nested_subroutine.cmm");
+  init_environment();
+  yyparse();
+  print_environment(gbl_frame);
+  check_frames(gbl_frame);
+
+  ck_assert_str_eq(gbl_frame->child->proc_id, "fact");
+  ck_assert_str_eq(gbl_frame->child->child->proc_id, "inner_fact");
+
+  printf("\nfirst_class_function.cmm\n");
+  printf("===========\n");
+  set_input_file("t/src/first_class_function.cmm");
+  init_environment();
+  yyparse();
+  print_environment(gbl_frame);
+  check_frames(gbl_frame);
+
+  ck_assert_str_eq(gbl_frame->child->proc_id, "twice");
+  ck_assert_str_eq(gbl_frame->child->child->proc_id, "g");
+
 } END_TEST
 
 /*
