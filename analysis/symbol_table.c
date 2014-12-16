@@ -20,12 +20,6 @@ TOKEN *int_token, *void_token, *function_token;
 
 TOKEN **new_symbtable() {
   TOKEN **symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
-  int_token = new_token(INT);
-  int_token->lexeme = "int";
-  function_token = new_token(FUNCTION);
-  function_token->lexeme = "function";
-  void_token = new_token(VOID);
-  void_token->lexeme = "void";
   return symbtable;
 }
 

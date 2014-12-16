@@ -18,6 +18,8 @@ int V, counter = 1, current_type;
 int yyerror(char *s);
 int yylex();
 
+/* Construction of environment */
+void init_environment();
 void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
 char *name_from_fn_def(NODE *);
@@ -310,6 +312,7 @@ void create_frame(NODE *n) {
  * Registers the remaining tokens on the token stack with the global frame
  */
 void populate_gbl_frame(NODE *n) {
+    init_environment();
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
@@ -356,3 +359,14 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
     if (V) print_frame(parent);
 }
 
+void init_environment() {
+  int_token = new_token(INT);
+  int_token->lexeme = "int";
+  function_token = new_token(FUNCTION);
+  function_token->lexeme = "function";
+  void_token = new_token(VOID);
+  void_token->lexeme = "void";
+
+  init_token_stack();
+  gbl_frame = new_frame(NULL, "gbl_frame");
+}

@@ -154,14 +154,8 @@ FRAME *new_frame(FRAME *parent, char *proc_id)
     new_frame->sibling = child;
   }
   new_frame->symbols = new_symbtable();
-  new_frame->proc_id = proc_id; // Should be tokens lexeme
+  new_frame->proc_id = proc_id; // Should be token's lexeme
   return new_frame;
-}
-
-/* Init some globals, or whatever else */
-void init_environment(void)
-{
-  gbl_frame = new_frame(NULL, "gbl_frame");
 }
 
 VARIABLE *new_var(int type, TOKEN *t, FRAME *frame) {

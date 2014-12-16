@@ -12,7 +12,8 @@
 #include "util.h"
 
 extern int yydebug;
-extern int yyparse (void);
+extern int yyparse();
+extern void init_environment();
 extern NODE *ans;
 extern FRAME *gbl_frame;
 extern int V;
@@ -59,7 +60,6 @@ int main ( int argc, char *argv[] )
     char *action  = "";
     V = 0; //1; // Verbose
     init_environment();
-    init_token_stack();
 
     // Determine translation requested
     while ((c = getopt(argc, argv, "a:df:")) != -1)
