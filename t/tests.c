@@ -11,7 +11,7 @@
 
 extern FRAME *gbl_frame;
 extern struct token_stack *ts;
-
+extern void register_frame_pointers(FRAME *, FRAME *);
 extern int yyparse();
 
 
@@ -30,7 +30,8 @@ START_TEST(basic_frame) {
 START_TEST(parent_frame) {
   init_environment();
 
-  FRAME *current = new_frame(gbl_frame, "testframe");
+  FRAME *current = new_frame("testframe");
+  register_frame_pointers(gbl_frame, current);
 
   ck_assert_int_eq(
     (int)current->parent, (int)gbl_frame

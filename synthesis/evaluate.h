@@ -3,6 +3,7 @@
 
 #include "analysis/nodes.h"
 
-VALUE *evaluate(NODE *);
+typedef enum { INTERPRET, TAC } eval_type;
+VALUE *evaluate(NODE *, eval_type);
 
 #endif

@@ -1,5 +1,5 @@
-#ifndef __TOKEN_H
-#define __TOKEN_H
+#ifndef ANALYSIS_TOKEN_H_
+#define ANALYSIS_TOKEN_H_
 
 typedef struct FRAME FRAME;
 typedef struct VALUE VALUE;

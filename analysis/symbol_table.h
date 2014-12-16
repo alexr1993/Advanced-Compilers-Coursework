@@ -1,8 +1,7 @@
-#ifndef __SYMBOL_TABLE_H
-#define __SYMBOL_TABLE_H
+#ifndef ANALYSIS_SYMBOL_TABLE_H_
+#define ANALYSIS_SYMBOL_TABLE_H_
 
 #include <stdbool.h>
-
 #include "token.h"
 
 TOKEN **new_symbtable();

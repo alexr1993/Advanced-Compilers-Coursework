@@ -291,23 +291,26 @@ int yyerror(char *s) {
  * Creates a frame using a 'D' node
  */
 void create_frame(NODE *n) {
-    FRAME *frame = new_frame(NULL, name_from_fn_def(n));
 
+    FRAME *frame = new_frame(name_from_fn_def(n));
     n->frame = frame;
+    frame->root = n;
+
     bond_with_children(n, false);
+
     /* Process every identifier that was found on the subtree */
     TOKEN *t = pop();
 
     // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
         t->val = new_val(t->data_type, t, frame);
-
-        // Add token to symbtable
         enter_token(t, frame->symbols);
+
         t = pop();
     }
     // the current token is the function which owns this frame
     t->data_type = FN_TYPE;
+
     push(t); // let enclosing frames find this fn
 }
 
@@ -320,7 +323,6 @@ void populate_gbl_frame(NODE *n) {
     while (t != NULL) {
         t->val = new_val(t->data_type, t, gbl_frame);
         enter_token(t, gbl_frame->symbols);
-
         t = pop();
     }
     bond_with_children(n, true);
@@ -363,7 +365,8 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
     child->parent = parent;
     child->sibling = parent->child;
     parent->child = child;
-    if (V) printf("Registered \"%s\" as the parent parent of child \"%s\"\n",
+    parent->nchildren++;
+    if (V) printf("Registered \"%s\" as the parent of child \"%s\"\n",
                   parent->proc_id, child->proc_id);
     if (V) print_frame(parent);
 }

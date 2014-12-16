@@ -51,7 +51,9 @@ void interpret_source(void)
     if (v) printf("Starting parse + semantic analysis\n");
     yyparse();
     NODE *tree = ans;
+    print_environment(gbl_frame);
     //print_tree(tree);
+    //call("main", gbl_frame);
 }
 
 /* Interpret --C program */
@@ -60,7 +62,7 @@ int main ( int argc, char *argv[] )
     int c         = 0;
     int len;
     char *action  = "";
-    V = 0; //1; // Verbose
+    V = 1; // Verbose
     v = 1;
     init_environment();
 

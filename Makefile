@@ -1,16 +1,4 @@
 ## TODO Clean up all the repitition in this file
-SYNTHOBJS = evaluation/param.o \
-            evaluation/function.o \
-            synthesis/interpret.o \
-            synthesis/tac.o \
-            synthesis/mips.o \
-
-SYNTHSRCS = evaluation/param.c \
-            evaluation/function.c \
-            synthesis/interpret.c \
-            synthesis/tac.c \
-            synthesis/mips.c \
-
 ANALOBJS = analysis/lex.yy.o \
            analysis/C.tab.o \
            analysis/symbol_table.o \
@@ -24,10 +12,18 @@ ANALSRCS = analysis/lex.yy.c \
            analysis/environment.c \
            analysis/token.c
 
+SYNTHOBJS = synthesis/interpret.o \
+            synthesis/tac.o \
+            synthesis/mips.o \
+
+SYNTHSRCS = synthesis/interpret.c \
+            synthesis/tac.c \
+            synthesis/mips.c \
+
+
 COMMOBJS = util.o \
-           common/operations.o
+
 COMMSRCS = main.c \
-           common/operations.co
 
 TESTOBJS = t/tests.o
 TESTSRCS = t/tests.c

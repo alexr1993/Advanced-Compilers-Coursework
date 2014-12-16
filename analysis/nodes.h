@@ -1,5 +1,5 @@
-#ifndef __NODES_H
-#define __NODES_H
+#ifndef ANALYSIS_NODES_H_
+#define ANALYSIS_NODES_H_
 
 typedef struct TOKEN TOKEN;
 #include "token.h"

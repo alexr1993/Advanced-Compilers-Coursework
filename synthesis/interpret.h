@@ -9,4 +9,6 @@
 VALUE *arithmetic(NODE *);
 VALUE *boolean(NODE *);
 VALUE *assignment(NODE *);
+
+VALUE *call(char *name, FRAME *caller, FRAME *callee);
 #endif
