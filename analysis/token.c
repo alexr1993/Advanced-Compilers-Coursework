@@ -44,22 +44,23 @@ TOKEN *make_identifier(char *s)
  * point to */
 char *type_to_str(int type) {
   switch(type) {
-    case STRING_LITERAL:
-      return "STRING_LITERAL";
-    case CONSTANT:
-      return "CONSTANT";
-    case IDENTIFIER:
-      return "IDENTIFIER";
-    default:
-      return "TYPE_NOT_RECOGNISED";
+   case STRING_LITERAL:
+    return "STRING_LITERAL";
+   case CONSTANT:
+    return "CONSTANT";
+   case IDENTIFIER:
+    return "IDENTIFIER";
+   default:
+    return "TYPE_NOT_RECOGNISED";
   }
 }
 
 void print_token(TOKEN *t) {
-    printf("TOKEN \"%s\" (lexeme), type: %s, data_type: %s\n",
+    printf("TOKEN \"%s\" (lexeme), type: %s, data_type: %s, param: %s\n",
             t->lexeme,
             type_to_str(t->type),
-            data_type_to_str(t->data_type));
+            data_type_to_str(t->data_type),
+            t->declaration_type == PARAMETER ? "yes" : "no");
 }
 
 /* The token stack is useful for populating frames during parsing */

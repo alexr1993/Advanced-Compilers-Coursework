@@ -8,25 +8,30 @@
 #include "nodes.h"
 #include "util.h"
 #include "environment.h"
+#include "token.h"
 
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
 extern char yytext[];
 extern int column;
+extern FRAME *gbl_frame;
+
 
 NODE *ans;
+
 int V, v, counter = 1, current_type;
 
 int yyerror(char *s);
 int yylex();
 
-/* Construction of environment */
+DECLARATION_TYPE current_declaration;
+
+/* Functions for construction of environment */
 void create_frame(NODE *);
 void populate_gbl_frame(NODE *);
 char *name_from_fn_def(NODE *);
 void bond_with_children(NODE *n, bool is_gbl);
 void register_frame_pointers(FRAME *parent, FRAME *child);
 
-extern FRAME *gbl_frame;
 FRAME *parent_frame;
 %}
 
@@ -110,7 +115,8 @@ equality_expression
 assignment_expression
 	: equality_expression		{ $$ = $1; }
 	| unary_expression '=' assignment_expression {
-                                          $$ = make_node('=', $1, $3); }
+        $$ = make_node('=', $1, $3);
+      }
 	;
 
 expression
@@ -135,11 +141,7 @@ declaration_specifiers
 	: storage_class_specifier		{ $$ = $1; }
 	| storage_class_specifier declaration_specifiers {
                                                   $$ = make_node('~', $1, $2); }
-	| type_specifier {
-        $$ = $1;
-        if (get_token($1) == int_token) current_type = INT_TYPE;
-        if (get_token($1) == function_token) current_type = FN_TYPE;
-       }
+	| type_specifier { $$ = $1; }
 	| type_specifier declaration_specifiers { $$ = make_node('~', $1, $2); }
 	;
 
@@ -160,23 +162,31 @@ storage_class_specifier
 
 type_specifier
 	: VOID		{ $$ = make_leaf(void_token); }
-	| INT		{ $$ = make_leaf(int_token); }
-	| FUNCTION	{ $$ = make_leaf(function_token); }
+	| INT		{ $$ = make_leaf(int_token); current_type = INT_TYPE; }
+	| FUNCTION	{ $$ = make_leaf(function_token); current_type = FN_TYPE; }
 	;
 
 declarator
-	:  direct_declarator		{ $$ = $1; }
+	: direct_declarator { $$ = $1; }
 	;
 
 direct_declarator
 	: IDENTIFIER		{
       $$ = make_leaf(lasttok);
       lasttok->data_type = current_type;
-      push(lasttok); }
+      lasttok->declaration_type = current_declaration;
+      push(lasttok);
+    }
 	| '(' declarator ')'	{ $$ = $2; }
-    | direct_declarator '(' parameter_list ')' { $$ = make_node('F', $1, $3); }
-	| direct_declarator '(' identifier_list ')'{ $$ = make_node('F', $1, $3); }
-	| direct_declarator '(' ')'                { $$ = make_node('F', $1, NULL); }
+    | direct_declarator '(' parameter_list ')' {
+        $$ = make_node('F', $1, $3);
+      }
+	| direct_declarator '(' identifier_list ')'{
+        $$ = make_node('F', $1, $3);
+      }
+	| direct_declarator '(' ')' {
+        $$ = make_node('F', $1, NULL);
+      }
 	;
 
 parameter_list
@@ -185,8 +195,14 @@ parameter_list
 	;
 
 parameter_declaration
-	: declaration_specifiers declarator { $$ = make_node('~', $1, $2); }
-	| declaration_specifiers abstract_declarator { $$ = make_node('~', $1, $2); }
+	: declaration_specifiers declarator {
+        $$ = make_node('~', $1, $2);
+        current_declaration = PARAMETER;
+      }
+	| declaration_specifiers abstract_declarator {
+        $$ = make_node('~', $1, $2);
+        current_declaration = PARAMETER;
+      }
 	| declaration_specifiers	{ $$ = $1; }
 	;
 
@@ -266,19 +282,11 @@ external_declaration
 	;
 
 function_definition
-	: declaration_specifiers declarator declaration_list compound_statement {
-        $$ = make_node('D', make_node('d', $1, make_node('e', $2, $3)), $4);
-      }
-	| declaration_specifiers declarator compound_statement  {
+	:  declaration_specifiers declarator compound_statement  {
         $$ = make_node('D', make_node('d', $1, $2), $3);
+        current_declaration = VARIABLE;
       }
-	| declarator declaration_list compound_statement  {
-        $$ = make_node('D', make_node('d', $1, $2), $3);
-      }
-	| declarator compound_statement {
-        $$ = make_node('D', $1, $2);
-      }
-    ;
+	;
 %%
 
 int yyerror(char *s) {

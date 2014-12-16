@@ -52,7 +52,7 @@ void interpret_source(void)
     yyparse();
     NODE *tree = ans;
     print_environment(gbl_frame);
-    //print_tree(tree);
+    print_tree(tree);
     //call("main", gbl_frame);
 }
 

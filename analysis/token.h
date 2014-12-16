@@ -10,6 +10,8 @@ typedef struct VALUE VALUE;
 #define TEST_MODE 0
 
 /* Data */
+typedef enum DECLARATION_TYPE { VARIABLE, PARAMETER } DECLARATION_TYPE;
+
 typedef struct TOKEN
 {
   int           type; // Type of lexical token (IDENTIFIER | CONSTANT ... )
@@ -18,7 +20,9 @@ typedef struct TOKEN
   VALUE         *val;
   struct TOKEN  *next;
   int           newly_created;
-  int data_type; // For IDENTIFIERS only
+  // For IDENTIFIERS only
+  int data_type;
+  DECLARATION_TYPE declaration_type;
 } TOKEN;
 
 struct token_stack {

@@ -110,6 +110,13 @@ START_TEST(frames) {
 
 } END_TEST
 
+START_TEST(parameter_recognition) {
+  set_input_file("t/src/awkward_declarations.cmm");
+  init_environment();
+  yyparse();
+
+
+} END_TEST
 /*
  * Test Suite Setup
  */
