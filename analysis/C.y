@@ -306,6 +306,9 @@ void create_frame(NODE *n) {
     push(t); // let enclosing frames find this fn
 }
 
+/*
+ * Registers the remaining tokens on the token stack with the global frame
+ */
 void populate_gbl_frame(NODE *n) {
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();

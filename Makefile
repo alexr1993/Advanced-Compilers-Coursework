@@ -1,10 +1,10 @@
 ## TODO Clean up all the repitition in this file
 EVALOBJS = evaluation/param.o \
            evaluation/function.o \
-           evaluation/evaluate.o
+           #evaluation/evaluate.o
 EVALSRCS = evaluation/param.c \
            evaluation/function.c \
-           evaluation/evaluate.c
+           #evaluation/evaluate.c
 
 ANALOBJS = analysis/lex.yy.o \
            analysis/C.tab.o \

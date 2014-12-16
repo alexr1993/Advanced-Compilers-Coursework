@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "evaluate.h"
+//#include "evaluate.h"
 
 function *new_function( int return_type,
                         FRAME *scope,
@@ -34,12 +34,12 @@ void register_function( int return_type,
                         NODE *body,
                         char *name        )
 {
-    init_var(name, FN_TYPE, frame);
+    //init_var(name, FN_TYPE, frame);
     STATE *state = new_fn_state(new_function(return_type,
                                              frame,
                                              body,
                                              name         ));
-    assign_var(name, FN_TYPE, state, frame);
+    //assign_var(name, FN_TYPE, state, frame);
     return;
 }
 
@@ -83,13 +83,14 @@ void *bind_args(function *fn, ENV *args)
     return 0;
 }
 
-ENV *call(char *name, FRAME *frame, ENV *args)
+/* Returns the evaluation of it's node, after binding arguments */
+void call(char *name, FRAME *frame, ENV *args)
 {
     function *function = lookup_var(name, FN_TYPE, frame)->state->function;
     if (args)
     {
         bind_args(function, args);
     }
-    return evaluate(function->body, NULL, function->scope, EVAL);
+    return; //evaluate(function->body, NULL, function->scope, EVAL);
 }
 

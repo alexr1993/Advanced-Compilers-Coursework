@@ -8,7 +8,6 @@
 #include "analysis/token.h"
 #include "analysis/C.tab.h"
 #include "analysis/environment.h"
-#include "evaluation/evaluate.h"
 #include "generation/tac.h"
 #include "util.h"
 
@@ -33,7 +32,7 @@ void translate_to_TAC()
     yyparse();
     NODE *tree = ans;
     print_tree(tree);
-    evaluate(tree, NULL, gbl_frame, TAC);
+    //evaluate(tree, NULL, gbl_frame, TAC);
     return;
 }
 

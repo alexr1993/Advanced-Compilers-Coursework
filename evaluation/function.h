@@ -24,6 +24,6 @@ function *new_function( int return_type,
                         char *name   );
 
 void *bind_args(struct function *fn, struct ENV *args);
-struct ENV *call(char *name, struct FRAME *frame, struct ENV *args);
+void call(char *name, struct FRAME *frame, struct ENV *args);
 
 #endif
