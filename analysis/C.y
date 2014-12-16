@@ -1,4 +1,7 @@
 %{
+#define YYSTYPE NODE*
+#define YYDEBUG 1
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -6,8 +9,6 @@
 #include "util.h"
 #include "environment.h"
 
-#define YYSTYPE NODE*
-#define YYDEBUG 1
 extern TOKEN *int_token, *void_token, *function_token, *lasttok;
 extern char yytext[];
 extern int column;
@@ -120,6 +121,7 @@ expression
 declaration
 	: declaration_specifiers ';'		{ $$ = $1; }
 	| function_definition {
+        if (V) printf("PARSER Found function definition\n");
         current_type = FN_TYPE;
         create_frame($1);
         $$ = $1;

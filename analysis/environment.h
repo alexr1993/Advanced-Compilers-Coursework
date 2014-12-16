@@ -6,20 +6,15 @@ typedef struct node NODE;
 
 #include "util.h"
 
+#include "token.h"
+#include "symbol_table.h"
 #include "C.tab.h"
-#include "analysis/token.h"
-#include "analysis/symbol_table.h"
 
 #include "evaluation/function.h"
 #include "evaluation/param.h"
 
 #define INT_TYPE  0
 #define FN_TYPE   1
-#define STR_TYPE  2
-#define NODE_TYPE 3
-#define ENV_TYPE  4
-#define PARAM_TYPE 5
-#define NO_TYPE 999
 
 struct function;
 struct PARAM;

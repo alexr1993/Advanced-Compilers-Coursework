@@ -1,8 +1,13 @@
+#include "util.h"
+
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
+
 #include "analysis/nodes.h"
 #include "analysis/C.tab.h"
-#include <string.h>
+
+extern FILE *yyin;
 
 /* Prints string representation of input node type */
 char *named(int t)
@@ -96,7 +101,10 @@ void print_tree0(NODE *tree, int level)
     }
 }
 
-void print_tree(NODE *tree)
-{
-    print_tree0(tree, 0);
+void print_tree(NODE *tree) {
+  print_tree0(tree, 0);
+}
+
+void set_input_file(char *filename) {
+  yyin = fopen(filename, "r");
 }

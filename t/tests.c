@@ -2,13 +2,17 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "util.h"
+
+#include "analysis/C.tab.h"
 #include "analysis/token.h"
 #include "analysis/symbol_table.h"
 #include "analysis/environment.h"
 
 extern FRAME *gbl_frame;
 extern struct token_stack *ts;
-FILE *yyin;
+
+extern int yyparse();
 
 
 /* Check token lookup works */
@@ -46,12 +50,23 @@ START_TEST(token_stack) {
   ck_assert_int_eq(ts->size, 2);
 } END_TEST
 
+/* Checks relationships of all frames in tree */
+void check_frames(FRAME *parent) {
+  FRAME *child = parent->child;
+  while (child != NULL) {
+    ck_assert_str_eq(parent->proc_id, child->parent->proc_id);
+    check_frames(child);
+    child = child->sibling;
+  }
+}
+
 /* Check frame structure using C-- source code */
 START_TEST(frames) {
   init_environment();
-  yyin = fopen("t/src/awkward_declarations.cmm", "r");
+  set_input_file("t/src/closure.cmm");
   yyparse();
 
+  check_frames(gbl_frame);
 } END_TEST
 
 /*
@@ -69,6 +84,7 @@ Suite *evaluate_suite(void) {
   tcase_add_test(tc_core, basic_frame);
   tcase_add_test(tc_core, parent_frame);
   tcase_add_test(tc_core, token_stack);
+  tcase_add_test(tc_core, frames);
   suite_add_tcase(s, tc_core);
 
   return s;

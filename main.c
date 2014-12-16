@@ -79,7 +79,7 @@ int main ( int argc, char *argv[] )
                 break;
 
             case 'f':
-                yyin = fopen(optarg, "r");
+                set_input_file(yyin);
                 if (!yyin)
                 {
                     printf("Invalid input file path.\n");
@@ -94,7 +94,7 @@ int main ( int argc, char *argv[] )
         }
     }
 
-    if (!yyin) yyin = fopen("t/src/awkward_declarations.cmm", "r");
+    if (!yyin) set_input_file("t/src/awkward_declarations.cmm");
 
     /* Translate */
     if ( str_eq(action, "") )
