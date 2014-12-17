@@ -43,6 +43,7 @@ FRAME *new_frame(char *proc_id) {
   frame->proc_id = proc_id; // Should be the original token's lexeme
   frame->child   = NULL;
   frame->sibling = NULL;
+  frame->parent  = NULL;
   return frame;
 }
 
@@ -84,7 +85,10 @@ VALUE *new_val(int type, TOKEN *t, FRAME *frame) {
 
 /* Define commonly used variables for parsing */
 void init_environment() {
-  gbl_frame = new_frame("gbl_frame");
+
+  char *name = malloc(10 * sizeof(char)); // gbl_frame\0
+  name = "gbl_frame";
+  gbl_frame = new_frame(name);
 
   int_token = new_token(INT);
   int_token->lexeme = "int";

@@ -145,7 +145,7 @@ Suite *evaluate_suite(void) {
   tcase_add_test(tc_core, token_stack);
   tcase_add_test(tc_core, frames);
   //FIXME this fails because the prev test case uses the same file
-  //tcase_add_test(tc_core, parameter_recognition);
+  tcase_add_test(tc_core, parameter_recognition);
   suite_add_tcase(s, tc_core);
   return s;
 }

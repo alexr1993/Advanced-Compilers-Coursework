@@ -107,4 +107,5 @@ void print_tree(NODE *tree) {
 
 void set_input_file(char *filename) {
   yyin = fopen(filename, "r");
+  if (yyin == NULL) perror("Input file error!");
 }
