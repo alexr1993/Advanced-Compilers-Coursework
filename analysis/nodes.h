@@ -1,7 +1,8 @@
 #ifndef ANALYSIS_NODES_H_
 #define ANALYSIS_NODES_H_
 
-typedef struct TOKEN TOKEN;
+struct token;
+
 #include "token.h"
 #include "environment.h"
 
@@ -10,12 +11,12 @@ typedef struct node {
   struct node *left;
   struct node *right;
   struct node *next_D;
-  FRAME *frame;
+  struct frame *frame;
 } NODE;
 
-NODE* make_leaf(TOKEN*);
-NODE* make_node(int, NODE*, NODE*);
+NODE *make_leaf(struct token *);
+NODE *make_node(int, NODE*, NODE*);
 int is_leaf(NODE *node);
-TOKEN *get_token(NODE *node);
+struct token *get_token(NODE *node);
 void print_node(NODE *node);
 #endif

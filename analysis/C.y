@@ -1,16 +1,16 @@
 %{
-#define YYSTYPE NODE*
-#define YYDEBUG 1
-
+#define YYSTYPE struct node*
+#include "nodes.h"
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "nodes.h"
 #include "util.h"
 #include "environment.h"
 #include "token.h"
 
-extern TOKEN *int_token, *void_token, *function_token, *lasttok;
+#define YYDEBUG 1
+
+extern struct token *int_token, *void_token, *function_token, *lasttok;
 extern char yytext[];
 extern int column;
 extern FRAME *gbl_frame;

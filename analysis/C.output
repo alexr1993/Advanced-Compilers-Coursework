@@ -254,7 +254,7 @@ function_definition (72)
     on left: 91, on right: 32
 
 
-State 0
+state 0
 
     0 $accept: . goal $end
 
@@ -274,56 +274,56 @@ State 0
     function_definition      go to state 13
 
 
-State 1
+state 1
 
    42 storage_class_specifier: EXTERN .
 
     $default  reduce using rule 42 (storage_class_specifier)
 
 
-State 2
+state 2
 
    43 storage_class_specifier: AUTO .
 
     $default  reduce using rule 43 (storage_class_specifier)
 
 
-State 3
+state 3
 
    45 type_specifier: INT .
 
     $default  reduce using rule 45 (type_specifier)
 
 
-State 4
+state 4
 
    44 type_specifier: VOID .
 
     $default  reduce using rule 44 (type_specifier)
 
 
-State 5
+state 5
 
    46 type_specifier: FUNCTION .
 
     $default  reduce using rule 46 (type_specifier)
 
 
-State 6
+state 6
 
     0 $accept: goal . $end
 
     $end  shift, and go to state 14
 
 
-State 7
+state 7
 
    90 external_declaration: declaration .
 
     $default  reduce using rule 90 (external_declaration)
 
 
-State 8
+state 8
 
    31 declaration: declaration_specifiers . ';'
    33            | declaration_specifiers . init_declarator_list ';'
@@ -339,7 +339,7 @@ State 8
     direct_declarator     go to state 21
 
 
-State 9
+state 9
 
    34 declaration_specifiers: storage_class_specifier .
    35                       | storage_class_specifier . declaration_specifiers
@@ -357,7 +357,7 @@ State 9
     type_specifier           go to state 10
 
 
-State 10
+state 10
 
    36 declaration_specifiers: type_specifier .
    37                       | type_specifier . declaration_specifiers
@@ -375,7 +375,7 @@ State 10
     type_specifier           go to state 10
 
 
-State 11
+state 11
 
     1 goal: translation_unit .
    89 translation_unit: translation_unit . external_declaration
@@ -396,35 +396,35 @@ State 11
     function_definition      go to state 13
 
 
-State 12
+state 12
 
    88 translation_unit: external_declaration .
 
     $default  reduce using rule 88 (translation_unit)
 
 
-State 13
+state 13
 
    32 declaration: function_definition .
 
     $default  reduce using rule 32 (declaration)
 
 
-State 14
+state 14
 
     0 $accept: goal $end .
 
     $default  accept
 
 
-State 15
+state 15
 
    48 direct_declarator: IDENTIFIER .
 
     $default  reduce using rule 48 (direct_declarator)
 
 
-State 16
+state 16
 
    49 direct_declarator: '(' . declarator ')'
 
@@ -435,14 +435,14 @@ State 16
     direct_declarator  go to state 21
 
 
-State 17
+state 17
 
    31 declaration: declaration_specifiers ';' .
 
     $default  reduce using rule 31 (declaration)
 
 
-State 18
+state 18
 
    33 declaration: declaration_specifiers init_declarator_list . ';'
    39 init_declarator_list: init_declarator_list . ',' init_declarator
@@ -451,14 +451,14 @@ State 18
     ';'  shift, and go to state 27
 
 
-State 19
+state 19
 
    38 init_declarator_list: init_declarator .
 
     $default  reduce using rule 38 (init_declarator_list)
 
 
-State 20
+state 20
 
    40 init_declarator: declarator .
    41                | declarator . '=' assignment_expression
@@ -472,7 +472,7 @@ State 20
     compound_statement  go to state 30
 
 
-State 21
+state 21
 
    47 declarator: direct_declarator .
    50 direct_declarator: direct_declarator . '(' parameter_list ')'
@@ -484,35 +484,35 @@ State 21
     $default  reduce using rule 47 (declarator)
 
 
-State 22
+state 22
 
    35 declaration_specifiers: storage_class_specifier declaration_specifiers .
 
     $default  reduce using rule 35 (declaration_specifiers)
 
 
-State 23
+state 23
 
    37 declaration_specifiers: type_specifier declaration_specifiers .
 
     $default  reduce using rule 37 (declaration_specifiers)
 
 
-State 24
+state 24
 
    89 translation_unit: translation_unit external_declaration .
 
     $default  reduce using rule 89 (translation_unit)
 
 
-State 25
+state 25
 
    49 direct_declarator: '(' declarator . ')'
 
     ')'  shift, and go to state 32
 
 
-State 26
+state 26
 
    39 init_declarator_list: init_declarator_list ',' . init_declarator
 
@@ -524,14 +524,14 @@ State 26
     direct_declarator  go to state 21
 
 
-State 27
+state 27
 
    33 declaration: declaration_specifiers init_declarator_list ';' .
 
     $default  reduce using rule 33 (declaration)
 
 
-State 28
+state 28
 
    41 init_declarator: declarator '=' . assignment_expression
 
@@ -550,7 +550,7 @@ State 28
     assignment_expression      go to state 46
 
 
-State 29
+state 29
 
    71 compound_statement: '{' . '}'
    72                   | '{' . statement_list '}'
@@ -599,14 +599,14 @@ State 29
     function_definition        go to state 13
 
 
-State 30
+state 30
 
    91 function_definition: declaration_specifiers declarator compound_statement .
 
     $default  reduce using rule 91 (function_definition)
 
 
-State 31
+state 31
 
    50 direct_declarator: direct_declarator '(' . parameter_list ')'
    51                  | direct_declarator '(' . identifier_list ')'
@@ -628,21 +628,21 @@ State 31
     identifier_list          go to state 70
 
 
-State 32
+state 32
 
    49 direct_declarator: '(' declarator ')' .
 
     $default  reduce using rule 49 (direct_declarator)
 
 
-State 33
+state 33
 
    39 init_declarator_list: init_declarator_list ',' init_declarator .
 
     $default  reduce using rule 39 (init_declarator_list)
 
 
-State 34
+state 34
 
    40 init_declarator: declarator .
    41                | declarator . '=' assignment_expression
@@ -652,28 +652,28 @@ State 34
     $default  reduce using rule 40 (init_declarator)
 
 
-State 35
+state 35
 
     2 primary_expression: IDENTIFIER .
 
     $default  reduce using rule 2 (primary_expression)
 
 
-State 36
+state 36
 
     3 primary_expression: CONSTANT .
 
     $default  reduce using rule 3 (primary_expression)
 
 
-State 37
+state 37
 
     4 primary_expression: STRING_LITERAL .
 
     $default  reduce using rule 4 (primary_expression)
 
 
-State 38
+state 38
 
     5 primary_expression: '(' . expression ')'
 
@@ -693,14 +693,14 @@ State 38
     expression                 go to state 71
 
 
-State 39
+state 39
 
     6 postfix_expression: primary_expression .
 
     $default  reduce using rule 6 (postfix_expression)
 
 
-State 40
+state 40
 
     7 postfix_expression: postfix_expression . '(' ')'
     8                   | postfix_expression . '(' argument_expression_list ')'
@@ -711,7 +711,7 @@ State 40
     $default  reduce using rule 11 (unary_expression)
 
 
-State 41
+state 41
 
    12 multiplicative_expression: unary_expression .
    28 assignment_expression: unary_expression . '=' assignment_expression
@@ -721,7 +721,7 @@ State 41
     $default  reduce using rule 12 (multiplicative_expression)
 
 
-State 42
+state 42
 
    13 multiplicative_expression: multiplicative_expression . '*' unary_expression
    14                          | multiplicative_expression . '/' unary_expression
@@ -735,7 +735,7 @@ State 42
     $default  reduce using rule 16 (additive_expression)
 
 
-State 43
+state 43
 
    17 additive_expression: additive_expression . '+' multiplicative_expression
    18                    | additive_expression . '-' multiplicative_expression
@@ -747,7 +747,7 @@ State 43
     $default  reduce using rule 19 (relational_expression)
 
 
-State 44
+state 44
 
    20 relational_expression: relational_expression . '<' additive_expression
    21                      | relational_expression . '>' additive_expression
@@ -763,7 +763,7 @@ State 44
     $default  reduce using rule 24 (equality_expression)
 
 
-State 45
+state 45
 
    25 equality_expression: equality_expression . EQ_OP relational_expression
    26                    | equality_expression . NE_OP relational_expression
@@ -775,14 +775,14 @@ State 45
     $default  reduce using rule 27 (assignment_expression)
 
 
-State 46
+state 46
 
    41 init_declarator: declarator '=' assignment_expression .
 
     $default  reduce using rule 41 (init_declarator)
 
 
-State 47
+state 47
 
    81 selection_statement: IF . '(' expression ')' statement
    82                    | IF . '(' expression ')' statement ELSE statement
@@ -790,28 +790,28 @@ State 47
     '('  shift, and go to state 85
 
 
-State 48
+state 48
 
    83 iteration_statement: WHILE . '(' expression ')' statement
 
     '('  shift, and go to state 86
 
 
-State 49
+state 49
 
    84 jump_statement: CONTINUE . ';'
 
     ';'  shift, and go to state 87
 
 
-State 50
+state 50
 
    85 jump_statement: BREAK . ';'
 
     ';'  shift, and go to state 88
 
 
-State 51
+state 51
 
    86 jump_statement: RETURN . ';'
    87               | RETURN . expression ';'
@@ -833,28 +833,28 @@ State 51
     expression                 go to state 90
 
 
-State 52
+state 52
 
    79 expression_statement: ';' .
 
     $default  reduce using rule 79 (expression_statement)
 
 
-State 53
+state 53
 
    71 compound_statement: '{' '}' .
 
     $default  reduce using rule 71 (compound_statement)
 
 
-State 54
+state 54
 
    29 expression: assignment_expression .
 
     $default  reduce using rule 29 (expression)
 
 
-State 55
+state 55
 
    30 expression: expression . ',' assignment_expression
    80 expression_statement: expression . ';'
@@ -863,28 +863,28 @@ State 55
     ';'  shift, and go to state 92
 
 
-State 56
+state 56
 
    75 declaration_list: declaration .
 
     $default  reduce using rule 75 (declaration_list)
 
 
-State 57
+state 57
 
    77 statement_list: statement .
 
     $default  reduce using rule 77 (statement_list)
 
 
-State 58
+state 58
 
    66 statement: compound_statement .
 
     $default  reduce using rule 66 (statement)
 
 
-State 59
+state 59
 
    73 compound_statement: '{' declaration_list . '}'
    74                   | '{' declaration_list . statement_list '}'
@@ -931,7 +931,7 @@ State 59
     function_definition        go to state 13
 
 
-State 60
+state 60
 
    72 compound_statement: '{' statement_list . '}'
    78 statement_list: statement_list . statement
@@ -966,49 +966,49 @@ State 60
     jump_statement             go to state 64
 
 
-State 61
+state 61
 
    67 statement: expression_statement .
 
     $default  reduce using rule 67 (statement)
 
 
-State 62
+state 62
 
    68 statement: selection_statement .
 
     $default  reduce using rule 68 (statement)
 
 
-State 63
+state 63
 
    69 statement: iteration_statement .
 
     $default  reduce using rule 69 (statement)
 
 
-State 64
+state 64
 
    70 statement: jump_statement .
 
     $default  reduce using rule 70 (statement)
 
 
-State 65
+state 65
 
    58 identifier_list: IDENTIFIER .
 
     $default  reduce using rule 58 (identifier_list)
 
 
-State 66
+state 66
 
    52 direct_declarator: direct_declarator '(' ')' .
 
     $default  reduce using rule 52 (direct_declarator)
 
 
-State 67
+state 67
 
    55 parameter_declaration: declaration_specifiers . declarator
    56                      | declaration_specifiers . abstract_declarator
@@ -1025,7 +1025,7 @@ State 67
     direct_abstract_declarator  go to state 101
 
 
-State 68
+state 68
 
    50 direct_declarator: direct_declarator '(' parameter_list . ')'
    54 parameter_list: parameter_list . ',' parameter_declaration
@@ -1034,14 +1034,14 @@ State 68
     ','  shift, and go to state 103
 
 
-State 69
+state 69
 
    53 parameter_list: parameter_declaration .
 
     $default  reduce using rule 53 (parameter_list)
 
 
-State 70
+state 70
 
    51 direct_declarator: direct_declarator '(' identifier_list . ')'
    59 identifier_list: identifier_list . ',' IDENTIFIER
@@ -1050,7 +1050,7 @@ State 70
     ','  shift, and go to state 105
 
 
-State 71
+state 71
 
     5 primary_expression: '(' expression . ')'
    30 expression: expression . ',' assignment_expression
@@ -1059,7 +1059,7 @@ State 71
     ','  shift, and go to state 91
 
 
-State 72
+state 72
 
     7 postfix_expression: postfix_expression '(' . ')'
     8                   | postfix_expression '(' . argument_expression_list ')'
@@ -1081,7 +1081,7 @@ State 72
     assignment_expression      go to state 109
 
 
-State 73
+state 73
 
    28 assignment_expression: unary_expression '=' . assignment_expression
 
@@ -1100,7 +1100,7 @@ State 73
     assignment_expression      go to state 110
 
 
-State 74
+state 74
 
    13 multiplicative_expression: multiplicative_expression '*' . unary_expression
 
@@ -1114,7 +1114,7 @@ State 74
     unary_expression    go to state 111
 
 
-State 75
+state 75
 
    14 multiplicative_expression: multiplicative_expression '/' . unary_expression
 
@@ -1128,7 +1128,7 @@ State 75
     unary_expression    go to state 112
 
 
-State 76
+state 76
 
    15 multiplicative_expression: multiplicative_expression '%' . unary_expression
 
@@ -1142,7 +1142,7 @@ State 76
     unary_expression    go to state 113
 
 
-State 77
+state 77
 
    17 additive_expression: additive_expression '+' . multiplicative_expression
 
@@ -1157,7 +1157,7 @@ State 77
     multiplicative_expression  go to state 115
 
 
-State 78
+state 78
 
    18 additive_expression: additive_expression '-' . multiplicative_expression
 
@@ -1172,7 +1172,7 @@ State 78
     multiplicative_expression  go to state 116
 
 
-State 79
+state 79
 
    22 relational_expression: relational_expression LE_OP . additive_expression
 
@@ -1188,7 +1188,7 @@ State 79
     additive_expression        go to state 117
 
 
-State 80
+state 80
 
    23 relational_expression: relational_expression GE_OP . additive_expression
 
@@ -1204,7 +1204,7 @@ State 80
     additive_expression        go to state 118
 
 
-State 81
+state 81
 
    20 relational_expression: relational_expression '<' . additive_expression
 
@@ -1220,7 +1220,7 @@ State 81
     additive_expression        go to state 119
 
 
-State 82
+state 82
 
    21 relational_expression: relational_expression '>' . additive_expression
 
@@ -1236,7 +1236,7 @@ State 82
     additive_expression        go to state 120
 
 
-State 83
+state 83
 
    25 equality_expression: equality_expression EQ_OP . relational_expression
 
@@ -1253,7 +1253,7 @@ State 83
     relational_expression      go to state 121
 
 
-State 84
+state 84
 
    26 equality_expression: equality_expression NE_OP . relational_expression
 
@@ -1270,7 +1270,7 @@ State 84
     relational_expression      go to state 122
 
 
-State 85
+state 85
 
    81 selection_statement: IF '(' . expression ')' statement
    82                    | IF '(' . expression ')' statement ELSE statement
@@ -1291,7 +1291,7 @@ State 85
     expression                 go to state 123
 
 
-State 86
+state 86
 
    83 iteration_statement: WHILE '(' . expression ')' statement
 
@@ -1311,28 +1311,28 @@ State 86
     expression                 go to state 124
 
 
-State 87
+state 87
 
    84 jump_statement: CONTINUE ';' .
 
     $default  reduce using rule 84 (jump_statement)
 
 
-State 88
+state 88
 
    85 jump_statement: BREAK ';' .
 
     $default  reduce using rule 85 (jump_statement)
 
 
-State 89
+state 89
 
    86 jump_statement: RETURN ';' .
 
     $default  reduce using rule 86 (jump_statement)
 
 
-State 90
+state 90
 
    30 expression: expression . ',' assignment_expression
    87 jump_statement: RETURN expression . ';'
@@ -1341,7 +1341,7 @@ State 90
     ';'  shift, and go to state 125
 
 
-State 91
+state 91
 
    30 expression: expression ',' . assignment_expression
 
@@ -1360,28 +1360,28 @@ State 91
     assignment_expression      go to state 126
 
 
-State 92
+state 92
 
    80 expression_statement: expression ';' .
 
     $default  reduce using rule 80 (expression_statement)
 
 
-State 93
+state 93
 
    73 compound_statement: '{' declaration_list '}' .
 
     $default  reduce using rule 73 (compound_statement)
 
 
-State 94
+state 94
 
    76 declaration_list: declaration_list declaration .
 
     $default  reduce using rule 76 (declaration_list)
 
 
-State 95
+state 95
 
    74 compound_statement: '{' declaration_list statement_list . '}'
    78 statement_list: statement_list . statement
@@ -1416,21 +1416,21 @@ State 95
     jump_statement             go to state 64
 
 
-State 96
+state 96
 
    72 compound_statement: '{' statement_list '}' .
 
     $default  reduce using rule 72 (compound_statement)
 
 
-State 97
+state 97
 
    78 statement_list: statement_list statement .
 
     $default  reduce using rule 78 (statement_list)
 
 
-State 98
+state 98
 
    49 direct_declarator: '(' . declarator ')'
    61 direct_abstract_declarator: '(' . abstract_declarator ')'
@@ -1457,21 +1457,21 @@ State 98
     direct_abstract_declarator  go to state 101
 
 
-State 99
+state 99
 
    55 parameter_declaration: declaration_specifiers declarator .
 
     $default  reduce using rule 55 (parameter_declaration)
 
 
-State 100
+state 100
 
    56 parameter_declaration: declaration_specifiers abstract_declarator .
 
     $default  reduce using rule 56 (parameter_declaration)
 
 
-State 101
+state 101
 
    60 abstract_declarator: direct_abstract_declarator .
    64 direct_abstract_declarator: direct_abstract_declarator . '(' ')'
@@ -1482,14 +1482,14 @@ State 101
     $default  reduce using rule 60 (abstract_declarator)
 
 
-State 102
+state 102
 
    50 direct_declarator: direct_declarator '(' parameter_list ')' .
 
     $default  reduce using rule 50 (direct_declarator)
 
 
-State 103
+state 103
 
    54 parameter_list: parameter_list ',' . parameter_declaration
 
@@ -1505,35 +1505,35 @@ State 103
     parameter_declaration    go to state 132
 
 
-State 104
+state 104
 
    51 direct_declarator: direct_declarator '(' identifier_list ')' .
 
     $default  reduce using rule 51 (direct_declarator)
 
 
-State 105
+state 105
 
    59 identifier_list: identifier_list ',' . IDENTIFIER
 
     IDENTIFIER  shift, and go to state 133
 
 
-State 106
+state 106
 
     5 primary_expression: '(' expression ')' .
 
     $default  reduce using rule 5 (primary_expression)
 
 
-State 107
+state 107
 
     7 postfix_expression: postfix_expression '(' ')' .
 
     $default  reduce using rule 7 (postfix_expression)
 
 
-State 108
+state 108
 
     8 postfix_expression: postfix_expression '(' argument_expression_list . ')'
    10 argument_expression_list: argument_expression_list . ',' assignment_expression
@@ -1542,49 +1542,49 @@ State 108
     ','  shift, and go to state 135
 
 
-State 109
+state 109
 
     9 argument_expression_list: assignment_expression .
 
     $default  reduce using rule 9 (argument_expression_list)
 
 
-State 110
+state 110
 
    28 assignment_expression: unary_expression '=' assignment_expression .
 
     $default  reduce using rule 28 (assignment_expression)
 
 
-State 111
+state 111
 
    13 multiplicative_expression: multiplicative_expression '*' unary_expression .
 
     $default  reduce using rule 13 (multiplicative_expression)
 
 
-State 112
+state 112
 
    14 multiplicative_expression: multiplicative_expression '/' unary_expression .
 
     $default  reduce using rule 14 (multiplicative_expression)
 
 
-State 113
+state 113
 
    15 multiplicative_expression: multiplicative_expression '%' unary_expression .
 
     $default  reduce using rule 15 (multiplicative_expression)
 
 
-State 114
+state 114
 
    12 multiplicative_expression: unary_expression .
 
     $default  reduce using rule 12 (multiplicative_expression)
 
 
-State 115
+state 115
 
    13 multiplicative_expression: multiplicative_expression . '*' unary_expression
    14                          | multiplicative_expression . '/' unary_expression
@@ -1598,7 +1598,7 @@ State 115
     $default  reduce using rule 17 (additive_expression)
 
 
-State 116
+state 116
 
    13 multiplicative_expression: multiplicative_expression . '*' unary_expression
    14                          | multiplicative_expression . '/' unary_expression
@@ -1612,7 +1612,7 @@ State 116
     $default  reduce using rule 18 (additive_expression)
 
 
-State 117
+state 117
 
    17 additive_expression: additive_expression . '+' multiplicative_expression
    18                    | additive_expression . '-' multiplicative_expression
@@ -1624,7 +1624,7 @@ State 117
     $default  reduce using rule 22 (relational_expression)
 
 
-State 118
+state 118
 
    17 additive_expression: additive_expression . '+' multiplicative_expression
    18                    | additive_expression . '-' multiplicative_expression
@@ -1636,7 +1636,7 @@ State 118
     $default  reduce using rule 23 (relational_expression)
 
 
-State 119
+state 119
 
    17 additive_expression: additive_expression . '+' multiplicative_expression
    18                    | additive_expression . '-' multiplicative_expression
@@ -1648,7 +1648,7 @@ State 119
     $default  reduce using rule 20 (relational_expression)
 
 
-State 120
+state 120
 
    17 additive_expression: additive_expression . '+' multiplicative_expression
    18                    | additive_expression . '-' multiplicative_expression
@@ -1660,7 +1660,7 @@ State 120
     $default  reduce using rule 21 (relational_expression)
 
 
-State 121
+state 121
 
    20 relational_expression: relational_expression . '<' additive_expression
    21                      | relational_expression . '>' additive_expression
@@ -1676,7 +1676,7 @@ State 121
     $default  reduce using rule 25 (equality_expression)
 
 
-State 122
+state 122
 
    20 relational_expression: relational_expression . '<' additive_expression
    21                      | relational_expression . '>' additive_expression
@@ -1692,7 +1692,7 @@ State 122
     $default  reduce using rule 26 (equality_expression)
 
 
-State 123
+state 123
 
    30 expression: expression . ',' assignment_expression
    81 selection_statement: IF '(' expression . ')' statement
@@ -1702,7 +1702,7 @@ State 123
     ','  shift, and go to state 91
 
 
-State 124
+state 124
 
    30 expression: expression . ',' assignment_expression
    83 iteration_statement: WHILE '(' expression . ')' statement
@@ -1711,35 +1711,35 @@ State 124
     ','  shift, and go to state 91
 
 
-State 125
+state 125
 
    87 jump_statement: RETURN expression ';' .
 
     $default  reduce using rule 87 (jump_statement)
 
 
-State 126
+state 126
 
    30 expression: expression ',' assignment_expression .
 
     $default  reduce using rule 30 (expression)
 
 
-State 127
+state 127
 
    74 compound_statement: '{' declaration_list statement_list '}' .
 
     $default  reduce using rule 74 (compound_statement)
 
 
-State 128
+state 128
 
    62 direct_abstract_declarator: '(' ')' .
 
     $default  reduce using rule 62 (direct_abstract_declarator)
 
 
-State 129
+state 129
 
    54 parameter_list: parameter_list . ',' parameter_declaration
    63 direct_abstract_declarator: '(' parameter_list . ')'
@@ -1748,14 +1748,14 @@ State 129
     ','  shift, and go to state 103
 
 
-State 130
+state 130
 
    61 direct_abstract_declarator: '(' abstract_declarator . ')'
 
     ')'  shift, and go to state 139
 
 
-State 131
+state 131
 
    64 direct_abstract_declarator: direct_abstract_declarator '(' . ')'
    65                           | direct_abstract_declarator '(' . parameter_list ')'
@@ -1774,28 +1774,28 @@ State 131
     parameter_declaration    go to state 69
 
 
-State 132
+state 132
 
    54 parameter_list: parameter_list ',' parameter_declaration .
 
     $default  reduce using rule 54 (parameter_list)
 
 
-State 133
+state 133
 
    59 identifier_list: identifier_list ',' IDENTIFIER .
 
     $default  reduce using rule 59 (identifier_list)
 
 
-State 134
+state 134
 
     8 postfix_expression: postfix_expression '(' argument_expression_list ')' .
 
     $default  reduce using rule 8 (postfix_expression)
 
 
-State 135
+state 135
 
    10 argument_expression_list: argument_expression_list ',' . assignment_expression
 
@@ -1814,7 +1814,7 @@ State 135
     assignment_expression      go to state 142
 
 
-State 136
+state 136
 
    81 selection_statement: IF '(' expression ')' . statement
    82                    | IF '(' expression ')' . statement ELSE statement
@@ -1848,7 +1848,7 @@ State 136
     jump_statement             go to state 64
 
 
-State 137
+state 137
 
    83 iteration_statement: WHILE '(' expression ')' . statement
 
@@ -1881,28 +1881,28 @@ State 137
     jump_statement             go to state 64
 
 
-State 138
+state 138
 
    63 direct_abstract_declarator: '(' parameter_list ')' .
 
     $default  reduce using rule 63 (direct_abstract_declarator)
 
 
-State 139
+state 139
 
    61 direct_abstract_declarator: '(' abstract_declarator ')' .
 
     $default  reduce using rule 61 (direct_abstract_declarator)
 
 
-State 140
+state 140
 
    64 direct_abstract_declarator: direct_abstract_declarator '(' ')' .
 
     $default  reduce using rule 64 (direct_abstract_declarator)
 
 
-State 141
+state 141
 
    54 parameter_list: parameter_list . ',' parameter_declaration
    65 direct_abstract_declarator: direct_abstract_declarator '(' parameter_list . ')'
@@ -1911,14 +1911,14 @@ State 141
     ','  shift, and go to state 103
 
 
-State 142
+state 142
 
    10 argument_expression_list: argument_expression_list ',' assignment_expression .
 
     $default  reduce using rule 10 (argument_expression_list)
 
 
-State 143
+state 143
 
    81 selection_statement: IF '(' expression ')' statement .
    82                    | IF '(' expression ')' statement . ELSE statement
@@ -1929,21 +1929,21 @@ State 143
     $default  reduce using rule 81 (selection_statement)
 
 
-State 144
+state 144
 
    83 iteration_statement: WHILE '(' expression ')' statement .
 
     $default  reduce using rule 83 (iteration_statement)
 
 
-State 145
+state 145
 
    65 direct_abstract_declarator: direct_abstract_declarator '(' parameter_list ')' .
 
     $default  reduce using rule 65 (direct_abstract_declarator)
 
 
-State 146
+state 146
 
    82 selection_statement: IF '(' expression ')' statement ELSE . statement
 
@@ -1976,7 +1976,7 @@ State 146
     jump_statement             go to state 64
 
 
-State 147
+state 147
 
    82 selection_statement: IF '(' expression ')' statement ELSE statement .
 

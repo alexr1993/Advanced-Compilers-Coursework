@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include "token.h"
 
-TOKEN **new_symbtable();
-TOKEN* lookup_token(char *s, TOKEN **symbtable);
-void enter_token(TOKEN *t, TOKEN **symbtable);
-void print_symbtable(TOKEN **symbtable, bool should_print_var);
+struct token **new_symbtable();
+struct token* lookup_token(char *s, struct token **symbtable);
+void enter_token(struct token *t, struct token **symbtable);
+void print_symbtable(struct token **symbtable, bool should_print_var);
 #endif

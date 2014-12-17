@@ -1,7 +1,7 @@
 #ifndef ANALYSIS_ENVIRONMENT_H_
 #define ANALYSIS_ENVIRONMENT_H_
 
-typedef struct node NODE;
+struct node;
 
 #include <stdbool.h>
 
@@ -23,23 +23,23 @@ typedef union STATE {
   struct function *function;
 } STATE;
 
-typedef struct VALUE {
+typedef struct value {
   int type;
   STATE *state;
 } VALUE;
 
-typedef struct FRAME {
-  struct FRAME *parent;
-  struct FRAME *child;
-  struct FRAME *sibling;
+typedef struct frame {
+  struct frame *parent;
+  struct frame *child;
+  struct frame *sibling;
   int nchildren;
-  TOKEN **symbols;
+  struct token **symbols;
   char *proc_id; // name of enclosing procedure
-  NODE *root;
+  struct node *root;
 } FRAME;
 
 typedef struct PARAM {
-  TOKEN *token;
+  struct token *token;
   struct PARAM *next;
 } PARAM;
 
@@ -48,7 +48,7 @@ typedef struct function {
   PARAM  *params;
   FRAME  *frame;
   char   *proc_id;
-  NODE   *body;
+  struct node   *body;
 } function;
 
 
@@ -60,7 +60,7 @@ void set_val(char *name, STATE* state, FRAME *frame);
 
 /* Environment construction */
 void init_environment();
-VALUE *new_val(int type, TOKEN *t, FRAME *frame);
+VALUE *new_val(int type, struct token *t, FRAME *frame);
 STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 FRAME *new_frame(char *proc_id);

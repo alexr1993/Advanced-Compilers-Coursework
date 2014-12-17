@@ -1,8 +1,8 @@
 #ifndef ANALYSIS_TOKEN_H_
 #define ANALYSIS_TOKEN_H_
 
-typedef struct FRAME FRAME;
-typedef struct VALUE VALUE;
+struct frame;
+struct value;
 #include "environment.h"
 
 #define TRUE 1
@@ -12,13 +12,12 @@ typedef struct VALUE VALUE;
 /* Data */
 typedef enum DECLARATION_TYPE { VARIABLE, PARAMETER } DECLARATION_TYPE;
 
-typedef struct TOKEN
-{
+typedef struct token {
   int           type; // Type of lexical token (IDENTIFIER | CONSTANT ... )
   char          *lexeme;
   int           value;
-  VALUE         *val;
-  struct TOKEN  *next;
+  struct value  *val;
+  struct token  *next;
   int           newly_created;
   // For IDENTIFIERS only
   int data_type;
