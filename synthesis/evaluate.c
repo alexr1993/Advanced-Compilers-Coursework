@@ -1,35 +1,30 @@
+#include "evaluate.h"
+
 #include "interpret.h"
 #include "tac.h"
 #include "mips.h"
+#include "operations.h"
 
-/* Things to evaluate
- *
- *
- * Arithmetic * /  + -
- * Logic      == < > != || && !
- * Control flow APPLY IF ELSE WHILE CONTINUE BREAK RETURN
- */
+/* Post order traversal of abstract syntax tree */
+VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
+  if (n->type == LEAF) return evaluate_leaf(n, e_type);
 
-VALUE *evaluate(NODE *n) {
+  /* Eval children */
+  VALUE *l, *r;
+  if (n->left)  l = evaluate(n->left, f, e_type);
+  if (n->right) r = evaluate(n->right, f, e_type);
+
+  /* Eval node */
   switch(n->type) {
+   /* Arithmetic */
    case '+': case '-': case '*': case '/':
-    break;
+    return arithmetic(n, l, r, e_type);
+   /* Logic */
    case '<': case '>': case LE_OP: case GE_OP: case EQ_OP: case NE_OP:
-    break;
-   case LEAF:
-    return evaluate_leaf(n);
-   case APPLY:
-    break;
-   case IF:
-    break;
-   case ELSE:
-    break;
-   case RETURN:
-    break;
-   case BREAK:
-    break;
-   default:
-    return NULL;
+    return logic(n, l, r, e_type);
+   /* Control Flow */
+   case APPLY: case IF: case ELSE: case RETURN: case BREAK:
+    return control(n, l, r, e_type);
   }
 }
 

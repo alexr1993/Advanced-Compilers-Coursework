@@ -19,6 +19,11 @@ void set_val(char *name, STATE* state, FRAME *frame) {
   get_val(name, frame)->state = state;
 }
 
+FRAME *get_frame(char *name, FRAME *parent) {
+  printf("Looking up frame \"%s\"...", name);
+  return get_val(name, parent)->state->function->frame;
+}
+
 /****************************************************************************
  * CONSTRUCTORS
  ***************************************************************************/

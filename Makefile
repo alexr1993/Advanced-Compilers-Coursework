@@ -4,21 +4,26 @@ ANALOBJS = analysis/lex.yy.o \
            analysis/symbol_table.o \
            analysis/nodes.o \
            analysis/environment.o \
-  		   analysis/token.o
+  		   analysis/token.o \
+
 ANALSRCS = analysis/lex.yy.c \
            analysis/C.tab.c \
            analysis/symbol_table.c \
            analysis/nodes.c \
            analysis/environment.c \
-           analysis/token.c
+           analysis/token.c \
 
 SYNTHOBJS = synthesis/interpret.o \
             synthesis/tac.o \
             synthesis/mips.o \
+			synthesis/evaluate.o \
+			synthesis/operations.o \
 
 SYNTHSRCS = synthesis/interpret.c \
             synthesis/tac.c \
             synthesis/mips.c \
+  			synthesis/evaluate.c \
+ 			synthesis/operations.c \
 
 
 COMMOBJS = common/util.o \

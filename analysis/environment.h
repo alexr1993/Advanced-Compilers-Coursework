@@ -58,6 +58,8 @@ FRAME *gbl_frame;
 VALUE *get_val(char *name, FRAME *frame);
 void set_val(char *name, STATE* state, FRAME *frame);
 
+FRAME *get_frame(char *name, FRAME *parent);
+
 /* Environment construction */
 void init_environment();
 VALUE *new_val(int type, struct token *t, FRAME *frame);

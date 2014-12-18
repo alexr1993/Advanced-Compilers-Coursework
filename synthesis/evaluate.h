@@ -1,9 +1,12 @@
 #ifndef SYNTHESIS_EVALUATE_
 #define SYNTHESIS_EVALUATE_
 
-#include "analysis/nodes.h"
+typedef enum eval_type { INTERPRET, TAC } EVAL_TYPE;
 
-typedef enum { INTERPRET, TAC } eval_type;
-VALUE *evaluate(NODE *, eval_type);
+#include "analysis/nodes.h"
+#include "analysis/environment.h"
+#include "analysis/token.h"
+
+VALUE *evaluate(NODE *, FRAME *, EVAL_TYPE);
 
 #endif

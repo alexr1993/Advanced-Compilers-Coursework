@@ -53,7 +53,7 @@ void interpret_source(void)
     NODE *tree = ans;
     print_environment(gbl_frame);
     print_tree(tree);
-    //call("main", gbl_frame);
+    call("main", gbl_frame);
 }
 
 /* Interpret --C program */
