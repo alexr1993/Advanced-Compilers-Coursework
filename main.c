@@ -57,7 +57,7 @@ void interpret_source(void)
 }
 
 /* Interpret --C program */
-int main ( int argc, char *argv[] )
+int main(int argc, char *argv[])
 {
     int c         = 0;
     int len;

@@ -30,8 +30,17 @@ COMMOBJS = common/util.o \
 
 COMMSRCS = common/util.c \
 
-TESTOBJS = t/tests.o
-TESTSRCS = t/tests.c
+TESTOBJS = t/tests.o \
+           t/frontend.o \
+           t/interpret.o \
+		   t/tac.o \
+#           t/mips.o \
+
+TESTSRCS = t/tests.c \
+           t/frontend.c \
+           t/interpret.c \
+		   t/tac.c \
+#           t/mips.c \
 
 OBJS = main.o
 SRCS = main.c
