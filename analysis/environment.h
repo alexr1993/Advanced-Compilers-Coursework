@@ -62,7 +62,7 @@ FRAME *get_frame(char *name, FRAME *parent);
 
 /* Environment construction */
 void init_environment();
-VALUE *new_val(int type, struct token *t, FRAME *frame);
+VALUE *new_val(int type, FRAME *frame);
 STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 FRAME *new_frame(char *proc_id);

@@ -8,11 +8,11 @@
 #include "interpret.h"
 #include "tac.h"
 
-enum eval_type;
+EVAL_TYPE;
 
-VALUE *evaluate_leaf(NODE *n, enum eval_type e_type);
+VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type);
 
-VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, enum eval_type e_type);
-VALUE *logic(NODE *n, VALUE *l, VALUE *r, enum eval_type e_type);
-VALUE *control(NODE *n, VALUE *l, VALUE *r, enum eval_type e_type);
+VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
+VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
+VALUE *control(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
 #endif

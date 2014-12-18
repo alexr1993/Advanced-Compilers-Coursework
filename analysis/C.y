@@ -307,7 +307,7 @@ void create_frame(NODE *n) {
 
     // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
-        t->val = new_val(t->data_type, t, frame);
+        t->val = new_val(t->data_type, frame);
         // Parameter Identifiers have already been marked
         if (t->declaration_type != PARAMETER) {
             t->declaration_type = VARIABLE;
@@ -330,7 +330,7 @@ void populate_gbl_frame(NODE *n) {
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
-        t->val = new_val(t->data_type, t, gbl_frame);
+        t->val = new_val(t->data_type, gbl_frame);
         enter_token(t, gbl_frame->symbols);
         t = pop();
     }

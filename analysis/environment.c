@@ -68,7 +68,7 @@ PARAM *new_param(TOKEN *t) {
   return p;
 }
 
-VALUE *new_val(int type, TOKEN *t, FRAME *frame) {
+VALUE *new_val(int type, FRAME *frame) {
   STATE *s;
   switch(type) {
    case INT_TYPE:

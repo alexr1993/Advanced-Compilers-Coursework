@@ -7,7 +7,7 @@
 
 /* Post order traversal of abstract syntax tree */
 VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
-  if (n->type == LEAF) return evaluate_leaf(n, e_type);
+  if (n->type == LEAF) return evaluate_leaf(n, f, e_type);
 
   /* Eval children */
   VALUE *l, *r;
@@ -18,13 +18,13 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   switch(n->type) {
    /* Arithmetic */
    case '+': case '-': case '*': case '/':
-    return arithmetic(n, l, r, e_type);
+    return arithmetic(n, l, r, f, e_type);
    /* Logic */
    case '<': case '>': case LE_OP: case GE_OP: case EQ_OP: case NE_OP:
-    return logic(n, l, r, e_type);
+    return logic(n, l, r, f, e_type);
    /* Control Flow */
    case APPLY: case IF: case ELSE: case RETURN: case BREAK:
-    return control(n, l, r, e_type);
+    return control(n, l, r, f, e_type);
   }
 }
 
