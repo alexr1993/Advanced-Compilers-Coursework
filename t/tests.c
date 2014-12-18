@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "util.h"
+#include "common/util.h"
 
 #include "analysis/C.tab.h"
 #include "analysis/token.h"

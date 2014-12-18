@@ -13,7 +13,7 @@
 #include "synthesis/interpret.h"
 #include "synthesis/tac.h"
 
-#include "util.h"
+#include "common/util.h"
 
 extern int yydebug;
 extern int yyparse();
@@ -62,7 +62,7 @@ int main ( int argc, char *argv[] )
     int c         = 0;
     int len;
     char *action  = "";
-    V = 1; // Verbose
+    V = 0; // Verbose
     v = 1;
     init_environment();
 

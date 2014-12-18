@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-#include "util.h"
+#include "common/util.h"
 #include "environment.h"
 #include "token.h"
 

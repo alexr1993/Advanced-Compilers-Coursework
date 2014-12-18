@@ -5,7 +5,7 @@ struct node;
 
 #include <stdbool.h>
 
-#include "util.h"
+#include "common/util.h"
 
 #include "C.tab.h"
 #include "symbol_table.h"

@@ -21,9 +21,9 @@ SYNTHSRCS = synthesis/interpret.c \
             synthesis/mips.c \
 
 
-COMMOBJS = util.o \
+COMMOBJS = common/util.o \
 
-COMMSRCS = main.c \
+COMMSRCS = common/util.c \
 
 TESTOBJS = t/tests.o
 TESTSRCS = t/tests.c
