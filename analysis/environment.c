@@ -46,6 +46,8 @@ STATE *new_state(int type) {
     return new_int_state(0);
    case FN_TYPE:
     return new_fn_state(NULL);
+   default:
+    return NULL;
   }
 }
 

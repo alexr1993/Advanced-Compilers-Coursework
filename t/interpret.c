@@ -7,7 +7,17 @@
 
 #include "synthesis/interpret.h"
 
+extern FRAME *gbl_frame;
+extern NODE ans;
+extern int *yyparse();
+
 START_TEST(t_interpret_control) {
+  set_input_file("t/src/control/1.cmm");
+  init_environment();
+  yyparse();
+  close_input_file();
+
+  ck_assert_int_eq(42, call("main", gbl_frame)->state->integer);
 } END_TEST
 
 START_TEST(t_interpret_logic) {
@@ -35,4 +45,3 @@ Suite *interpret_suite() {
   suite_add_tcase(s, arithmetic);
   return s;
 }
-

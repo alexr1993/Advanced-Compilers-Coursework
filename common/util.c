@@ -99,3 +99,7 @@ void set_input_file(char *filename) {
   yyin = fopen(filename, "r");
   if (yyin == NULL) perror("Input file error!");
 }
+
+void close_input_file() {
+  if (yyin) fclose(yyin);
+}
