@@ -48,6 +48,7 @@ typedef struct function {
   PARAM  *params;
   FRAME  *frame;
   char   *proc_id;
+  struct node *body;
 } function;
 
 
