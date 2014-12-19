@@ -5,7 +5,12 @@
 #include "analysis/nodes.h"
 struct node;
 
+static char *const LINE =
+"**************************************************************************";
+
+
 char *named(int t);
+void print_banner(char *content);
 void print_leaf(struct node *tree, int level);
 void print_branch(struct node *tree);
 void print_tree(struct node *tree);

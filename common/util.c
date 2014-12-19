@@ -9,9 +9,13 @@
 
 extern FILE *yyin;
 
+/* General Print Utils */
+print_banner(char *contents) {
+  printf("%s\n%s\n%s\n", LINE, contents, LINE);
+}
+
 /* Prints string representation of input node type */
 char *named(int t) {
-  //printf("Op type: %d\n", t);
   static char b[100];
   if (isgraph(t) || t==' ') {
     // Write the symbol to the string at identifier b
@@ -95,6 +99,7 @@ void print_tree(NODE *tree) {
   print_tree0(tree, 0);
 }
 
+/* Input File Utils */
 void set_input_file(char *filename) {
   yyin = fopen(filename, "r");
   if (yyin == NULL) perror("Input file error!");

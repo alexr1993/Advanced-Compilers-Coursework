@@ -2,6 +2,8 @@
 
 #include "evaluate.h"
 
+extern int V,v;
+
 VALUE *interpret_leaf(NODE *n, FRAME *f) {
   TOKEN *t = get_token(n);
 
@@ -39,7 +41,12 @@ void bind_arg(FRAME *caller, FRAME *callee) {
 }
 
 VALUE *call(char *name, FRAME *caller) {
-  return evaluate(get_frame(name, caller)->root, caller, INTERPRET); 
+  if (v) {
+    char msg[80];
+    sprintf(msg, "INTERPRET Calling %s", name);
+    print_banner(msg);
+  }
+  return evaluate(get_frame(name, caller)->root, caller, INTERPRET);
 }
 
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r) {
