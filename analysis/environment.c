@@ -40,6 +40,15 @@ STATE *new_fn_state(function *function) {
   return state;
 }
 
+STATE *new_state(int type) {
+  switch(type) {
+   case INT_TYPE:
+    return new_int_state(0);
+   case FN_TYPE:
+    return new_fn_state(NULL);
+  }
+}
+
 FRAME *new_frame(char *proc_id) {
   if (V) printf("\nCreating new frame \"%s\"\n", proc_id);
   FRAME *frame = malloc(sizeof(FRAME));
@@ -68,20 +77,7 @@ PARAM *new_param(TOKEN *t) {
   return p;
 }
 
-VALUE *new_val(int type, FRAME *frame) {
-  STATE *s;
-  switch(type) {
-   case INT_TYPE:
-    s = new_int_state(0);
-    break;
-   case FN_TYPE:
-    s = new_fn_state(new_function(INT_TYPE, frame));
-    break;
-   default:
-    printf("Error: type for new variable not recognised\n");
-    exit(-1);
-  }
-
+VALUE *new_val(int type, STATE *s) {
   VALUE *val = malloc(sizeof(VALUE));
   val->type = type;
   val->state = s;

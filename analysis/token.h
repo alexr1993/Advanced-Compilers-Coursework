@@ -46,4 +46,6 @@ void push(TOKEN *);
 void print_token_stack();
 
 void mark_params();
+
+char *type_to_str(int);
 #endif

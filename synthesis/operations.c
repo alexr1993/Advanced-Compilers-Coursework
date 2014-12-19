@@ -4,7 +4,14 @@
 #include "stdlib.h"
 
 VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
-  return NULL; // TODO
+  switch(e_type) {
+   case INTERPRET:
+    return interpret_leaf(n, f);
+   case TAC:
+    return tac_leaf(n, f);
+   default:
+    return NULL;
+  }
 }
 
 VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {

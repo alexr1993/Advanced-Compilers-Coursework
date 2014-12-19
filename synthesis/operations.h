@@ -8,8 +8,6 @@
 #include "interpret.h"
 #include "tac.h"
 
-EVAL_TYPE;
-
 VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type);
 
 VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);

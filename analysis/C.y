@@ -17,7 +17,7 @@ extern FRAME *gbl_frame;
 
 NODE *ans;
 
-int V, v, counter = 1, current_type;
+int V, v, counter = 1, current_type, current_return_type;
 
 int yyerror(char *s);
 int yylex();
@@ -280,6 +280,7 @@ external_declaration
 
 function_definition
 	:  declaration_specifiers declarator compound_statement  {
+        current_return_type = current_type;
         $$ = make_node('D', make_node('d', $1, $2), $3);
       }
 	;
@@ -307,7 +308,7 @@ void create_frame(NODE *n) {
 
     // Register all members of the frames symboltable
     while (!str_eq(t->lexeme, frame->proc_id)) {
-        t->val = new_val(t->data_type, frame);
+        t->val = new_val(t->data_type, new_state(t->data_type));
         // Parameter Identifiers have already been marked
         if (t->declaration_type != PARAMETER) {
             t->declaration_type = VARIABLE;
@@ -319,7 +320,8 @@ void create_frame(NODE *n) {
     // the current token is the function which owns this frame
     t->data_type = FN_TYPE;
     t->declaration_type = VARIABLE;
-
+    t->val = new_val(FN_TYPE,
+                     new_fn_state(new_function(current_return_type, frame)));
     push(t); // let enclosing frames find this fn
 }
 
@@ -330,7 +332,7 @@ void populate_gbl_frame(NODE *n) {
     if (V) printf("Populating gbl frame!\n");
     TOKEN *t = pop();
     while (t != NULL) {
-        t->val = new_val(t->data_type, gbl_frame);
+        t->val = new_val(t->data_type, new_state(t->data_type));
         enter_token(t, gbl_frame->symbols);
         t = pop();
     }

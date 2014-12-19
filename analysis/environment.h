@@ -48,7 +48,6 @@ typedef struct function {
   PARAM  *params;
   FRAME  *frame;
   char   *proc_id;
-  struct node   *body;
 } function;
 
 
@@ -62,10 +61,12 @@ FRAME *get_frame(char *name, FRAME *parent);
 
 /* Environment construction */
 void init_environment();
-VALUE *new_val(int type, FRAME *frame);
+VALUE *new_val(int type, STATE *s);
 STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
+STATE *new_state(int type);
 FRAME *new_frame(char *proc_id);
+function *new_function(int return_type, FRAME *frame);
 
 /* Diagnostics */
 void print_frame(FRAME *frame);

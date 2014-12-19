@@ -5,9 +5,15 @@
 #include "mips.h"
 #include "operations.h"
 
+extern int V,v;
+
 /* Post order traversal of abstract syntax tree */
 VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
-  if (n->type == LEAF) return evaluate_leaf(n, f, e_type);
+  if (n->type == LEAF) {
+    VALUE *val = evaluate_leaf(n, f, e_type);
+    if (V) print_val(val);
+    return val;
+  }
 
   /* Eval children */
   VALUE *l, *r;
@@ -25,7 +31,7 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
    /* Control Flow */
    case APPLY: case IF: case ELSE: case RETURN: case BREAK:
     return control(n, l, r, f, e_type);
+   default:
+    return NULL;
   }
 }
-
-
