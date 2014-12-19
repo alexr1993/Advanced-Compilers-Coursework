@@ -1,0 +1,14 @@
+void e() {}
+
+int f() {
+  return -1;
+}
+
+int g() {
+  return 42;
+}
+
+int main() {
+  f();
+  return g();
+}
