@@ -16,6 +16,7 @@ void print_branch(struct node *tree);
 void print_tree(struct node *tree);
 void set_input_file(char *filename);
 void close_input_file();
+void parse(char *filename);
 #define str_eq(s1, s2)    (!strcmp ((s1),(s2)))
 
 #endif

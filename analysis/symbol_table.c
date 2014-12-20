@@ -53,11 +53,11 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
   TOKEN *ans;
 
   /* Return token for s if it exists */
-  printf("\nSYMBOL TABLE: Lookup: \"%s\"\n", s);
+  if (V) printf("\nSYMBOL TABLE Lookup: \"%s\"...", s);
   while (a!=NULL) {
     if (strcmp(a->lexeme, s)==0) {
       a->newly_created = false;
-      if (V) printf("Token found!\n");
+      if (V) printf("found!\n");
       if (V) print_token(a);
       return a;
     }
@@ -67,7 +67,7 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
   /* If not create and insert a token for s */
   ans = make_identifier(s);
   enter_token(ans, symbtable);
-  printf("SYMBOL TABLE: \"%s\" stored at %p\n", s, ans);
+  if (V) printf("not found: \"%s\" stored at %p\n", s, ans);
   print_token(ans);
   return ans;
 }

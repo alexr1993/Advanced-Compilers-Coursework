@@ -126,7 +126,6 @@ expression
 declaration
 	: declaration_specifiers ';'		{ $$ = $1; }
 	| function_definition {
-        if (V) printf("PARSER Found function definition\n");
         current_type = FN_TYPE;
         create_frame($1);
         $$ = $1;

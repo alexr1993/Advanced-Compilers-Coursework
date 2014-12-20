@@ -108,3 +108,10 @@ void set_input_file(char *filename) {
 void close_input_file() {
   if (yyin) fclose(yyin);
 }
+
+void parse(char *filename) {
+  set_input_file("t/src/control/1.cmm");
+  init_environment();
+  yyparse();
+  close_input_file();
+}
