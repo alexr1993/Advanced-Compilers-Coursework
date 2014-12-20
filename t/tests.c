@@ -7,6 +7,7 @@
 #include "interpret.h"
 #include "tac.h"
 
+int V,v;
 void print_test_help() {
   printf("Enter one of the following:\n");
   printf(" -f (frontend)\n -i (interpret)\n -t (tac)\n -m (mips)\n");
@@ -22,6 +23,9 @@ int main (int argc, char *argv[]) {
     print_test_help();
     exit(0);
   }
+  V = 1;
+  v = 1;
+
   Suite *s;
   int c = 0;
   while ((c = getopt(argc, argv, "fitm")) != -1) {
