@@ -15,7 +15,7 @@ VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
 }
 
 VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, f);
+  VALUE *output = new_val(INT_TYPE, NULL);
 
   switch(e_type) {
    case INTERPRET:
@@ -35,7 +35,7 @@ VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
 }
 
 VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, f);
+  VALUE *output = new_val(INT_TYPE, NULL);
 
   switch(e_type) {
    case INTERPRET:
@@ -55,10 +55,10 @@ VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
 }
 
 VALUE *control(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, f);
+  VALUE *output = new_val(INT_TYPE, NULL);
   switch(e_type) {
    case INTERPRET:
-    return interpret_control(n, l, r);
+    return interpret_control(n, l, r, f);
 
    case TAC:
     tac_control(n, l, r);

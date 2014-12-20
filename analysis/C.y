@@ -29,7 +29,8 @@ void populate_gbl_frame(NODE *);
 char *name_from_fn_def(NODE *);
 void bond_with_children(NODE *n, bool is_gbl);
 void register_frame_pointers(FRAME *parent, FRAME *child);
-
+void init_val(TOKEN *t);
+void init_fn(TOKEN *t, FRAME *frame);
 FRAME *parent_frame;
 %}
 
@@ -287,89 +288,86 @@ function_definition
 %%
 
 int yyerror(char *s) {
-	fflush(stdout);
-	printf("\n%*s\n%*s\n", column, "^", column, s);
-    return 0;
+  fflush(stdout);
+  printf("\n%*s\n%*s\n", column, "^", column, s);
+  return 0;
 }
+
+/****************************************************************************
+ * SEMANTIC ACTIONS
+ ***************************************************************************/
 
 /*
  * Creates a frame using a 'D' node
  */
 void create_frame(NODE *n) {
 
-    FRAME *frame = new_frame(name_from_fn_def(n));
-    n->frame = frame;
-    frame->root = n;
+  FRAME *frame = new_frame(name_from_fn_def(n));
+  n->frame = frame;
+  frame->root = n;
 
-    bond_with_children(n, false);
+  bond_with_children(n, false);
 
-    /* Process every identifier that was found on the subtree */
-    TOKEN *t = pop();
+  /* Process every identifier that was found on the subtree */
+  TOKEN *t = pop();
 
-    // Register all members of the frames symboltable
-    while (!str_eq(t->lexeme, frame->proc_id)) {
-        if (t->val == NULL) {
-          t->val = new_val(t->data_type, new_state(t->data_type));
-        }
-        // Parameter Identifiers have already been marked
-        if (t->declaration_type != PARAMETER) {
-            t->declaration_type = VARIABLE;
-        }
-        enter_token(t, frame->symbols);
-
-        t = pop();
+  // Register all members of the frames symboltable
+  while (!str_eq(t->lexeme, frame->proc_id)) {
+    if (t->val == NULL) init_val(t);
+    // Parameter Identifiers have already been marked
+    if (t->declaration_type != PARAMETER) {
+      t->declaration_type = VARIABLE;
     }
-    // the current token is the function which owns this frame
-    t->data_type = FN_TYPE;
-    t->declaration_type = VARIABLE;
-    t->val = new_val(FN_TYPE,
-                     new_fn_state(new_function(current_return_type, frame)));
-    push(t); // let enclosing frames find this fn
+    enter_token(t, frame->symbols);
+
+    t = pop();
+  }
+  // the current token is the function which owns this frame
+  init_fn(t, frame);
+  push(t); // let enclosing frames find this fn
 }
 
 /*
  * Registers the remaining tokens on the token stack with the global frame
  */
 void populate_gbl_frame(NODE *n) {
-    if (V) printf("Populating gbl frame!\n");
-    TOKEN *t = pop();
-    while (t != NULL) {
-        if (t->val == NULL) {
-            t->val = new_val(t->data_type, new_state(t->data_type));
-        }
-        enter_token(t, gbl_frame->symbols);
-        t = pop();
-    }
-    bond_with_children(n, true);
+  if (V) printf("Populating gbl frame!\n");
+  TOKEN *t = pop();
+  while (t != NULL) {
+    if (t->val == NULL) init_val(t);
+    enter_token(t, gbl_frame->symbols);
+    t = pop();
+  }
+  bond_with_children(n, true);
 }
 
 /*
  * Fetches the name of the function given the 'D' node (the fns definition)
  */
 char *name_from_fn_def(NODE *D) {
-    TOKEN *t = get_token(D->left->right->left);
-    return t->lexeme;
+  TOKEN *t = get_token(D->left->right->left);
+  return t->lexeme;
 }
 
 /*
  * Find nodes indicating frame starts and establish pointers between them
  */
 void bond_with_children(NODE *n, bool is_gbl) {
-    NODE *D;
-    // Binding a tree with root 'D' with the global frame is an edge case
-    if (is_gbl && (char)n->type == 'D') {
-        D = n;
-    } else {
-        D = n->next_D;
-    }
-    while (D != NULL) {
-        if (V) printf("Next 'D' child in subtree:\n");
-        FRAME *child = D->frame;
-        register_frame_pointers(is_gbl ? gbl_frame : n->frame, child);
-        D = D->next_D;
-    }
-    // These frames have now been bonded
-    n->next_D = NULL;
+  NODE *D;
+  // Binding a tree with root 'D' with the global frame is an edge case
+  if (is_gbl && (char)n->type == 'D') {
+    D = n;
+  } else {
+    D = n->next_D;
+  }
+  while (D != NULL) {
+    if (V) printf("Next 'D' child in subtree:\n");
+    FRAME *child = D->frame;
+    register_frame_pointers(is_gbl ? gbl_frame : n->frame, child);
+    D = D->next_D;
+  }
+  // These frames have now been bonded
+  n->next_D = NULL;
 }
 
 /*
@@ -377,11 +375,29 @@ void bond_with_children(NODE *n, bool is_gbl) {
  * Child is insert as the first child of it's parent
  */
 void register_frame_pointers(FRAME *parent, FRAME *child) {
-    child->parent = parent;
-    child->sibling = parent->child;
-    parent->child = child;
-    parent->nchildren++;
-    if (V) printf("Registered \"%s\" as the parent of child \"%s\"\n",
-                  parent->proc_id, child->proc_id);
-    if (V) print_frame(parent);
+  child->parent = parent;
+  child->sibling = parent->child;
+  parent->child = child;
+  parent->nchildren++;
+  if (V) printf("Registered \"%s\" as the parent of child \"%s\"\n",
+  parent->proc_id, child->proc_id);
+  if (V) print_frame(parent);
+}
+
+/* Some tokens e.g. function definition roots will have their value
+ * initialised explicitly, other declarations will need this
+ *
+ * Essentially the tokens passed to this are functions or ints which have been
+ * declared with normal declaration syntax
+ */
+void init_val(TOKEN *t) {
+    t->val = new_val(t->data_type, new_state(t->data_type));
+}
+
+/* Initialise function with the most recently parsed return type  */
+void init_fn(TOKEN *t, FRAME *frame) {
+  t->data_type = FN_TYPE;
+  t->declaration_type = VARIABLE;
+  t->val = new_val(FN_TYPE,
+           new_fn_state(new_function(current_return_type, frame)));
 }

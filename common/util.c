@@ -10,7 +10,7 @@
 extern FILE *yyin;
 
 /* General Print Utils */
-print_banner(char *contents) {
+void print_banner(char *contents) {
   printf("%s\n%s\n%s\n", LINE, contents, LINE);
 }
 

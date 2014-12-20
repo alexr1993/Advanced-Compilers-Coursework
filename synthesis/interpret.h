@@ -9,6 +9,6 @@ VALUE *interpret_leaf(NODE *n, FRAME *f);
 int interpret_arithmetic(int op, int l, int r);
 int interpret_logic(int op, int l, int r);
 
-VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r);
+VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f);
 VALUE *call(char *name, FRAME *caller);
 #endif

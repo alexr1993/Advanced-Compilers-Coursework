@@ -1,5 +1,7 @@
 #include "interpret.h"
 
+#include "common/util.h"
+
 #include "analysis/C.tab.h"
 #include "analysis/environment.h"
 #include "analysis/nodes.h"

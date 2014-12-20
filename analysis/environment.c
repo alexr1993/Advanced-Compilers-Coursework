@@ -60,6 +60,7 @@ FRAME *new_frame(char *proc_id) {
   frame->child   = NULL;
   frame->sibling = NULL;
   frame->parent  = NULL;
+  frame->return_called = false;
   return frame;
 }
 

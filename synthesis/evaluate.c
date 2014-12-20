@@ -32,6 +32,6 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
    case APPLY: case IF: case ELSE: case RETURN: case BREAK:
     return control(n, l, r, f, e_type);
    default:
-    return NULL;
+    return r; // TODO this is a stab in the dark, check function AST structure
   }
 }

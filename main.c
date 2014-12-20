@@ -40,7 +40,7 @@ void interpret_source(void) {
   NODE *tree = ans;
   print_environment(gbl_frame);
   print_tree(tree);
-  call("main", gbl_frame);
+  printf("Output: %d\n", call("main", gbl_frame)->state->integer);
 }
 
 int main(int argc, char *argv[]) {

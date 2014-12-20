@@ -1,7 +1,8 @@
 #include "interpret.h"
 
-#include "evaluate.h"
+#include <stdio.h>
 
+#include "evaluate.h"
 extern int V,v;
 
 VALUE *interpret_leaf(NODE *n, FRAME *f) {
@@ -49,6 +50,20 @@ VALUE *call(char *name, FRAME *caller) {
   return evaluate(get_frame(name, caller)->root, caller, INTERPRET);
 }
 
-VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r) {
-  return NULL; // TODO
+VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
+  switch(n->type) {
+   case APPLY:
+    // return call(name, frame);
+    break;
+   case IF:
+    break;
+   case ELSE:
+    break;
+   case RETURN:
+    f->return_called = true;
+    return l;
+   case BREAK:
+   default:
+    return NULL;
+  }
 }

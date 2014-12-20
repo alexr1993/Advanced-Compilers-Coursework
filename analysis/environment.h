@@ -36,6 +36,7 @@ typedef struct frame {
   struct token **symbols;
   char *proc_id; // name of enclosing procedure
   struct node *root;
+  bool return_called;
 } FRAME;
 
 typedef struct PARAM {
