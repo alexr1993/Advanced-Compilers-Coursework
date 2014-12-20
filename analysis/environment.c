@@ -11,7 +11,16 @@ extern int V;
 
 VALUE *get_val(char *name, FRAME *frame) {
   if (V) printf("Looking up variable \"%s\"\n", name);
-  return lookup_token(name, frame->symbols)->val;
+  TOKEN *t =  lookup_token(name, frame->symbols, true);
+
+  // If token is not found in symbtable, check parent's
+  if (t != NULL) {
+    return t->val;
+  } else if (frame->parent == NULL) {
+    return NULL;
+  } else {
+    return get_val(name, frame->parent);
+  }
 }
 
 /* Sets the state of the variable */

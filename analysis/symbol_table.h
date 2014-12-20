@@ -5,7 +5,7 @@
 #include "token.h"
 
 struct token **new_symbtable();
-struct token* lookup_token(char *s, struct token **symbtable);
+struct token* lookup_token(char *s, struct token **symbtable, bool runtime);
 void enter_token(struct token *t, struct token **symbtable);
 void print_symbtable(struct token **symbtable, bool should_print_var);
 #endif

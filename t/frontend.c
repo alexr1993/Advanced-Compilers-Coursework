@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdbool.h>
 
 #include "common/util.h"
 
@@ -23,10 +24,10 @@ char *filename;
 START_TEST(basic_frame) {
   init_environment();
   // Token should only by newly_created on it's first lookup
-  TOKEN *t = lookup_token("variable", gbl_frame->symbols);
+  TOKEN *t = lookup_token("variable", gbl_frame->symbols, true);
   ck_assert_int_eq(1, t->newly_created);
 
-  t = lookup_token("variable", gbl_frame->symbols);
+  t = lookup_token("variable", gbl_frame->symbols, true);
   ck_assert_int_eq(0, t->newly_created);
 } END_TEST
 
@@ -121,7 +122,7 @@ START_TEST(parameter_recognition) {
   parse(filename);
 
   if (V) print_environment(gbl_frame);
-  TOKEN *t = lookup_token("x", find_child(gbl_frame, "f")->symbols);
+  TOKEN *t = lookup_token("x", find_child(gbl_frame, "f")->symbols, true);
   ck_assert(t->declaration_type == PARAMETER);
 
 } END_TEST

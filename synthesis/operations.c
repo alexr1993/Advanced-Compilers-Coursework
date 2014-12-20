@@ -2,6 +2,9 @@
 
 #include "stdio.h"
 #include "stdlib.h"
+/*
+ * Shim between evaluate.c and interpret.c | tac.c
+ */
 
 VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   switch(e_type) {

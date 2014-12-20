@@ -46,22 +46,34 @@ VALUE *call(char *name, FRAME *caller) {
     sprintf(msg, "INTERPRET Calling %s", name);
     print_banner(msg);
   }
-  return evaluate(get_frame(name, caller)->root, caller, INTERPRET);
+  FRAME *callee = get_frame(name, caller);
+  return evaluate(callee->root, callee, INTERPRET);
 }
 
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
+  bool else_exists;
+  NODE *true_eval, *false_eval;
+
   switch(n->type) {
    case APPLY:
+    // todo bind args
     return call(l->state->function->proc_id, f);
-    break;
    case IF:
-    break;
-   case ELSE:
-    break;
+    else_exists = str_eq("else", named(n->right->type));
+    true_eval  = else_exists ? n->right->left  : n->right->right;
+    false_eval = else_exists ? n->right->right : NULL;
+
+    return evaluate( is_true(l) ? true_eval : false_eval, f, INTERPRET);
    case RETURN:
+    if (V) printf("INTERPRET return called for function \"%s\"\n", f->proc_id);
     f->return_called = true;
     return l;
    case BREAK:
+    break;
+   case ';':
+    if (V) printf("INTERPRET ; Return has been called? %s\n",
+                  f->return_called ? "yes" : "no");
+    return f->return_called ? l : evaluate(n->right, f, INTERPRET);
    default:
     return NULL;
   }

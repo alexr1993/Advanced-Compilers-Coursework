@@ -47,7 +47,7 @@ void enter_token(TOKEN *t, TOKEN **symbtable) {
  *
  * Otherwise it creates a token and insert it
  */
-TOKEN* lookup_token(char *s, TOKEN **symbtable) {
+TOKEN* lookup_token(char *s, TOKEN **symbtable, bool runtime) {
   int	h = hash(s);
   TOKEN *a = symbtable[h];
   TOKEN *ans;
@@ -63,6 +63,7 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
     }
     a = a->next;
   }
+  if (runtime) return NULL;
 
   /* If not create and insert a token for s */
   ans = make_identifier(s);

@@ -21,13 +21,18 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   }
 
   /* Eval children */
-  VALUE *l, *r;
+  VALUE *l = NULL, *r = NULL;
   if (str_eq(named(n->type), "d")) return NULL;
   if (n->left)  l = evaluate(n->left, f, e_type);
-  if (n->right) r = evaluate(n->right, f, e_type);
+
+  // Certain control statement will evaluate the right child themselves if
+  // necessary
+  if (n->right && n->type != ';' && n->type != IF) {
+    r = evaluate(n->right, f, e_type); // don't want to do this for IF and ;
+  }
 
   if (V) {
-    printf("EVALUATE %s\n", named(n->type));
+    printf("EVALUATE (\"%s\") %s\n", f->proc_id, named(n->type));
     printf("  L:");
     print_val(l);
     printf("  R:");
@@ -42,7 +47,7 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
    case '<': case '>': case LE_OP: case GE_OP: case EQ_OP: case NE_OP:
     return logic(n, l, r, f, e_type);
    /* Control Flow */
-   case APPLY: case IF: case ELSE: case RETURN: case BREAK:
+   case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';':
     return control(n, l, r, f, e_type);
    default:
     return r; // TODO this is a stab in the dark, check function AST structure
