@@ -24,10 +24,10 @@ char *filename;
 START_TEST(basic_frame) {
   init_environment();
   // Token should only by newly_created on it's first lookup
-  TOKEN *t = lookup_token("variable", gbl_frame->symbols, true);
+  TOKEN *t = lookup_token("variable", gbl_frame->symbols, false);
   ck_assert_int_eq(1, t->newly_created);
 
-  t = lookup_token("variable", gbl_frame->symbols, true);
+  t = lookup_token("variable", gbl_frame->symbols, false);
   ck_assert_int_eq(0, t->newly_created);
 } END_TEST
 
