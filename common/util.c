@@ -9,6 +9,8 @@
 
 extern FILE *yyin;
 
+int V,v;
+
 /* General Print Utils */
 void print_banner(char *contents) {
   printf("%s\n%s\n%s\n", LINE, contents, LINE);
@@ -110,7 +112,8 @@ void close_input_file() {
 }
 
 void parse(char *filename) {
-  set_input_file("t/src/control/1.cmm");
+  set_input_file(filename);
+  if (v) print_banner(filename);
   init_environment();
   yyparse();
   close_input_file();

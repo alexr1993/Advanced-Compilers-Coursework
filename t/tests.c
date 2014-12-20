@@ -23,12 +23,12 @@ int main (int argc, char *argv[]) {
     print_test_help();
     exit(0);
   }
-  V = 1;
-  v = 1;
+  V = 0;
+  v = 0;
 
   Suite *s;
   int c = 0;
-  while ((c = getopt(argc, argv, "fitm")) != -1) {
+  while ((c = getopt(argc, argv, "fitmvV")) != -1) {
     switch(c) {
      case 'f':
       s = frontend_suite();
@@ -41,6 +41,13 @@ int main (int argc, char *argv[]) {
       break;
      case 'm':
       s = mips_suite();
+      break;
+     case 'V':
+      v = 1;
+      V = 1;
+      break;
+     case 'v':
+      v = 1;
       break;
      default:
       printf("Invalid test option\n");

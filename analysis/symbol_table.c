@@ -68,7 +68,7 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable) {
   ans = make_identifier(s);
   enter_token(ans, symbtable);
   if (V) printf("not found: \"%s\" stored at %p\n", s, ans);
-  print_token(ans);
+  if (V) print_token(ans);
   return ans;
 }
 

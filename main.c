@@ -15,7 +15,6 @@
 
 #include "common/util.h"
 
-extern int yydebug;
 extern int yyparse();
 extern NODE *ans;
 extern FRAME *gbl_frame;
@@ -48,11 +47,11 @@ int main(int argc, char *argv[]) {
   int len;
   char *action  = "";
   V = 0; // Verbose
-  v = 1;
+  v = 0;
   init_environment();
 
   // Determine translation requested
-  while ((c = getopt(argc, argv, "a:df:")) != -1) {
+  while ((c = getopt(argc, argv, "a:f:")) != -1) {
     switch (c) {
      case 'a':
       // copy action type to var
@@ -61,10 +60,6 @@ int main(int argc, char *argv[]) {
       strncpy(action, optarg, len);
 
       printf("Action Selected: %s\n", action);
-      break;
-
-     case 'd':
-      yydebug = 1;
       break;
 
      case 'f':

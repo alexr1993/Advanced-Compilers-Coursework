@@ -48,6 +48,7 @@ SRCS = main.c
 CC = gcc
 
 all:	mycc tests
+	./t/build_tests.sh
 
 clean:
 	rm ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS} ${TESTOBJS} \
@@ -77,6 +78,6 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 	tar cvfz mycc.tgz symbol_table.c nodes.c util.c main.c Makefile C.flex C.y \
 		nodes.h token.h
 
-tests: ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
+tests: ${ANALSRCS} ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
 	${CC} -g -o run_tests ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS} \
     `pkg-config --cflags --libs check`

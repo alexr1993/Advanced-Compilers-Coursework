@@ -16,8 +16,9 @@ extern struct token_stack *ts;
 extern void register_frame_pointers(FRAME *, FRAME *);
 extern int yyparse();
 extern FILE *yyin;
+extern int V,v;
 
-
+char *filename;
 /* Check token lookup works */
 START_TEST(basic_frame) {
   init_environment();
@@ -65,50 +66,41 @@ void check_frames(FRAME *parent) {
 }
 
 START_TEST(frames) {
-  printf("\nclosure.cmm\n");
-  printf("===========\n");
-  set_input_file("t/src/closure.cmm");
-  init_environment();
-  yyparse();
-  fclose(yyin);
-  print_environment(gbl_frame);
+  filename = "t/src/closure.cmm";
+  if (v) print_banner(filename);
+  parse(filename);
+  if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
   ck_assert_str_eq(gbl_frame->child->proc_id, "cplus");
   ck_assert_str_eq(gbl_frame->child->child->proc_id, "cplusa");
 
-  printf("\nawkward_declarations.cmm\n");
-  printf("===========\n");
-  set_input_file("t/src/awkward_declarations.cmm");
-  init_environment();
-  yyparse();
-  fclose(yyin);
-  print_environment(gbl_frame);
+  filename = "t/src/awkward_declarations.cmm";
+  if (v) print_banner(filename);
+  parse(filename);
+
+  if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
   // It's possible that these will be the other way roudn
   ck_assert_str_eq(gbl_frame->child->proc_id, "main");
   ck_assert_str_eq(gbl_frame->child->sibling->proc_id, "g");
 
-  printf("\nnested_subroutine.cmm\n");
-  printf("===========\n");
-  set_input_file("t/src/nested_subroutine.cmm");
-  init_environment();
-  yyparse();
-  fclose(yyin);
-  print_environment(gbl_frame);
+  filename = "t/src/nested_subroutine.cmm";
+  if (v) print_banner(filename);
+  parse(filename);
+
+  if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
   ck_assert_str_eq(gbl_frame->child->proc_id, "fact");
   ck_assert_str_eq(gbl_frame->child->child->proc_id, "inner_fact");
 
-  printf("\nfirst_class_function.cmm\n");
-  printf("===========\n");
-  set_input_file("t/src/first_class_function.cmm");
-  init_environment();
-  yyparse();
-  fclose(yyin);
-  print_environment(gbl_frame);
+  filename = "t/src/first_class_function.cmm";
+  if (v) print_banner(filename);
+  parse(filename);
+
+  if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
   ck_assert_str_eq(gbl_frame->child->proc_id, "twice");
@@ -125,12 +117,10 @@ FRAME *find_child(FRAME *parent, char *name) {
 }
 
 START_TEST(parameter_recognition) {
-  set_input_file("t/src/awkward_declarations.cmm");
-  init_environment();
-  yyparse();
-  fclose(yyin);
+  filename = "t/src/awkward_declarations.cmm";
+  parse(filename);
 
-  print_environment(gbl_frame);
+  if (V) print_environment(gbl_frame);
   TOKEN *t = lookup_token("x", find_child(gbl_frame, "f")->symbols);
   ck_assert(t->declaration_type == PARAMETER);
 

@@ -10,7 +10,7 @@ extern int V;
  ****************************************************************************/
 
 VALUE *get_val(char *name, FRAME *frame) {
-  printf("Looking up variable \"%s\"...", name);
+  if (V) printf("Looking up variable \"%s\"\n", name);
   return lookup_token(name, frame->symbols)->val;
 }
 
@@ -20,7 +20,7 @@ void set_val(char *name, STATE* state, FRAME *frame) {
 }
 
 FRAME *get_frame(char *name, FRAME *parent) {
-  printf("Looking up frame \"%s\"...", name);
+  if (V) printf("Looking up frame \"%s\"\n", name);
   return get_val(name, parent)->state->function->frame;
 }
 

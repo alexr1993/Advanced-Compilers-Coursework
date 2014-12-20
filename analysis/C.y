@@ -8,7 +8,7 @@
 #include "environment.h"
 #include "token.h"
 
-#define YYDEBUG 1
+//#define YYDEBUG 1
 
 extern struct token *int_token, *void_token, *function_token, *lasttok;
 extern char yytext[];

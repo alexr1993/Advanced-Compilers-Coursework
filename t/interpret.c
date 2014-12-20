@@ -10,15 +10,15 @@
 #include "synthesis/interpret.h"
 
 extern FRAME *gbl_frame;
-extern NODE ans;
-extern int *yyparse();
+VALUE *output;
 
 START_TEST(t_interpret_control) {
   parse("t/src/control/1.cmm");
-  ck_assert_int_eq(42, call("main", gbl_frame)->state->integer);
+  output = call("main", gbl_frame);
+  ck_assert_int_eq(42, output->state->integer);
 
   parse("t/src/control/2.cmm");
-  ck_assert_int_eq(43, call("main", gbl_frame)->state->integer);
+  ck_assert_int_eq(42, call("main", gbl_frame)->state->integer);
 
   parse("t/src/control/3.cmm");
   ck_assert_int_eq(6, call("main", gbl_frame)->state->integer);
