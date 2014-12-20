@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
   v = 0;
 
   // Determine translation requested
-  while ((c = getopt(argc, argv, "a:f:vV")) != -1) {
+  while ((c = getopt(argc, argv, "vVa:f:")) != -1) {
     switch (c) {
      case 'a':
       // copy action type to var
@@ -61,8 +61,8 @@ int main(int argc, char *argv[]) {
       break;
 
      case 'f':
-      set_input_file(optarg);
       printf("Input source file: %s\n", optarg);
+      set_input_file(optarg);
       break;
 
      case 'V':

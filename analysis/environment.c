@@ -6,7 +6,7 @@
 extern int V;
 
 /****************************************************************************
- * MODIFIERS
+ * RUNTIME OPERATIONS
  ****************************************************************************/
 
 VALUE *get_val(char *name, FRAME *frame) {
@@ -22,6 +22,10 @@ void set_val(char *name, STATE* state, FRAME *frame) {
 FRAME *get_frame(char *name, FRAME *parent) {
   if (V) printf("Looking up frame \"%s\"\n", name);
   return get_val(name, parent)->state->function->frame;
+}
+
+bool is_true(VALUE *boolean) {
+  return boolean->state->integer == 1;
 }
 
 /****************************************************************************

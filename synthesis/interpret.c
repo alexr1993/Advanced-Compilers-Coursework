@@ -52,7 +52,7 @@ VALUE *call(char *name, FRAME *caller) {
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
   switch(n->type) {
    case APPLY:
-    // return call(name, frame);
+    return call(l->state->function->proc_id, f);
     break;
    case IF:
     break;

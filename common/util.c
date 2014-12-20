@@ -9,7 +9,7 @@
 
 extern FILE *yyin;
 extern NODE *ans;
-int V,v;
+extern int V,v;
 
 /* General Print Utils */
 void print_banner(char *contents) {
@@ -103,8 +103,9 @@ void print_tree(NODE *tree) {
 
 /* Input File Utils */
 void set_input_file(char *filename) {
+  printf("Setting input file to %s\n", filename);
   yyin = fopen(filename, "r");
-  if (yyin == NULL) perror("Input file error!");
+  if (yyin == NULL && filename != NULL) perror("Input file error!");
 }
 
 void close_input_file() {
@@ -112,13 +113,13 @@ void close_input_file() {
 }
 
 void parse(char *filename) {
-  if (filename == NULL) {
-    set_input_file("t/src/awkward_declarations.cmm");
-  } else {
+  printf("Parse called with filename %s\n", filename);
+  if (filename != NULL) {
     set_input_file(filename);
   }
   if (v) print_banner(filename);
   init_environment();
+  if (v) printf("yyparsing\n");
   yyparse();
   if (V) print_tree(ans);
   close_input_file();

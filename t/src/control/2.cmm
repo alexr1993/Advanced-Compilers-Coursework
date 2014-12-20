@@ -5,7 +5,7 @@ int f() {
 }
 
 int g() {
-  return 43;
+  return 42;
 }
 
 int main() {

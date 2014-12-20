@@ -55,11 +55,13 @@ typedef struct function {
 
 FRAME *gbl_frame;
 
-/* Modifiers */
+/* Runtime procedures */
 VALUE *get_val(char *name, FRAME *frame);
 void set_val(char *name, STATE* state, FRAME *frame);
 
 FRAME *get_frame(char *name, FRAME *parent);
+
+bool is_true(VALUE *boolean);
 
 /* Environment construction */
 void init_environment();
