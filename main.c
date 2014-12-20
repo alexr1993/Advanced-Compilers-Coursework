@@ -19,7 +19,8 @@ extern int yyparse();
 extern NODE *ans;
 extern FRAME *gbl_frame;
 extern int V, v;
-FILE *yyin;
+
+char *filename;
 
 void translate_to_TAC() {
   yyparse();
@@ -35,11 +36,9 @@ void translate_to_MIPS() {
 
 void interpret_source(void) {
   if (v) printf("Starting parse + semantic analysis\n");
-  yyparse();
-  NODE *tree = ans;
-  print_environment(gbl_frame);
-  print_tree(tree);
-  printf("Output: %d\n", call("main", gbl_frame)->state->integer);
+  parse(NULL);
+  VALUE *output = call("main", gbl_frame);
+  printf("Output: %d\n", output->state->integer);
 }
 
 int main(int argc, char *argv[]) {
@@ -48,10 +47,9 @@ int main(int argc, char *argv[]) {
   char *action  = "";
   V = 0; // Verbose
   v = 0;
-  init_environment();
 
   // Determine translation requested
-  while ((c = getopt(argc, argv, "a:f:")) != -1) {
+  while ((c = getopt(argc, argv, "a:f:vV")) != -1) {
     switch (c) {
      case 'a':
       // copy action type to var
@@ -64,11 +62,16 @@ int main(int argc, char *argv[]) {
 
      case 'f':
       set_input_file(optarg);
-      if (!yyin) {
-        printf("Invalid input file path.\n");
-        abort();
-      }
       printf("Input source file: %s\n", optarg);
+      break;
+
+     case 'V':
+      v = 1;
+      V = 1;
+      break;
+
+     case 'v':
+      v = 1;
       break;
 
      default:
@@ -76,8 +79,6 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-
-  if (!yyin) set_input_file("t/src/awkward_declarations.cmm");
 
   /* Translate */
   if ( str_eq(action, "") ) {

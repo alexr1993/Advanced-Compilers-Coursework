@@ -8,7 +8,7 @@
 #include "analysis/C.tab.h"
 
 extern FILE *yyin;
-
+extern NODE *ans;
 int V,v;
 
 /* General Print Utils */
@@ -112,9 +112,14 @@ void close_input_file() {
 }
 
 void parse(char *filename) {
-  set_input_file(filename);
+  if (filename == NULL) {
+    set_input_file("t/src/awkward_declarations.cmm");
+  } else {
+    set_input_file(filename);
+  }
   if (v) print_banner(filename);
   init_environment();
   yyparse();
+  if (V) print_tree(ans);
   close_input_file();
 }

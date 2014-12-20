@@ -10,8 +10,7 @@ VALUE *interpret_leaf(NODE *n, FRAME *f) {
 
   switch(t->type) {
    case IDENTIFIER:
-    return t->val; // Not sure if this will always reference the correct var
-    // may have to use get_val(t->lexeme, f);
+    return get_val(t->lexeme, f);
    case CONSTANT:
     return new_val(INT_TYPE, new_int_state(t->value));
    default:

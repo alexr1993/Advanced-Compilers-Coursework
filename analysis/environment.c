@@ -115,6 +115,8 @@ void print_state(STATE *s, int type) {
    case FN_TYPE:
     printf("state: function_state\n");
     break;
+   default:
+    printf("\n");
   }
 }
 

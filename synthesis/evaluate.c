@@ -12,7 +12,9 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   if (n->type == LEAF) {
     VALUE *val = evaluate_leaf(n, f, e_type);
     if (V) {
-      printf("EVALUATE Leaf: ");
+      printf("EVALUATE Leaf: \n  ");
+      print_token(get_token(n));
+      printf("  ");
       print_val(val);
     }
     return val;
@@ -20,25 +22,29 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
 
   /* Eval children */
   VALUE *l, *r;
+  if (str_eq(named(n->type), "d")) return NULL;
   if (n->left)  l = evaluate(n->left, f, e_type);
   if (n->right) r = evaluate(n->right, f, e_type);
 
+  if (V) {
+    printf("EVALUATE %s\n", named(n->type));
+    printf("  L:");
+    print_val(l);
+    printf("  R:");
+    print_val(r);
+  }
   /* Eval node */
   switch(n->type) {
    /* Arithmetic */
    case '+': case '-': case '*': case '/':
-    if (V) printf("EVALUATE arithmetic\n");
     return arithmetic(n, l, r, f, e_type);
    /* Logic */
    case '<': case '>': case LE_OP: case GE_OP: case EQ_OP: case NE_OP:
-    if (V) printf("EVALUATE logic\n");
     return logic(n, l, r, f, e_type);
    /* Control Flow */
    case APPLY: case IF: case ELSE: case RETURN: case BREAK:
-    if (V) printf("EVALUATE control\n");
     return control(n, l, r, f, e_type);
    default:
-    if (V) printf("EVALUATE default\n");
     return r; // TODO this is a stab in the dark, check function AST structure
   }
 }
