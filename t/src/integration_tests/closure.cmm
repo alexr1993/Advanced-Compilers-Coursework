@@ -1,4 +1,9 @@
-/* needs function type */
+/* Should return 42 */
+int main() {
+  function plus2 = cplus(2);
+  return plus2(40);
+}
+
 function cplus (int a)
 {
     int cplusa (int b)
@@ -7,3 +12,4 @@ function cplus (int a)
     }
     return cplusa;
 }
+

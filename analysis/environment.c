@@ -3,20 +3,28 @@
 #include <stdbool.h>
 #include "environment.h"
 
-extern int V;
+extern int v,V;
 
 /****************************************************************************
  * RUNTIME OPERATIONS
  ****************************************************************************/
 
 VALUE *get_val(char *name, FRAME *frame) {
-  if (V) printf("Looking up variable \"%s\"\n", name);
+  if (V) printf("ENVIRONMENT Looking up variable \"%s\" in frame \"%s\"\n",
+                 name, frame->proc_id);
   TOKEN *t =  lookup_token(name, frame->symbols, true);
 
   // If token is not found in symbtable, check parent's
   if (t != NULL) {
     return t->val;
   } else if (frame->parent == NULL) {
+    /* Symbol lookup failed in entire tree lineage */
+    if (v) printf("ENVIRONMENT Lookup of variable \"%s\" returned nothing!\n",
+                  name);
+    if (str_eq("main", name)) {
+      printf("Make sure your program has a main()!\n");
+      exit(0);
+    }
     return NULL;
   } else {
     return get_val(name, frame->parent);
@@ -29,7 +37,7 @@ void set_val(char *name, STATE* state, FRAME *frame) {
 }
 
 FRAME *get_frame(char *name, FRAME *parent) {
-  if (V) printf("Looking up frame \"%s\"\n", name);
+  if (V) printf("ENVIRONMENT Looking up frame \"%s\"\n", name);
   return get_val(name, parent)->state->function->frame;
 }
 
@@ -179,4 +187,11 @@ char *data_type_to_str(int type) {
    default:
     return "TYPE_NOT_RECOGNISED";
   }
+}
+
+void print_function(function *f) {
+  printf("Returns: %s, has body? %s, param(s)? %s\n",
+         data_type_to_str(f->return_type),
+         f->body == NULL ? "no" : "yes",
+         f->params == NULL ? "no" : "yes");
 }

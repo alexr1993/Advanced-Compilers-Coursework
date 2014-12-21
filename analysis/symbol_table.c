@@ -63,7 +63,11 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable, bool runtime) {
     }
     a = a->next;
   }
-  if (runtime) return NULL;
+  // TODO this function could use rethinking - lookup + enter in one function?
+  if (runtime) {
+    if (V) printf("not found!\n");
+    return NULL;
+  }
 
   /* If not create and insert a token for s */
   ans = make_identifier(s);

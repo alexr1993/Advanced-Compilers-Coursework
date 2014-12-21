@@ -77,4 +77,5 @@ void print_frame(FRAME *frame);
 void print_val(VALUE *val);
 void print_environment(FRAME *frame);
 char *data_type_to_str(int type);
+void print_function(function *f);
 #endif

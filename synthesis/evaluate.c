@@ -24,8 +24,9 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
 
   /* Eval children */
   VALUE *l = NULL, *r = NULL;
-  if (str_eq(named(n->type), "d")) return NULL;
-  if (n->left)  l = evaluate(n->left, f, e_type);
+  // TODO encapsulate this "should_evaluate()"
+  if (n->type == 'd' || n->type == 'D' && n != f->root) return NULL;
+  if (n->left) l = evaluate(n->left, f, e_type);
 
   // Certain control statement will evaluate the right child themselves if
   // necessary
@@ -49,7 +50,7 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
    case '<': case '>': case LE_OP: case GE_OP: case EQ_OP: case NE_OP:
     return logic(n, l, r, f, e_type);
    /* Control Flow */
-   case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';':
+   case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';': case '=':
     return control(n, l, r, f, e_type);
    default:
     return r; // TODO this is a stab in the dark, check function AST structure

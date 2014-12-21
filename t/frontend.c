@@ -77,6 +77,7 @@ START_TEST(frames) {
   if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
+  // FIXME this test is fragile
   ck_assert_str_eq(gbl_frame->child->proc_id, "cplus");
   ck_assert_str_eq(gbl_frame->child->child->proc_id, "cplusa");
 
@@ -87,7 +88,7 @@ START_TEST(frames) {
   if (V) print_environment(gbl_frame);
   check_frames(gbl_frame);
 
-  // It's possible that these will be the other way roudn
+  // FIXME so is this: It's possible that these will be the other way roudn
   ck_assert_str_eq(gbl_frame->child->proc_id, "main");
   ck_assert_str_eq(gbl_frame->child->sibling->proc_id, "g");
 

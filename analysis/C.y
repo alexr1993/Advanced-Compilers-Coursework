@@ -380,7 +380,6 @@ void register_frame_pointers(FRAME *parent, FRAME *child) {
   parent->nchildren++;
   if (V) printf("Registered \"%s\" as the parent of child \"%s\"\n",
   parent->proc_id, child->proc_id);
-  if (V) print_frame(parent);
 }
 
 /* Some tokens e.g. function definition roots will have their value

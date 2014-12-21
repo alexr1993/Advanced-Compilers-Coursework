@@ -73,6 +73,8 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
   switch(n->type) {
    case APPLY:
     // todo bind args
+    if (V) printf("Function to be called:\n");
+    if (V) print_function(l->state->function);
     return call(l->state->function->proc_id, f);
 
    case IF:
@@ -94,6 +96,16 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
                   f->return_called ? "yes" : "no");
     return f->return_called ? l : evaluate(n->right, f, INTERPRET);
 
+   // Doesn't really belong here but whatever
+   case '=':
+    if (V) printf("INTERPRET = Assigning ");
+    if (V) print_val(r);
+    if (V) printf("to ");
+    if (V) print_val(l);
+    l->state = r->state;
+    return l;
+   case 'D':
+    return r;
    default:
     return NULL;
   }

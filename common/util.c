@@ -6,11 +6,13 @@
 
 #include "analysis/nodes.h"
 #include "analysis/C.tab.h"
+#include "analysis/environment.h"
 
 extern FILE *yyin;
 extern NODE *ans;
 extern NODE *yyparse();
 extern int V,v;
+extern FRAME *gbl_frame;
 
 /* General Print Utils */
 void print_banner(char *contents) {
@@ -123,5 +125,6 @@ void parse(char *filename) {
   if (v) printf("yyparsing\n");
   yyparse();
   if (V) print_tree(ans);
+  if (V) print_environment(gbl_frame);
   close_input_file();
 }
