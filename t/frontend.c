@@ -71,7 +71,7 @@ void check_frames(FRAME *parent) {
 }
 
 START_TEST(frames) {
-  filename = "t/src/closure.cmm";
+  filename = "t/src/integration_tests/closure.cmm";
   if (v) print_banner(filename);
   parse(filename);
   if (V) print_environment(gbl_frame);
@@ -80,7 +80,7 @@ START_TEST(frames) {
   ck_assert_str_eq(gbl_frame->child->proc_id, "cplus");
   ck_assert_str_eq(gbl_frame->child->child->proc_id, "cplusa");
 
-  filename = "t/src/awkward_declarations.cmm";
+  filename = "t/src/integration_tests/awkward_declarations.cmm";
   if (v) print_banner(filename);
   parse(filename);
 
@@ -91,7 +91,7 @@ START_TEST(frames) {
   ck_assert_str_eq(gbl_frame->child->proc_id, "main");
   ck_assert_str_eq(gbl_frame->child->sibling->proc_id, "g");
 
-  filename = "t/src/nested_subroutine.cmm";
+  filename = "t/src/integration_tests/nested_subroutine.cmm";
   if (v) print_banner(filename);
   parse(filename);
 
@@ -101,7 +101,7 @@ START_TEST(frames) {
   ck_assert_str_eq(gbl_frame->child->proc_id, "fact");
   ck_assert_str_eq(gbl_frame->child->child->proc_id, "inner_fact");
 
-  filename = "t/src/first_class_function.cmm";
+  filename = "t/src/integration_tests/first_class_function.cmm";
   if (v) print_banner(filename);
   parse(filename);
 
@@ -122,7 +122,7 @@ FRAME *find_child(FRAME *parent, char *name) {
 }
 
 START_TEST(parameter_recognition) {
-  filename = "t/src/awkward_declarations.cmm";
+  filename = "t/src/integration_tests/awkward_declarations.cmm";
   parse(filename);
 
   if (V) print_environment(gbl_frame);

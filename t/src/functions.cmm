@@ -1,9 +1,0 @@
-int a(int b)
-{
-    return b + 8;
-}
-
-void main(void)
-{
-    return a(3);
-}
