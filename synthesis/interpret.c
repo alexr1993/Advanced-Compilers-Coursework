@@ -22,6 +22,12 @@ int interpret_arithmetic(int op, int l, int r) {
   switch(op) {
    case '+':
     return l + r;
+   case '-':
+    return l - r;
+   case '*':
+    return l * r;
+   case '/':
+    return l / r;
    default:
     return 0;
   }
