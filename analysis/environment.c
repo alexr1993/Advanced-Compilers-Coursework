@@ -74,6 +74,7 @@ FRAME *new_frame(char *proc_id) {
   frame->sibling = NULL;
   frame->parent  = NULL;
   frame->return_called = false;
+  frame->nchildren = 0;
   return frame;
 }
 
