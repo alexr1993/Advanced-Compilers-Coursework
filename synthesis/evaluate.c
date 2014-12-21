@@ -25,7 +25,7 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   /* Eval children */
   VALUE *l = NULL, *r = NULL;
   // TODO encapsulate this "should_evaluate()"
-  if (n->type == 'd' || n->type == 'D' && n != f->root) return NULL;
+  if (n->type == 'd' || (n->type == 'D' && n != f->root)) return NULL;
   if (n->left) l = evaluate(n->left, f, e_type);
 
   // Certain control statement will evaluate the right child themselves if

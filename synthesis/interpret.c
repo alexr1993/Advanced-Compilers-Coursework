@@ -67,6 +67,11 @@ VALUE *call(function *func) {
   return evaluate(func->frame->root, func->frame, INTERPRET);
 }
 
+VALUE *interpret_program() {
+  function *main_fn = get_val("main", gbl_frame)->state->function;
+  return call(main_fn);
+}
+
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
   bool else_exists;
   NODE *true_eval, *false_eval;

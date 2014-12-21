@@ -115,7 +115,7 @@ void close_input_file() {
 }
 
 void parse(char *filename) {
-  printf("Parse called with filename %s\n", filename);
+  printf("Parsing...\n");
   if (filename != NULL) {
     set_input_file(filename);
   }
@@ -126,9 +126,4 @@ void parse(char *filename) {
   if (V) print_tree(ans);
   if (V) print_environment(gbl_frame);
   close_input_file();
-}
-
-VALUE *interpret_program() {
-  function *main = get_val("main", gbl_frame)->state->function;
-  return call(main);
 }
