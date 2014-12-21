@@ -35,8 +35,18 @@ int interpret_arithmetic(int op, int l, int r) {
 
 int interpret_logic(int op, int l, int r) {
   switch(op) {
+   case '<':
+    return l < r;
+   case '>':
+    return l > r;
+   case LE_OP:
+    return l <= r;
+   case GE_OP:
+    return l >= r;
    case EQ_OP:
     return l == r;
+   case NE_OP:
+    return l != r;
    default:
     return 0;
   }

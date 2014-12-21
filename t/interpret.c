@@ -39,7 +39,7 @@ START_TEST(t_interpret_logic) {
   output = call("main", gbl_frame);
   ck_assert_int_eq(0, output->state->integer);
 
-  parse("t/src/arithmetic/3.cmm");
+  parse("t/src/logic/3.cmm");
   output = call("main", gbl_frame);
   ck_assert_int_eq(1, output->state->integer);
 
