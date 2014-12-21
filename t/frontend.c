@@ -58,12 +58,15 @@ START_TEST(token_stack) {
 
 /* Checks relationships of all frames in tree */
 void check_frames(FRAME *parent) {
+  int nchildren = 0;
   FRAME *child = parent->child;
   while (child != NULL) {
+    nchildren++;
     ck_assert_str_eq(parent->proc_id, child->parent->proc_id);
     check_frames(child);
     child = child->sibling;
   }
+  ck_assert_int_eq(nchildren, parent->nchildren);
 }
 
 START_TEST(frames) {

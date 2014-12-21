@@ -44,7 +44,7 @@ void interpret_source(void) {
 int main(int argc, char *argv[]) {
   int c     = 0;
   int len;
-  char *action  = "";
+  char *action  = NULL;
   V = 0; // Verbose
   v = 0;
 
@@ -79,6 +79,7 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
+  if (action == NULL) action = "interpret";
 
   /* Translate */
   if ( str_eq(action, "") ) {
