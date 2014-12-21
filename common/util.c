@@ -6,7 +6,6 @@
 
 #include "analysis/nodes.h"
 #include "analysis/C.tab.h"
-#include "analysis/environment.h"
 
 extern FILE *yyin;
 extern NODE *ans;
@@ -127,4 +126,9 @@ void parse(char *filename) {
   if (V) print_tree(ans);
   if (V) print_environment(gbl_frame);
   close_input_file();
+}
+
+VALUE *interpret_program() {
+  function *main = get_val("main", gbl_frame)->state->function;
+  return call(main);
 }

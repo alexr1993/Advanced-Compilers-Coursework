@@ -14,33 +14,33 @@ VALUE *output;
 
 START_TEST(t_interpret_control) {
   parse("t/src/control/1.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 
   parse("t/src/control/2.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 
   /* Aint nobody got time for factorial...
   parse("t/src/control/3.cmm");
-  ck_assert_int_eq(6, call("main", gbl_frame)->state->integer);
+  ck_assert_int_eq(6, interpret_program();
   */
   parse("t/src/control/4.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 } END_TEST
 
 START_TEST(t_interpret_logic) {
   parse("t/src/logic/1.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(1, output->state->integer);
 
   parse("t/src/logic/2.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(0, output->state->integer);
 
   parse("t/src/logic/3.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(1, output->state->integer);
 
 
@@ -48,11 +48,11 @@ START_TEST(t_interpret_logic) {
 
 START_TEST(t_interpret_arithmetic) {
   parse("t/src/arithmetic/1.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(1, output->state->integer);
 
   parse("t/src/arithmetic/2.cmm");
-  output = call("main", gbl_frame);
+  output = interpret_program();
   ck_assert_int_eq(1, output->state->integer);
 
 } END_TEST

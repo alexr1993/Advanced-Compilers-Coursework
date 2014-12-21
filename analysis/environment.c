@@ -92,6 +92,10 @@ function *new_function(int return_type, FRAME *frame) {
   fn->frame       = frame;
   fn->proc_id     = frame->proc_id;
   fn->body        = frame->root;
+  if (V) {
+    printf("New function created:\n");
+    print_function(fn);
+  }
   return fn;
 }
 
@@ -190,8 +194,9 @@ char *data_type_to_str(int type) {
 }
 
 void print_function(function *f) {
-  printf("Returns: %s, has body? %s, param(s)? %s\n",
+  printf("Returns: %s, has body? %s, has frame? %s, param(s)? %s\n",
          data_type_to_str(f->return_type),
          f->body == NULL ? "no" : "yes",
+         f->frame == NULL ? "no" : "yes",
          f->params == NULL ? "no" : "yes");
 }

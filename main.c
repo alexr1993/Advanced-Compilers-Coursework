@@ -37,7 +37,7 @@ void translate_to_MIPS() {
 void interpret_source(void) {
   if (v) printf("Starting parse + semantic analysis\n");
   parse(NULL);
-  VALUE *output = call("main", gbl_frame);
+  VALUE *output = interpret_program("main", gbl_frame);
   printf("Output: %d\n", output->state->integer);
 }
 

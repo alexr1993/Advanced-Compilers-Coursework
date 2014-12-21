@@ -56,14 +56,15 @@ void bind_arg(FRAME *caller, FRAME *callee) {
 
 }
 
-VALUE *call(char *name, FRAME *caller) {
+VALUE *call(function *func) {
   if (v) {
     char msg[80];
-    sprintf(msg, "INTERPRET Calling %s", name);
+    sprintf(msg, "INTERPRET Calling %s", func->proc_id);
     print_banner(msg);
   }
-  FRAME *callee = get_frame(name, caller);
-  return evaluate(callee->root, callee, INTERPRET);
+  print_function(func);
+  print_frame(func->frame);
+  return evaluate(func->frame->root, func->frame, INTERPRET);
 }
 
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
@@ -75,7 +76,7 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     // todo bind args
     if (V) printf("Function to be called:\n");
     if (V) print_function(l->state->function);
-    return call(l->state->function->proc_id, f);
+    return call(l->state->function);
 
    case IF:
     else_exists = str_eq("else", named(n->right->type));
