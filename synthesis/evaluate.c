@@ -1,5 +1,7 @@
 #include "evaluate.h"
 
+#include <stdio.h>
+
 #include "interpret.h"
 #include "tac.h"
 #include "mips.h"

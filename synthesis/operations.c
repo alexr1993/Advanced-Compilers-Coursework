@@ -58,7 +58,6 @@ VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
 }
 
 VALUE *control(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, NULL);
   switch(e_type) {
    case INTERPRET:
     return interpret_control(n, l, r, f);

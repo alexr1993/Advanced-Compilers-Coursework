@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #include "common/util.h"
 
@@ -39,7 +40,7 @@ START_TEST(parent_frame) {
   register_frame_pointers(gbl_frame, current);
 
   ck_assert_int_eq(
-    (int)current->parent, (int)gbl_frame
+    (uintptr_t)current->parent, (uintptr_t)gbl_frame
   );
 } END_TEST
 

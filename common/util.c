@@ -9,6 +9,7 @@
 
 extern FILE *yyin;
 extern NODE *ans;
+extern NODE *yyparse();
 extern int V,v;
 
 /* General Print Utils */

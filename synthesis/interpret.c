@@ -64,22 +64,26 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
    case APPLY:
     // todo bind args
     return call(l->state->function->proc_id, f);
+
    case IF:
     else_exists = str_eq("else", named(n->right->type));
     true_eval  = else_exists ? n->right->left  : n->right->right;
     false_eval = else_exists ? n->right->right : NULL;
-
     return evaluate( is_true(l) ? true_eval : false_eval, f, INTERPRET);
+
    case RETURN:
     if (V) printf("INTERPRET return called for function \"%s\"\n", f->proc_id);
     f->return_called = true;
     return l;
+
    case BREAK:
-    break;
+    return NULL;
+
    case ';':
     if (V) printf("INTERPRET ; Return has been called? %s\n",
                   f->return_called ? "yes" : "no");
     return f->return_called ? l : evaluate(n->right, f, INTERPRET);
+
    default:
     return NULL;
   }

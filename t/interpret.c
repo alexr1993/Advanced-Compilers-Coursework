@@ -31,6 +31,19 @@ START_TEST(t_interpret_control) {
 } END_TEST
 
 START_TEST(t_interpret_logic) {
+  parse("t/src/logic/1.cmm");
+  output = call("main", gbl_frame);
+  ck_assert_int_eq(1, output->state->integer);
+
+  parse("t/src/logic/2.cmm");
+  output = call("main", gbl_frame);
+  ck_assert_int_eq(0, output->state->integer);
+
+  parse("t/src/arithmetic/3.cmm");
+  output = call("main", gbl_frame);
+  ck_assert_int_eq(1, output->state->integer);
+
+
 } END_TEST
 
 START_TEST(t_interpret_arithmetic) {

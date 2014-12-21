@@ -79,5 +79,4 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 		nodes.h token.h
 
 tests: ${ANALSRCS} ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
-	${CC} -g -o run_tests ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS} \
-    `pkg-config --cflags --libs check`
+	${CC} -g -o run_tests -lcheck ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
