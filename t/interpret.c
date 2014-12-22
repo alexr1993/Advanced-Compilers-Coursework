@@ -74,6 +74,7 @@ START_TEST(t_interpret_integration) {
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 } END_TEST
+
 Suite *interpret_suite() {
   Suite *s = suite_create("interpret");
 
