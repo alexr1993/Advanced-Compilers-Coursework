@@ -102,7 +102,7 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
 }
 
 VALUE *call(function *func) {
-
+  // TODO create activation record
   if (v) {
     char msg[80];
     sprintf(msg, "INTERPRET Calling %s", func->proc_id);

@@ -61,15 +61,18 @@ START_TEST(t_interpret_integration) {
   parse("t/src/integration_tests/closure.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
-
+/* Another factorial one, can't test until implementing a call stack
   parse("t/src/integration_tests/nested_subroutine.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
-
+*/
   parse("t/src/integration_tests/first_class_function.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 
+  parse("t/src/integration_tests/awkward_declarations.cmm");
+  output = interpret_program();
+  ck_assert_int_eq(42, output->state->integer);
 } END_TEST
 Suite *interpret_suite() {
   Suite *s = suite_create("interpret");

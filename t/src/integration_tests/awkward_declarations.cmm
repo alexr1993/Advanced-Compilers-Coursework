@@ -1,6 +1,7 @@
+/* Returns 42 */
 int f(int x)
 {
-    int z = 2, y = 3;
+    int z = 35, y = 3;
     return g(x + z);
 }
 
