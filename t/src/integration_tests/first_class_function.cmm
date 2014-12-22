@@ -1,3 +1,12 @@
+function add1(int n) {
+  return n + 1;
+}
+
+int main() {
+  function add2 = twice(add1);
+  return add2(40);
+}
+
 /* Accept function as a param */
 function twice (function f)
 {

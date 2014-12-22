@@ -57,6 +57,20 @@ START_TEST(t_interpret_arithmetic) {
 
 } END_TEST
 
+START_TEST(t_interpret_integration) {
+  parse("t/src/integration_tests/closure.cmm");
+  output = interpret_program();
+  ck_assert_int_eq(42, output->state->integer);
+
+  parse("t/src/integration_tests/nested_subroutine.cmm");
+  output = interpret_program();
+  ck_assert_int_eq(42, output->state->integer);
+
+  parse("t/src/integration_tests/first_class_function.cmm");
+  output = interpret_program();
+  ck_assert_int_eq(42, output->state->integer);
+
+} END_TEST
 Suite *interpret_suite() {
   Suite *s = suite_create("interpret");
 
@@ -69,8 +83,12 @@ Suite *interpret_suite() {
   TCase *arithmetic = tcase_create("arithmetic");
   tcase_add_test(arithmetic, t_interpret_arithmetic);
 
+  TCase *integration = tcase_create("integration");
+  tcase_add_test(integration, t_interpret_integration);
+
   suite_add_tcase(s, control);
   suite_add_tcase(s, logic);
   suite_add_tcase(s, arithmetic);
+  suite_add_tcase(s, integration);
   return s;
 }
