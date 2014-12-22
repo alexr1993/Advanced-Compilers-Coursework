@@ -1,6 +1,7 @@
 #include "interpret.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "evaluate.h"
 extern int V,v;
@@ -58,7 +59,7 @@ int interpret_logic(int op, int l, int r) {
 void arg_traversal(NODE *argstree, FRAME *caller, VALUE **args,
                    int *current_arg_ptr,     int nargs) {
 
-  if (*current_arg_ptr + 1 == nargs) return; // ignore excess args
+  if (*current_arg_ptr == nargs) return; // ignore excess args
 
   if (argstree->type == ',') {
     arg_traversal(argstree->left, caller, args, current_arg_ptr, nargs);
@@ -66,6 +67,7 @@ void arg_traversal(NODE *argstree, FRAME *caller, VALUE **args,
   } else {
     args[*current_arg_ptr] = evaluate(argstree, caller, INTERPRET);
     (*current_arg_ptr)++;
+    if (V) printf("INTERPRET Evaluated arg %d\n", *current_arg_ptr);
   }
 }
 
@@ -82,16 +84,19 @@ VALUE **eval_args(NODE *argstree, int nargs, FRAME *caller) {
 
 /* Eval and assign arguments to parameters */
 void bind_args(function *func, NODE *argstree, FRAME *caller) {
+  if (V) printf("INTERPRET Evaluating arguments for \"%s\" call\n",
+                func->proc_id);
   VALUE **args = eval_args(argstree, func->nparams, caller);
 
   int i;
   PARAM *p = func->params;
   for(i = 0; i < func->nparams; i++) {
-    p->token->val = args[i];
+    // FIXME get_val may be overcomplicating the code, token->val may do?
+    get_val(p->token->lexeme, func->frame)->state = args[i]->state;
     if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
                   p->token->lexeme);
 
-    if (V) print_val(p->token->val);
+    if (V) print_val(args[i]);
     p = p->next;
   }
 }
