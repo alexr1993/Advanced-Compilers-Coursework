@@ -13,28 +13,23 @@ VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
    case TAC:
     return tac_leaf(n, f);
    default:
-    return NULL;
+    perror("ERROR: Invalid eval type!\n");
+    abort();
   }
 }
 
 VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, NULL);
-
   switch(e_type) {
    case INTERPRET:
-    output->state = new_int_state(
-      interpret_arithmetic(n->type, l->state->integer, r->state->integer));
-   break;
-
+    return new_val(INT_TYPE, new_int_state(
+      interpret_arithmetic(n->type, l->state->integer, r->state->integer)));
    case TAC:
     tac_arithmetic(n, l, r);
-    break;
-
+    return NULL;
    default:
     perror("Unknown EVAL_TYPE\n");
     exit(-1);
   }
-  return output;
 }
 
 VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {

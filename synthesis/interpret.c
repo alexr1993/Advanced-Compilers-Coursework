@@ -8,13 +8,13 @@ extern int V,v;
 
 VALUE *interpret_leaf(NODE *n, FRAME *f) {
   TOKEN *t = get_token(n);
-
   switch(t->type) {
    case IDENTIFIER:
     return get_val(t->lexeme, f);
    case CONSTANT:
     return new_val(INT_TYPE, new_int_state(t->value));
    default:
+    // Maybe a type identifier "int" "function etc.
     return NULL;
   }
 }
@@ -101,6 +101,9 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
   }
 }
 
+/* Evaluates the given function, if args have not been bound there may be a
+ * segfault
+ */
 VALUE *call(function *func) {
   // TODO create activation record
   if (v) {
