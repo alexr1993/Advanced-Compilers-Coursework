@@ -86,12 +86,20 @@ FRAME *new_frame(char *proc_id) {
   return frame;
 }
 
-function *new_function(int return_type, FRAME *frame) {
+function *new_function(int return_type, FRAME *frame, PARAM *params) {
   function *fn = malloc(sizeof(function));
   fn->return_type = return_type;
   fn->frame       = frame;
   fn->proc_id     = frame->proc_id;
   fn->body        = frame->root;
+  fn->params      = params;
+  fn->nparams     = 0;
+  PARAM *tmp = params;
+  while (tmp != NULL) {
+    fn->nparams++;
+    tmp = tmp->next;
+  }
+
   if (V) {
     printf("New function created:\n");
     print_function(fn);

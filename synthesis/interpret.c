@@ -52,18 +52,59 @@ int interpret_logic(int op, int l, int r) {
   }
 }
 
-void bind_arg(FRAME *caller, FRAME *callee) {
+/* In-order traversal of argstree, evaluates the args and stores the resulting
+ * values in args
+ */
+void arg_traversal(NODE *argstree, FRAME *caller, VALUE **args,
+                   int *current_arg_ptr,     int nargs) {
 
+  if (*current_arg_ptr + 1 == nargs) return; // ignore excess args
+
+  if (argstree->type == ',') {
+    arg_traversal(argstree->left, caller, args, current_arg_ptr, nargs);
+    arg_traversal(argstree->right, caller, args, current_arg_ptr, nargs);
+  } else {
+    args[*current_arg_ptr] = evaluate(argstree, caller, INTERPRET);
+    (*current_arg_ptr)++;
+  }
+}
+
+/* Creates array of arg values from an args subtree (the right child of an
+ * APPLY node
+ */
+VALUE **eval_args(NODE *argstree, int nargs, FRAME *caller) {
+  /* Linearise args tree */
+  VALUE **args = malloc(nargs * sizeof(VALUE));
+  int current_arg = 0;
+  arg_traversal(argstree, caller, args, &current_arg, nargs);
+  return args;
+}
+
+/* Eval and assign arguments to parameters */
+void bind_args(function *func, NODE *argstree, FRAME *caller) {
+  VALUE **args = eval_args(argstree, func->nparams, caller);
+
+  int i;
+  PARAM *p = func->params;
+  for(i = 0; i < func->nparams; i++) {
+    p->token->val = args[i];
+    if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
+                  p->token->lexeme);
+
+    if (V) print_val(p->token->val);
+    p = p->next;
+  }
 }
 
 VALUE *call(function *func) {
+
   if (v) {
     char msg[80];
     sprintf(msg, "INTERPRET Calling %s", func->proc_id);
     print_banner(msg);
   }
-  print_function(func);
-  print_frame(func->frame);
+  if (V) print_function(func);
+  if (V) print_frame(func->frame);
   return evaluate(func->frame->root, func->frame, INTERPRET);
 }
 
@@ -79,8 +120,9 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
   switch(n->type) {
    case APPLY:
     // todo bind args
-    if (V) printf("Function to be called:\n");
+    if (V) printf("INTERPRET Function to be called:\n");
     if (V) print_function(l->state->function);
+    if (n->right) bind_args(l->state->function, n->right, f);
     return call(l->state->function);
 
    case IF:

@@ -47,6 +47,7 @@ typedef struct PARAM {
 typedef struct function {
   int    return_type; // INT_FN or INT_TYPE
   PARAM  *params;
+  int    nparams;
   FRAME  *frame;
   char   *proc_id;
   struct node *body;
@@ -70,7 +71,8 @@ STATE *new_int_state(int value);
 STATE *new_fn_state(struct function* function);
 STATE *new_state(int type);
 FRAME *new_frame(char *proc_id);
-function *new_function(int return_type, FRAME *frame);
+function *new_function(int return_type, FRAME *frame, PARAM *params);
+PARAM *new_param(struct token *t);
 
 /* Diagnostics */
 void print_frame(FRAME *frame);

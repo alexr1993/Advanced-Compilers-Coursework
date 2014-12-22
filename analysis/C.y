@@ -30,7 +30,7 @@ char *name_from_fn_def(NODE *);
 void bond_with_children(NODE *n, bool is_gbl);
 void register_frame_pointers(FRAME *parent, FRAME *child);
 void init_val(TOKEN *t);
-void init_fn(TOKEN *t, FRAME *frame);
+void init_fn(TOKEN *t, FRAME *frame, PARAM *params);
 FRAME *parent_frame;
 %}
 
@@ -304,8 +304,10 @@ void create_frame(NODE *n) {
   FRAME *frame = new_frame(name_from_fn_def(n));
   n->frame = frame;
   frame->root = n;
-
   bond_with_children(n, false);
+
+  PARAM *params = NULL;
+  PARAM *tmp = NULL;
 
   /* Process every identifier that was found on the subtree */
   TOKEN *t = pop();
@@ -314,7 +316,12 @@ void create_frame(NODE *n) {
   while (!str_eq(t->lexeme, frame->proc_id)) {
     if (t->val == NULL) init_val(t);
     // Parameter Identifiers have already been marked
-    if (t->declaration_type != PARAMETER) {
+    if (t->declaration_type == PARAMETER) {
+      // Put param at end of paramlist as stack is LIFA
+      tmp = params;
+      params = new_param(t);
+      params->next = tmp;
+    } else {
       t->declaration_type = VARIABLE;
     }
     enter_token(t, frame->symbols);
@@ -322,7 +329,7 @@ void create_frame(NODE *n) {
     t = pop();
   }
   // the current token is the function which owns this frame
-  init_fn(t, frame);
+  init_fn(t, frame, params);
   push(t); // let enclosing frames find this fn
 }
 
@@ -393,9 +400,10 @@ void init_val(TOKEN *t) {
 }
 
 /* Initialise function with the most recently parsed return type  */
-void init_fn(TOKEN *t, FRAME *frame) {
+void init_fn(TOKEN *t, FRAME *frame, PARAM *params) {
   t->data_type = FN_TYPE;
   t->declaration_type = VARIABLE;
-  t->val = new_val(FN_TYPE,
-           new_fn_state(new_function(current_return_type, frame)));
+  t->val = new_val(
+    FN_TYPE,
+    new_fn_state(new_function(current_return_type, frame, params)));
 }
