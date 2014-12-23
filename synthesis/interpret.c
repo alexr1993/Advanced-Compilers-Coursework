@@ -65,7 +65,7 @@ void arg_traversal(NODE *argstree, FRAME *caller, VALUE **args,
     arg_traversal(argstree->left, caller, args, current_arg_ptr, nargs);
     arg_traversal(argstree->right, caller, args, current_arg_ptr, nargs);
   } else {
-    args[*current_arg_ptr] = evaluate(argstree, caller, INTERPRET)->val;
+    args[*current_arg_ptr] = evaluate(argstree, caller)->val;
     (*current_arg_ptr)++;
     if (V) printf("INTERPRET Evaluated arg %d\n", *current_arg_ptr);
   }
@@ -93,8 +93,6 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
   for(i = 0; i < func->nparams; i++) {
     // FIXME get_val may be overcomplicating the code, token->val may do?
     VALUE *val = get_val(p->token->lexeme, func->frame);
-    if (val->state == NULL) abort();
-    if (args[i]->state == NULL) abort();
     val->state = args[i]->state;
     if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
                   p->token->lexeme);
@@ -117,7 +115,7 @@ VALUE *call(function *func) {
   if (V) print_function(func);
   if (V) print_frame(func->frame);
   // Execute function
-  return evaluate(func->frame->root, func->frame, INTERPRET)->val;
+  return evaluate(func->frame->root, func->frame)->val;
 }
 
 VALUE *interpret_program() {
@@ -142,7 +140,7 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     true_eval  = else_exists ? n->right->left  : n->right->right;
     false_eval = else_exists ? n->right->right : NULL;
     // Execute branch
-    return evaluate( is_true(l) ? true_eval : false_eval, f, INTERPRET)->val;
+    return evaluate( is_true(l) ? true_eval : false_eval, f)->val;
 
    case RETURN:
     if (V) printf("INTERPRET return called for function \"%s\"\n", f->proc_id);
@@ -156,7 +154,7 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     if (V) printf("INTERPRET ; Return has been called? %s\n",
                   f->return_called ? "yes" : "no");
     // Execute next statement if no return was called
-    return f->return_called ? l : evaluate(n->right, f, INTERPRET)->val;
+    return f->return_called ? l : evaluate(n->right, f)->val;
 
    // Doesn't really belong here but whatever
    case '=':

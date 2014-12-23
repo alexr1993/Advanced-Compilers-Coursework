@@ -6,7 +6,7 @@
  * Shim between evaluate.c and interpret.c | tac.c
  */
 
-EVAL *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
+EVAL *evaluate_leaf(NODE *n, FRAME *f) {
   switch(e_type) {
    case INTERPRET:
     return new_eval((void *)interpret_leaf(n, f));
@@ -18,8 +18,7 @@ EVAL *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   }
 }
 
-EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
-                       EVAL_TYPE e_type) {
+EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
   VALUE *val;
   switch(e_type) {
    case INTERPRET:
@@ -34,8 +33,7 @@ EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
   }
 }
 
-EVAL *logic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
-                  EVAL_TYPE e_type) {
+EVAL *logic(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
 
   EVAL *output;
   VALUE *val;
@@ -60,7 +58,7 @@ EVAL *logic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
   return output;
 }
 
-EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f, EVAL_TYPE e_type) {
+EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
   switch(e_type) {
    case INTERPRET:
     return new_eval((void *)interpret_control(n,

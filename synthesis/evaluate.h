@@ -17,6 +17,6 @@ typedef union eval {
   struct tac *code;
 } EVAL;
 
-EVAL *evaluate(NODE *, FRAME *, EVAL_TYPE);
+EVAL *evaluate(NODE *, FRAME *);
 EVAL *new_eval(void *);
 #endif
