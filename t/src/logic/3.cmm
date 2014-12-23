@@ -1,3 +1,10 @@
 int main() {
   return 42 != 0;
 }
+
+/*
+
+t1 = 42 != 0
+return t1
+
+*/

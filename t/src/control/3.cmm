@@ -9,3 +9,26 @@ int factorial(int n) {
 int main() {
   return factorial(3);
 }
+
+/* TAC
+
+declare factorial
+
+pop n
+t1 = n == 1
+if t1 goto Ltrue
+t2 = n - 1
+push t2
+t3 = call factorial
+t4 = n * t3
+return t4
+
+Ltrue:
+  return n
+
+declare main
+push 3
+t5 = call factorial
+return t5
+
+*/

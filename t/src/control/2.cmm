@@ -12,3 +12,16 @@ int main() {
   f();
   return g();
 }
+
+/* TAC
+
+declare e
+declare f
+declare g
+declare main
+
+call f
+t1 = call g
+return t1
+
+*/
