@@ -6,43 +6,51 @@
  * Shim between evaluate.c and interpret.c | tac.c
  */
 
-VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
+EVAL *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   switch(e_type) {
    case INTERPRET:
-    return interpret_leaf(n, f);
+    return new_eval((void *)interpret_leaf(n, f));
    case IR:
-    return tac_leaf(n, f);
+    return new_eval((void *)tac_leaf(n, f));
    default:
     perror("ERROR: Invalid eval type!\n");
     abort();
   }
 }
 
-VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
+EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
+                       EVAL_TYPE e_type) {
+  VALUE *val;
   switch(e_type) {
    case INTERPRET:
-    return new_val(INT_TYPE, new_int_state(
-      interpret_arithmetic(n->type, l->state->integer, r->state->integer)));
+    val =  new_val(INT_TYPE, new_int_state(
+      interpret_arithmetic(n->type, l->val->state->integer, r->val->state->integer)));
+    return new_eval((void *)val);
    case IR:
-    tac_arithmetic(n, l, r);
-    return NULL;
+    return new_eval((void *)tac_arithmetic(n, l->code, r->code));
    default:
     perror("Unknown EVAL_TYPE\n");
     exit(-1);
   }
 }
 
-VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
-  VALUE *output = new_val(INT_TYPE, NULL);
+EVAL *logic(NODE *n, EVAL *l, EVAL *r, FRAME *f,
+                  EVAL_TYPE e_type) {
 
+  EVAL *output;
+  VALUE *val;
+  TAC *code;
   switch(e_type) {
    case INTERPRET:
-    output->state = new_int_state(
-      interpret_logic(n->type, l->state->integer, r->state->integer));
+    val = new_val(INT_TYPE, new_int_state(
+      interpret_logic(n->type,
+                      l->val->state->integer,
+                      r->val->state->integer)));
+    output = new_eval((void *)val);
     break;
 
    case IR:
-    tac_logic(n, l, r);
+    code = tac_logic(n, l->code, r->code);
     break;
 
    default:
@@ -52,13 +60,15 @@ VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
   return output;
 }
 
-VALUE *control(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type) {
+EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f, EVAL_TYPE e_type) {
   switch(e_type) {
    case INTERPRET:
-    return interpret_control(n, l, r, f);
+    return new_eval((void *)interpret_control(n,
+                                              l ? l->val : NULL,
+                                              r ? r->val : NULL, f));
 
    case IR:
-    tac_control(n, l, r);
+    tac_control(n, l->code, r->code);
     return NULL;
 
    default:

@@ -65,7 +65,7 @@ void arg_traversal(NODE *argstree, FRAME *caller, VALUE **args,
     arg_traversal(argstree->left, caller, args, current_arg_ptr, nargs);
     arg_traversal(argstree->right, caller, args, current_arg_ptr, nargs);
   } else {
-    args[*current_arg_ptr] = evaluate(argstree, caller, INTERPRET);
+    args[*current_arg_ptr] = evaluate(argstree, caller, INTERPRET)->val;
     (*current_arg_ptr)++;
     if (V) printf("INTERPRET Evaluated arg %d\n", *current_arg_ptr);
   }
@@ -92,7 +92,10 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
   PARAM *p = func->params;
   for(i = 0; i < func->nparams; i++) {
     // FIXME get_val may be overcomplicating the code, token->val may do?
-    get_val(p->token->lexeme, func->frame)->state = args[i]->state;
+    VALUE *val = get_val(p->token->lexeme, func->frame);
+    if (val->state == NULL) abort();
+    if (args[i]->state == NULL) abort();
+    val->state = args[i]->state;
     if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
                   p->token->lexeme);
 
@@ -113,7 +116,8 @@ VALUE *call(function *func) {
   }
   if (V) print_function(func);
   if (V) print_frame(func->frame);
-  return evaluate(func->frame->root, func->frame, INTERPRET);
+  // Execute function
+  return evaluate(func->frame->root, func->frame, INTERPRET)->val;
 }
 
 VALUE *interpret_program() {
@@ -137,7 +141,8 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     else_exists = str_eq("else", named(n->right->type));
     true_eval  = else_exists ? n->right->left  : n->right->right;
     false_eval = else_exists ? n->right->right : NULL;
-    return evaluate( is_true(l) ? true_eval : false_eval, f, INTERPRET);
+    // Execute branch
+    return evaluate( is_true(l) ? true_eval : false_eval, f, INTERPRET)->val;
 
    case RETURN:
     if (V) printf("INTERPRET return called for function \"%s\"\n", f->proc_id);
@@ -150,7 +155,8 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
    case ';':
     if (V) printf("INTERPRET ; Return has been called? %s\n",
                   f->return_called ? "yes" : "no");
-    return f->return_called ? l : evaluate(n->right, f, INTERPRET);
+    // Execute next statement if no return was called
+    return f->return_called ? l : evaluate(n->right, f, INTERPRET)->val;
 
    // Doesn't really belong here but whatever
    case '=':

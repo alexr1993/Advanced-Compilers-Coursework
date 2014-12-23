@@ -16,10 +16,12 @@
 #include "common/util.h"
 
 extern int V, v;
+extern EVAL_TYPE e_type;
 
 char *filename;
 
 void translate_to_TAC() {
+  e_type = IR;
   parse(NULL);
   generate_tac();
 }
@@ -28,6 +30,7 @@ void translate_to_MIPS() {
 }
 
 void interpret(void) {
+  e_type = INTERPRET;
   parse(NULL);
   VALUE *output = interpret_program();
   printf("Output: %d\n", output->state->integer);

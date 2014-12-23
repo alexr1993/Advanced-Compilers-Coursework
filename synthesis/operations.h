@@ -8,9 +8,9 @@
 #include "interpret.h"
 #include "tac.h"
 
-VALUE *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type);
+EVAL *evaluate_leaf(NODE *n, FRAME *f, EVAL_TYPE e_type);
 
-VALUE *arithmetic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
-VALUE *logic(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
-VALUE *control(NODE *n, VALUE *l, VALUE *r, FRAME *f, EVAL_TYPE e_type);
+EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f, EVAL_TYPE e_type);
+EVAL *logic(NODE *n, EVAL *l, EVAL *r, FRAME *f, EVAL_TYPE e_type);
+EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f, EVAL_TYPE e_type);
 #endif

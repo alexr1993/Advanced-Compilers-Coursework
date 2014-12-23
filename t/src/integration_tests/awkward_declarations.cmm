@@ -2,7 +2,7 @@
 int f(int x)
 {
     int z = 35, y = 3;
-    return g(x + z);
+    return g(x + z, 0);
 }
 
 int g(int y, int z)

@@ -1,6 +1,7 @@
 #include "evaluate.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "interpret.h"
 #include "tac.h"
@@ -9,21 +10,42 @@
 
 extern int V,v;
 
+EVAL *new_eval(void *obj) {
+  EVAL *eval = malloc(sizeof(EVAL));
+  switch(e_type) {
+   case INTERPRET:
+    eval->val = (VALUE *)obj;
+    break;
+   case IR:
+    eval->code = (TAC *)obj;
+    break;
+   default:
+    perror("Error: Invalid e_type\n");
+    return NULL;
+  }
+  return eval;
+}
+
+void print_eval(EVAL *obj) {
+  if (obj == NULL) return;
+  if (e_type == INTERPRET) print_val(obj->val);
+}
+
 /* Post order traversal of abstract syntax tree */
-VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
+EVAL *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   if (n->type == LEAF) {
-    VALUE *val = evaluate_leaf(n, f, e_type);
+    EVAL *eval = evaluate_leaf(n, f, e_type);
     if (V) {
       printf("EVALUATE Leaf: \n  ");
       print_token(get_token(n));
       printf("  ");
-      print_val(val);
+      print_eval(eval);
     }
-    return val;
+    return eval;
   }
 
   /* Eval children */
-  VALUE *l = NULL, *r = NULL;
+  EVAL *l = NULL, *r = NULL;
   // TODO encapsulate this "should_evaluate()"
   if (n->type == 'd' || (n->type == 'D' && n != f->root)) return NULL;
   if (n->left) l = evaluate(n->left, f, e_type);
@@ -37,9 +59,9 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
   if (V) {
     printf("EVALUATE (\"%s\") %s\n", f->proc_id, named(n->type));
     printf("  L:");
-    print_val(l);
+    print_eval(l);
     printf("  R:");
-    print_val(r);
+    print_eval(r);
   }
   /* Eval node */
   switch(n->type) {
@@ -56,3 +78,4 @@ VALUE *evaluate(NODE *n, FRAME *f, EVAL_TYPE e_type) {
     return r; // TODO this is a stab in the dark, check function AST structure
   }
 }
+
