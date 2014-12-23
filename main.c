@@ -15,29 +15,21 @@
 
 #include "common/util.h"
 
-extern int yyparse();
-extern NODE *ans;
-extern FRAME *gbl_frame;
 extern int V, v;
 
 char *filename;
 
 void translate_to_TAC() {
-  yyparse();
-  NODE *tree = ans;
-  print_tree(tree);
-  //evaluate(tree, NULL, gbl_frame, TAC);
-  return;
+  parse(NULL);
+  generate_tac();
 }
 
 void translate_to_MIPS() {
-  return;
 }
 
-void interpret_source(void) {
-  if (v) printf("Starting parse + semantic analysis\n");
+void interpret(void) {
   parse(NULL);
-  VALUE *output = interpret_program("main", gbl_frame);
+  VALUE *output = interpret_program();
   printf("Output: %d\n", output->state->integer);
 }
 
@@ -87,7 +79,7 @@ int main(int argc, char *argv[]) {
     abort();
   }
   else if ( str_eq(action, "interpret") ) {
-    interpret_source();
+    interpret();
   }
   else if ( str_eq(action, "tac") ) {
     translate_to_TAC();

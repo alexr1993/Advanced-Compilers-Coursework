@@ -1,3 +1,12 @@
 int main() {
   return 42;
 }
+/* translates to something like this:
+
+newfunc
+begin main
+return 42
+end
+
+call newfunc
+*/
