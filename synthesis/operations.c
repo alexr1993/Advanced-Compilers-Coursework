@@ -66,7 +66,7 @@ EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
                                               r ? r->val : NULL, f));
 
    case IR:
-    tac_control(n, l->code, r->code);
+    tac_control(n, l->code, r->code, f);
     return NULL;
 
    default:

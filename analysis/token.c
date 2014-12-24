@@ -56,11 +56,17 @@ char *type_to_str(int type) {
 }
 
 void print_token(TOKEN *t) {
-    printf("TOKEN \"%s\" (lexeme), type: %s, data_type: %s, param: %s\n",
+  switch(t->type) {
+   case IDENTIFIER:
+    printf("TOKEN \"%s\" (lexeme), type: IDENTIFIER, data_type: %s, param: %s\n",
             t->lexeme,
-            type_to_str(t->type),
             data_type_to_str(t->data_type),
             t->declaration_type == PARAMETER ? "yes" : "no");
+    break;
+   case CONSTANT:
+    printf("TOKEN \"%d\" (value), type: CONSTANT\n", t->value);
+    break;
+  }
 }
 
 /* The token stack is useful for populating frames during parsing */

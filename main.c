@@ -74,14 +74,13 @@ int main(int argc, char *argv[]) {
       abort();
     }
   }
-  if (action == NULL) action = "interpret";
+  if (action == NULL) {
+    action = "tac";
+    printf("Setting mode to \"%s\" by default.\n", action);
+  }
 
   /* Translate */
-  if ( str_eq(action, "") ) {
-    printf("No action selected\n");
-    abort();
-  }
-  else if ( str_eq(action, "interpret") ) {
+  if ( str_eq(action, "interpret") ) {
     interpret();
   }
   else if ( str_eq(action, "tac") ) {

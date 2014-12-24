@@ -11,15 +11,15 @@ typedef struct tac {
   TOKEN *arg1;
   TOKEN *arg2;
   TOKEN *result;
-  TOKEN *op;
+  int op;
 } TAC;
 
 TAC *tac_leaf(NODE *, FRAME *);
 TAC *tac_arithmetic(NODE *, TAC *, TAC *);
 TAC *tac_logic(NODE *, TAC *, TAC *);
-TAC *tac_control(NODE *, TAC *, TAC *);
+TAC *tac_control(NODE *, TAC *, TAC *, FRAME *);
 
-TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, TOKEN *);
+TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, int);
 
 void generate_tac();
 

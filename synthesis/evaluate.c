@@ -29,6 +29,7 @@ EVAL *new_eval(void *obj) {
 void print_eval(EVAL *obj) {
   if (obj == NULL) return;
   if (e_type == INTERPRET) print_val(obj->val);
+  if (e_type == IR) print_tac(obj->code);
 }
 
 /* Post order traversal of abstract syntax tree */
