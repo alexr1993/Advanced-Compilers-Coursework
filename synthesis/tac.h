@@ -12,7 +12,14 @@ typedef struct tac {
   TOKEN *arg2;
   TOKEN *result;
   int op;
+  struct tac *next;
+  struct tac *prev;
 } TAC;
+
+typedef struct label {
+  char *name;
+  TAC *code;
+} LABEL;
 
 TAC *tac_leaf(NODE *, FRAME *);
 TAC *tac_arithmetic(NODE *, TAC *, TAC *);
