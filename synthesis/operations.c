@@ -66,8 +66,9 @@ EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
                                               r ? r->val : NULL, f));
 
    case IR:
-    tac_control(n, l->code, r->code, f);
-    return NULL;
+    return new_eval((void *)tac_control(n,
+                                        l->code,
+                                        r == NULL ? NULL : r->code, f));
 
    default:
     perror("Unknown EVAL_TYPE\n");

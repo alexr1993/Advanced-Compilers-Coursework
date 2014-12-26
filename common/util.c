@@ -66,6 +66,8 @@ char *named(int t) {
     return "break";
    case RETURN:
     return "return";
+   case LOAD:
+    return "LOAD";
   }
 }
 
