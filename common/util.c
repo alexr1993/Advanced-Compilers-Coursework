@@ -67,7 +67,9 @@ char *named(int t) {
    case RETURN:
     return "return";
    case LOAD:
-    return "LOAD";
+    return "load";
+   case GOTO:
+    return "goto";
   }
 }
 

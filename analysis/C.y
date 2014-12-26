@@ -43,6 +43,8 @@ FRAME *parent_frame;
 
 %token  IF ELSE WHILE CONTINUE BREAK RETURN
 %token LOAD PUSH
+
+%token GOTO
 %start goal
 %%
 

@@ -31,7 +31,7 @@ void create_str_rep(TAC *code) {
             op_to_str(code->arg1));
     break;
    case IF:
-    sprintf(str, "not implemented yet");
+    sprintf(str, "if %s goto %s", op_to_str(code->arg1), op_to_str(code->arg2));
     break;
    case RETURN: case PUSH: case LOAD:
     sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
@@ -64,8 +64,17 @@ TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op) {
 TOKEN *new_temp() {
   static int id = 0;
   id++;
-  char name[2];
+  char name[4];
   sprintf(name, "t%d", id);
+  if (V) printf("TAC \"%s\" created\n", name);
+  return make_identifier(name);
+}
+
+TOKEN *new_label() {
+  static int id = 0;
+  id++;
+  char name[4];
+  sprintf(name, "L%d", id);
   if (V) printf("TAC \"%s\" created\n", name);
   return make_identifier(name);
 }
@@ -126,8 +135,11 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
    case APPLY:
     push_args(n->right, f);
     code = new_tac(l->result, NULL, new_temp(), APPLY);
+    // TODO jump to label
     break;
    case IF:
+    // TODO evaluate boolean and jump
+    code = new_tac(l->result, new_label(), NULL, IF);
     break;
    case RETURN:
     code = new_tac(l->result, NULL, NULL, RETURN);

@@ -53,7 +53,7 @@ EVAL *evaluate(NODE *n, FRAME *f) {
 
   // Certain control statement will evaluate the right child themselves if
   // necessary
-  if (n->right && n->type != ';' && n->type != IF) {
+  if (n->right && n->type != ';' && n->type != IF && n->type != APPLY) {
     r = evaluate(n->right, f); // don't want to do this for IF and ;
   }
 
