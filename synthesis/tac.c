@@ -9,14 +9,55 @@ extern int V, v;
  * INSTANCE MANIPULATION
  ***************************************************************************/
 
+char *op_to_str(TOKEN *t) {
+  if (t == NULL) return "";
+  static char b[100];
+  switch(t->type) {
+   case IDENTIFIER:
+    return t->lexeme;
+   case CONSTANT:
+    sprintf(b, "%d", t->value);
+    return b;
+  }
+  return NULL;
+}
+
+void create_str_rep(TAC *code) {
+  char *str = malloc(50);
+
+  switch(code->op) {
+   case APPLY:
+    sprintf(str, "%s := %s %s", op_to_str(code->result), named(code->op),
+            op_to_str(code->arg1));
+    break;
+   case IF:
+    sprintf(str, "not implemented yet");
+    break;
+   case RETURN: case PUSH: case LOAD:
+    sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
+    break;
+   case '=':
+    sprintf(str, "%s := %s", op_to_str(code->result), op_to_str(code->arg1));
+    break;
+   default:
+    sprintf(str,                  "%s := %s %s %s", op_to_str(code->result),
+            op_to_str(code->arg1), named(code->op), op_to_str(code->arg2));
+  }
+  code->str = str;
+}
+
 TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op) {
   TAC *code = malloc(sizeof(TAC));
   code->arg1   = arg1;
   code->arg2   = arg2;
   code->op     = op;
   code->result = result;
-  // Print TAC if it is not simply hosting a constant integer
-  if (result == NULL || result->type != CONSTANT) print_tac(code);
+  if (op == 0) {
+    code->str = NULL;
+  } else {
+    create_str_rep(code);
+    print_tac(code);
+  }
   return code;
 }
 
@@ -38,10 +79,10 @@ TAC *tac_leaf(NODE *n, FRAME *f) {
   TAC *code;
   switch(t->type) {
    case IDENTIFIER:
-    code = new_tac(NULL, NULL, t, LOAD);
+    code = new_tac(t, NULL, t, LOAD);
     break;
    case CONSTANT:
-    code = new_tac(NULL, NULL, t, 0);
+    code = new_tac(t, NULL, t, 0);
     break;
    default:
     return NULL;
@@ -92,9 +133,9 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     code = new_tac(l->result, NULL, NULL, RETURN);
     break;
    case ';':
-    tmp = evaluate(n->left, f)->code;
+    //tmp = evaluate(n->left, f)->code;
     code = evaluate(n->right, f)->code;
-    code->prev = tmp;
+    //code->prev = tmp;
     break;
    case '=':
     code = new_tac(r->result, NULL, l->result, '=');
@@ -120,43 +161,14 @@ void generate_tac() {
  * DIAGNOSTICS
  ***************************************************************************/
 
-char *op_to_str(TOKEN *t) {
-  if (t == NULL) return "";
-  static char b[100];
-  switch(t->type) {
-   case IDENTIFIER:
-    return t->lexeme;
-   case CONSTANT:
-    sprintf(b, "%d", t->value);
-    return b;
-  }
-  return NULL;
-}
-
-char *int_to_str(int x) {
-  static char str[15];
-  sprintf(str, "%d", x);
-  return str;
-}
-
 void print_tac(TAC *t) {
   if (t == NULL) {
     printf("NULL TAC (print_tac)\n");
     return;
+  } else if (t->str == NULL) {
+    printf("TAC has no string representation\n");
+    return;
   }
-  /* Arithmetic/Logic */
-  if (t->result != NULL && t->arg1 != NULL)
-    printf("%s := %s %s %s\n", op_to_str(t->result),
-                               op_to_str(t->arg1),
-                               named(t->op),
-                               op_to_str(t->arg2));
-  /* APPLY, PUSH */
-  else if (t->result != NULL)
-    printf("%s %s\n", named(t->op),
-                         op_to_str(t->result));
-  /* =, RETURN (stuff with no result temp) */
-  else
-    printf("%s %s %s\n", named(t->op),
-                         op_to_str(t->arg1),
-                         op_to_str(t->arg2));
+  printf("%s\n", t->str);
 }
+

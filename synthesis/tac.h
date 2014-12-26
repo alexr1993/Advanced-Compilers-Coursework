@@ -14,6 +14,7 @@ typedef struct tac {
   int op;
   struct tac *next;
   struct tac *prev;
+  char *str;
 } TAC;
 
 typedef struct label {
