@@ -136,6 +136,7 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     push_args(n->right, f);
     code = new_tac(l->result, NULL, new_temp(), APPLY);
     // TODO jump to label
+    // goto(fn->label)
     break;
    case IF:
     // TODO evaluate boolean and jump
