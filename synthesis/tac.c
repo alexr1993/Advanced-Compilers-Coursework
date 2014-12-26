@@ -144,14 +144,17 @@ void print_tac(TAC *t) {
     printf("NULL TAC (print_tac)\n");
     return;
   }
+  /* Arithmetic/Logic */
   if (t->result != NULL && t->arg1 != NULL)
     printf("%s := %s %s %s\n", op_to_str(t->result),
                                op_to_str(t->arg1),
                                named(t->op),
                                op_to_str(t->arg2));
+  /* APPLY, PUSH */
   else if (t->result != NULL)
     printf("%s %s\n", named(t->op),
                          op_to_str(t->result));
+  /* =, RETURN (stuff with no result temp) */
   else
     printf("%s %s %s\n", named(t->op),
                          op_to_str(t->arg1),
