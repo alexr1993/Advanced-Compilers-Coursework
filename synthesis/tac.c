@@ -107,23 +107,12 @@ TAC *tac_logic(NODE *n, TAC *l, TAC *r) {
   return new_tac(l->result , r->result, new_temp(), n->type);
 }
 
-void push_arg(TAC *code) {
-  switch(code->result->type) {
-   case IDENTIFIER:
-    printf("PUSH %s\n", code->result->lexeme);
-    break;
-   case CONSTANT:
-    printf("PUSH %d\n", code->result->value);
-    break;
-  }
-}
-
 void push_args(NODE *argstree, FRAME *f) {
   if (argstree->type == ',') {
     push_args(argstree->left, f);
     push_args(argstree->right, f);
   } else {
-    push_arg(evaluate(argstree, f)->code);
+    new_tac(evaluate(argstree, f)->code->result, NULL, NULL, PUSH);
   }
 }
 
