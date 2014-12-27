@@ -14,6 +14,8 @@ struct node;
 #define INT_TYPE  0
 #define FN_TYPE   1
 
+struct token *int_token, *void_token, *function_token, *return_label;
+
 struct function;
 struct PARAM;
 

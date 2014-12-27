@@ -7,6 +7,9 @@ extern int V, v;
 extern NODE *ans;
 extern FRAME *gbl_frame;
 
+static bool unresolved_if = false;
+static TOKEN *next_label = NULL;;
+
 /****************************************************************************
  * INSTANCE MANIPULATION
  ***************************************************************************/
@@ -26,7 +29,6 @@ char *op_to_str(TOKEN *t) {
 
 void create_str_rep(TAC *code) {
   char *str = malloc(50);
-
   switch(code->op) {
    case APPLY:
     sprintf(str, "%s := %s %s", op_to_str(code->result), named(code->op),
@@ -35,7 +37,7 @@ void create_str_rep(TAC *code) {
    case IF:
     sprintf(str, "if %s goto %s", op_to_str(code->arg1), op_to_str(code->arg2));
     break;
-   case RETURN: case PUSH: case LOAD:
+   case RETURN: case PUSH: case LOAD: case GOTO:
     sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
     break;
    case '=':
@@ -54,6 +56,9 @@ TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op) {
   code->arg2   = arg2;
   code->op     = op;
   code->result = result;
+  if (unresolved_if) {
+    code->label = next_label;
+  }
   if (op == 0) {
     code->str = NULL;
   } else {
@@ -118,11 +123,47 @@ void push_args(NODE *argstree, FRAME *f) {
   }
 }
 
+TAC *gen_fn(NODE *D) {
+  printf("Begin function \"%s\"\n", D->frame->proc_id);
+  // pop params
+  TAC *code = evaluate(D->right, D->frame)->code;
+  printf("End function \"%s\"\n", D->frame->proc_id);
+  return code;
+}
+
+TAC *gen_cond(NODE *n, TAC *cond, FRAME *f) {
+  //Create true f'nality
+  TOKEN *true_label = new_label();
+  new_tac(cond->result, true_label, NULL, IF); // if true jump to true
+
+  NODE *false_root = get_false_root(n);
+
+  // False branch, jumps to label with currently unknown destination
+  evaluate(false_root, f);
+  TAC *goto_exit = new_tac(new_label(), NULL, NULL, GOTO); // Exit cond
+
+  // True branch
+  NODE *true_root = get_true_root(n);
+  TAC *true_code = evaluate(true_root,f)->code;
+  true_code->label = true_label; // Mark as destination for true jump
+  printf("(2) "); print_tac(true_code);
+
+  // TODO this is an open issue - the best resolution is to set the label to 
+  // 'return' once the function exits with not statements to jump to after the
+  // if, this would be after gen_fn or something.
+  // next created TAC must carry next_label or change the label to a 'return'
+  unresolved_if = true;
+  next_label = goto_exit->arg1;
+}
+
 TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
   TAC *code;
   TAC *tmp;
   //return new_tac(l->result, r->result, new_temp(), n->type);
   switch(n->type) {
+   case 'D':
+    code = gen_fn(n);
+    break;
    case APPLY:
     push_args(n->right, f);
     code = new_tac(l->result, NULL, new_temp(), APPLY);
@@ -131,7 +172,7 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     break;
    case IF:
     // TODO evaluate boolean and jump
-    code = new_tac(l->result, new_label(), NULL, IF);
+    code = gen_cond(n, l, f);
     break;
    case RETURN:
     code = new_tac(l->result, NULL, NULL, RETURN);
@@ -145,7 +186,7 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     code = new_tac(r->result, NULL, l->result, '=');
     break;
    default:
-    perror("Error: TAC control problem\n");
+    //perror("Error: TAC control problem\n");
     code = NULL;
     break;
   }
@@ -173,6 +214,11 @@ void print_tac(TAC *t) {
     printf("TAC has no string representation\n");
     return;
   }
-  printf("%s\n", t->str);
+  if (t->label != NULL) {
+    printf("%s: ", t->label->lexeme);
+    printf("%s\n", t->str);
+  } else {
+    printf("    %s\n", t->str);
+  }
 }
 

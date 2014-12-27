@@ -124,7 +124,6 @@ VALUE *interpret_program() {
 }
 
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
-  bool else_exists;
   NODE *true_eval, *false_eval;
 
   switch(n->type) {
@@ -136,9 +135,8 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     return call(l->state->function);
 
    case IF:
-    else_exists = str_eq("else", named(n->right->type));
-    true_eval  = else_exists ? n->right->left  : n->right->right;
-    false_eval = else_exists ? n->right->right : NULL;
+    true_eval  = get_true_root(n);
+    false_eval = get_false_root(n);
     // Execute branch
     return evaluate( is_true(l) ? true_eval : false_eval, f)->val;
 

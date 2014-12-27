@@ -19,8 +19,6 @@
 
 extern int V, v;
 
-TOKEN *int_token, *void_token, *function_token;
-
 TOKEN **new_symbtable() {
   TOKEN **symbtable = (TOKEN**)calloc(HASH_SIZE, sizeof(TOKEN*));
   return symbtable;

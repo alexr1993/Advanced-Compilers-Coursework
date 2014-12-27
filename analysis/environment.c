@@ -134,7 +134,7 @@ void init_environment() {
   function_token->lexeme = "function";
   void_token = new_token(VOID);
   void_token->lexeme = "void";
-
+  return_label = make_identifier("Lreturn");
   init_token_stack();
 }
 

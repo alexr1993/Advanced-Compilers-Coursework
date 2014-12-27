@@ -27,7 +27,10 @@ EVAL *new_eval(void *obj) {
 }
 
 void print_eval(EVAL *obj) {
-  if (obj == NULL) return;
+  if (obj == NULL) {
+    printf("\n");
+    return;
+  }
   if (e_type == INTERPRET) print_val(obj->val);
   if (e_type == IR) print_tac(obj->code);
 }
@@ -50,16 +53,18 @@ bool should_eval_r(NODE *n, FRAME *f) {
      default:
       return true;
     }
-  }
-  else if (e_type == IR) {
+  } else if (e_type == IR) {
     switch(n->type) {
      case 'D':
       return n == f->root;
+     case IF: case ';':
+      return false;
      default:
       return true;
     }
   }
   perror("Something's wrong");
+  return false;
 }
 
 /* Post order traversal of abstract syntax tree */
@@ -78,9 +83,7 @@ EVAL *evaluate(NODE *n, FRAME *f) {
   /* Eval children */
   EVAL *l = NULL, *r = NULL;
   if (should_eval_l(n, f)) l = evaluate(n->left,  f);
-  else printf("%s: don't eval left\n", named(n->type));
   if (should_eval_r(n, f)) r = evaluate(n->right, f);
-  else printf("%s: don't eval right\n", named(n->type));
   if (V) {
     printf("EVALUATE (\"%s\") %s\n", f->proc_id, named(n->type));
     printf("  L:");
@@ -99,6 +102,7 @@ EVAL *evaluate(NODE *n, FRAME *f) {
     return logic(n, l, r, f);
    /* Control Flow */
    case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';': case '=':
+   case 'D':
     return control(n, l, r, f);
    default:
     return r; // TODO this is a stab in the dark, check function AST structure

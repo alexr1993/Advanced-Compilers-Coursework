@@ -109,6 +109,16 @@ void print_tree(NODE *tree) {
   print_tree0(tree, 0);
 }
 
+/* Returns the root of the true subtree, given an IF node */
+NODE *get_true_root(NODE *n) {
+  return ELSE == n->right->type ? n->right->left  : n->right;
+}
+
+/* Returns the root of the false subtree, given an IF node */
+NODE *get_false_root(NODE *n) {
+  return ELSE == n->right->type ? n->right->right : NULL;
+}
+
 /* Input File Utils */
 void set_input_file(char *filename) {
   printf("Setting input file to %s\n", filename);
@@ -129,7 +139,7 @@ void parse(char *filename) {
   init_environment();
   if (v) printf("yyparsing\n");
   yyparse();
-  if (V) print_tree(ans);
+  if (v) print_tree(ans);
   if (V) print_environment(gbl_frame);
   close_input_file();
 }

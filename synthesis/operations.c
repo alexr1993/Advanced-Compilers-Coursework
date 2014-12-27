@@ -67,7 +67,7 @@ EVAL *control(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
 
    case IR:
     return new_eval((void *)tac_control(n,
-                                        l->code,
+                                        l == NULL ? NULL : l->code,
                                         r == NULL ? NULL : r->code, f));
 
    default:
