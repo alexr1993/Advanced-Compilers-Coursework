@@ -32,6 +32,36 @@ void print_eval(EVAL *obj) {
   if (e_type == IR) print_tac(obj->code);
 }
 
+bool should_eval_l(NODE *n, FRAME *f) {
+  if (n->left == NULL) return false;
+  // Fn declarations handled in first pass
+  return n->type != 'D';
+}
+
+bool should_eval_r(NODE *n, FRAME *f) {
+  if (n->right == NULL) return false;
+  if (e_type == INTERPRET) {
+    switch(n->type) {
+     // Only eval function body if it belongs to the current frame
+     case 'D':
+      return n == f->root;
+     case ';': case IF: case APPLY:
+      return false;
+     default:
+      return true;
+    }
+  }
+  else if (e_type == IR) {
+    switch(n->type) {
+     case 'D':
+      return n == f->root;
+     default:
+      return true;
+    }
+  }
+  perror("Something's wrong");
+}
+
 /* Post order traversal of abstract syntax tree */
 EVAL *evaluate(NODE *n, FRAME *f) {
   if (n->type == LEAF) {
@@ -47,16 +77,10 @@ EVAL *evaluate(NODE *n, FRAME *f) {
 
   /* Eval children */
   EVAL *l = NULL, *r = NULL;
-  // TODO encapsulate this "should_evaluate()"
-  if (n->type == 'd' || (n->type == 'D' && n != f->root)) return NULL;
-  if (n->left) l = evaluate(n->left, f);
-
-  // Certain control statement will evaluate the right child themselves if
-  // necessary
-  if (n->right && n->type != ';' && n->type != IF && n->type != APPLY) {
-    r = evaluate(n->right, f); // don't want to do this for IF and ;
-  }
-
+  if (should_eval_l(n, f)) l = evaluate(n->left,  f);
+  else printf("%s: don't eval left\n", named(n->type));
+  if (should_eval_r(n, f)) r = evaluate(n->right, f);
+  else printf("%s: don't eval right\n", named(n->type));
   if (V) {
     printf("EVALUATE (\"%s\") %s\n", f->proc_id, named(n->type));
     printf("  L:");
@@ -64,6 +88,7 @@ EVAL *evaluate(NODE *n, FRAME *f) {
     printf("  R:");
     print_eval(r);
   }
+
   /* Eval node */
   switch(n->type) {
    /* Arithmetic */

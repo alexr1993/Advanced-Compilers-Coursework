@@ -4,6 +4,8 @@
 #include <stdlib.h>
 
 extern int V, v;
+extern NODE *ans;
+extern FRAME *gbl_frame;
 
 /****************************************************************************
  * INSTANCE MANIPULATION
@@ -155,8 +157,8 @@ void gen(function *func) {
 }
 
 void generate_tac() {
-  function *main_fn = get_val("main", gbl_frame)->state->function;
-  gen(main_fn);
+  //function *main_fn = get_val("main", gbl_frame)->state->function;
+ evaluate(ans, gbl_frame);
 }
 
 /****************************************************************************
