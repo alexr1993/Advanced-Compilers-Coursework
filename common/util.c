@@ -72,6 +72,8 @@ char *named(int t) {
     return "push";
    case GOTO:
     return "goto";
+   case POP:
+    return "pop";
   }
 }
 

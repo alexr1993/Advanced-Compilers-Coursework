@@ -37,7 +37,7 @@ void create_str_rep(TAC *code) {
    case IF:
     sprintf(str, "if %s goto %s", op_to_str(code->arg1), op_to_str(code->arg2));
     break;
-   case RETURN: case PUSH: case LOAD: case GOTO:
+   case RETURN: case PUSH: case LOAD: case GOTO: case POP:
     sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
     break;
    case '=':
@@ -124,10 +124,16 @@ void push_args(NODE *argstree, FRAME *f) {
 }
 
 TAC *gen_fn(NODE *D) {
-  printf("Begin function \"%s\"\n", D->frame->proc_id);
+  printf("\nbegin %s\n", D->frame->proc_id);
   // pop params
+  function *fn = get_val(D->frame->proc_id, D->frame)->state->function;
+  PARAM *tmp = fn->params;
+  while (tmp != NULL) {
+    new_tac(tmp->token, NULL, tmp->token, POP);
+    tmp = tmp->next;
+  }
   TAC *code = evaluate(D->right, D->frame)->code;
-  printf("End function \"%s\"\n", D->frame->proc_id);
+  printf("end %s\n\n", D->frame->proc_id);
   return code;
 }
 
@@ -165,7 +171,7 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     code = gen_fn(n);
     break;
    case APPLY:
-    push_args(n->right, f);
+    if (n->right != NULL) push_args(n->right, f);
     code = new_tac(l->result, NULL, new_temp(), APPLY);
     // TODO jump to label
     // goto(fn->label)
@@ -222,3 +228,9 @@ void print_tac(TAC *t) {
   }
 }
 
+print_program(TAC *t) {
+  while (t != NULL) {
+    print_tac(t);
+    t = t->next;
+  }
+}

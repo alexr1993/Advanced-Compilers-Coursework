@@ -1,5 +1,3 @@
-void e() {}
-
 int f() {
   return 1;
 }
