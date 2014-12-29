@@ -66,6 +66,7 @@ char *named(int t) {
     return "break";
    case RETURN:
     return "return";
+   /* TAC */
    case LOAD:
     return "load";
    case PUSH:
@@ -74,6 +75,10 @@ char *named(int t) {
     return "goto";
    case POP:
     return "pop";
+   case BEGIN:
+    return "begin";
+   case END:
+    return "end";
   }
 }
 

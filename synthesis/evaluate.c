@@ -57,7 +57,7 @@ bool should_eval_r(NODE *n, FRAME *f) {
     switch(n->type) {
      case 'D':
       return n == f->root;
-     case IF: case ';':
+     case IF: case APPLY:
       return false;
      default:
       return true;
@@ -104,8 +104,14 @@ EVAL *evaluate(NODE *n, FRAME *f) {
    case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';': case '=':
    case 'D':
     return control(n, l, r, f);
-   default:
-    return r; // TODO this is a stab in the dark, check function AST structure
+   default: // pretty much just ~
+    switch(e_type) {
+     case INTERPRET:
+      return r;
+     case IR:
+      link(l->code, r->code);
+      return l;
+    }
   }
 }
 

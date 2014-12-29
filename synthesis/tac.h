@@ -24,11 +24,10 @@ typedef struct label {
 } LABEL;
 
 TAC *tac_leaf(NODE *, FRAME *);
-TAC *tac_arithmetic(NODE *, TAC *, TAC *);
-TAC *tac_logic(NODE *, TAC *, TAC *);
+TAC *tac_arith_and_logic(NODE *, TAC *, TAC *);
 TAC *tac_control(NODE *, TAC *, TAC *, FRAME *);
 
-TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, int);
+TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, int, TAC *);
 
 void generate_tac();
 

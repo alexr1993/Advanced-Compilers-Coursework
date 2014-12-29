@@ -16,7 +16,7 @@ static TOKEN *next_label = NULL;;
 
 char *op_to_str(TOKEN *t) {
   if (t == NULL) return "";
-  static char b[100];
+  char *b = malloc(100);
   switch(t->type) {
    case IDENTIFIER:
     return t->lexeme;
@@ -37,7 +37,8 @@ void create_str_rep(TAC *code) {
    case IF:
     sprintf(str, "if %s goto %s", op_to_str(code->arg1), op_to_str(code->arg2));
     break;
-   case RETURN: case PUSH: case LOAD: case GOTO: case POP:
+   case RETURN: case PUSH: case LOAD: case GOTO: case POP: case BEGIN:
+   case END:
     sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
     break;
    case '=':
@@ -50,14 +51,43 @@ void create_str_rep(TAC *code) {
   code->str = str;
 }
 
-TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op) {
+TAC *traverse_to_end(TAC *code) {
+  if (code == NULL) return NULL;
+  while (code->next != NULL) {
+    code = code->next;
+  }
+  return code;
+}
+
+TAC *traverse_to_start(TAC *code) {
+  if (code == NULL) return NULL;
+  while (code->prev != NULL) {
+    code = code->prev;
+  }
+  return code;
+}
+
+// Links next to the end of prev
+void link(TAC *prev, TAC *next) {
+  if (prev == NULL || next == NULL) perror("Error! Linking NULL");
+  prev = traverse_to_end(prev);
+  next = traverse_to_start(next);
+  prev->next = next;
+  next->prev = prev;
+}
+
+TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op, TAC *prev) {
   TAC *code = malloc(sizeof(TAC));
   code->arg1   = arg1;
   code->arg2   = arg2;
   code->op     = op;
   code->result = result;
+  code->next   = NULL;
+  if (prev != NULL) link(prev, code);
+
   if (unresolved_if) {
     code->label = next_label;
+    unresolved_if = false;
   }
   if (op == 0) {
     code->str = NULL;
@@ -86,6 +116,7 @@ TOKEN *new_label() {
   return make_identifier(name);
 }
 
+
 /****************************************************************************
  * TRANSLATION
  ***************************************************************************/
@@ -95,10 +126,10 @@ TAC *tac_leaf(NODE *n, FRAME *f) {
   TAC *code;
   switch(t->type) {
    case IDENTIFIER:
-    code = new_tac(t, NULL, t, LOAD);
+    code = new_tac(t, NULL, t, LOAD, NULL);
     break;
    case CONSTANT:
-    code = new_tac(t, NULL, t, 0);
+    code = new_tac(t, NULL, t, 0, NULL);
     break;
    default:
     return NULL;
@@ -106,51 +137,74 @@ TAC *tac_leaf(NODE *n, FRAME *f) {
   return code;
 }
 
-TAC *tac_arithmetic(NODE *n, TAC *l, TAC* r) {
-  return new_tac(l->result , r->result, new_temp(), n->type);
+TAC *tac_arith_and_logic(NODE *n, TAC *l, TAC* r) {
+  l = traverse_to_end(l);
+  r = traverse_to_end(r);
+  link(l, r);
+  new_tac(l->result, r->result, new_temp(), n->type, r);
+  return l;
 }
 
-TAC *tac_logic(NODE *n, TAC *l, TAC *r) {
-  return new_tac(l->result , r->result, new_temp(), n->type);
-}
-
-void push_args(NODE *argstree, FRAME *f) {
+TAC *push_args(NODE *argstree, FRAME *f, TAC *prev) {
   if (argstree->type == ',') {
-    push_args(argstree->left, f);
-    push_args(argstree->right, f);
+    return push_args(argstree->right, f, push_args(argstree->left, f, prev));
   } else {
-    new_tac(evaluate(argstree, f)->code->result, NULL, NULL, PUSH);
+    new_tac(evaluate(argstree, f)->code->result, NULL, NULL, PUSH, prev);
+    return prev;
   }
 }
 
+/* Generate function code and return the first instruction */
 TAC *gen_fn(NODE *D) {
-  printf("\nbegin %s\n", D->frame->proc_id);
-  // pop params
+  // Begin
+  TOKEN *fn_label = make_identifier(D->frame->proc_id);
+  TAC *begin      = new_tac(fn_label, NULL, NULL, BEGIN, NULL);
+  begin->label    = fn_label;
+  TAC *prev       = begin;
+
+  // Pop params
   function *fn = get_val(D->frame->proc_id, D->frame)->state->function;
   PARAM *tmp = fn->params;
+
   while (tmp != NULL) {
-    new_tac(tmp->token, NULL, tmp->token, POP);
+    prev = new_tac(tmp->token, NULL, tmp->token, POP, prev);
     tmp = tmp->next;
   }
+
+  // Gen body
   TAC *code = evaluate(D->right, D->frame)->code;
-  printf("end %s\n\n", D->frame->proc_id);
-  return code;
+  link(prev, code);
+
+  // End
+  new_tac(fn_label, NULL, NULL, END, code);
+  return begin;
 }
 
+/* Generate conditional code and return the first instruction */
 TAC *gen_cond(NODE *n, TAC *cond, FRAME *f) {
   //Create true f'nality
   TOKEN *true_label = new_label();
-  new_tac(cond->result, true_label, NULL, IF); // if true jump to true
 
+  // if true jump to true
+  TAC *if_start = new_tac(cond->result, true_label, NULL, IF, cond);
   NODE *false_root = get_false_root(n);
+  // Jumps to label with currently unknown destination
+  TAC *goto_exit = NULL;
 
-  // False branch, jumps to label with currently unknown destination
-  evaluate(false_root, f);
-  TAC *goto_exit = new_tac(new_label(), NULL, NULL, GOTO); // Exit cond
+  if (false_root != NULL) {
+    // There is a false branch
+    TAC *false_cond = evaluate(false_root, f)->code;
+    link(if_start, false_cond);
+    goto_exit = new_tac(new_label(), NULL, NULL, GOTO, false_cond);
+  } else {
+    // There is no execution for the false outcome
+    goto_exit = new_tac(new_label(), NULL, NULL, GOTO, if_start);
+  }
 
   // True branch
   NODE *true_root = get_true_root(n);
   TAC *true_code = evaluate(true_root,f)->code;
+  link(goto_exit, true_code);
   true_code->label = true_label; // Mark as destination for true jump
   printf("(2) "); print_tac(true_code);
 
@@ -160,52 +214,51 @@ TAC *gen_cond(NODE *n, TAC *cond, FRAME *f) {
   // next created TAC must carry next_label or change the label to a 'return'
   unresolved_if = true;
   next_label = goto_exit->arg1;
+  return cond;
 }
 
+/* Returns the first code out of the series it creates */
 TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
-  TAC *code;
-  TAC *tmp;
-  //return new_tac(l->result, r->result, new_temp(), n->type);
+  l = traverse_to_end(l);
+  r = traverse_to_end(r);
+
   switch(n->type) {
    case 'D':
-    code = gen_fn(n);
+    return gen_fn(n);
+   case APPLY: // Eval args if any
+    if (n->right != NULL) {
+      new_tac(l->result, NULL, new_temp(), APPLY, push_args(n->right, f, l));
+    } else {
+      new_tac(l->result, NULL, new_temp(), APPLY, l);
+    }
+    return l;
+   case IF: // in-order
+    return gen_cond(n, l, f);
+   case RETURN: // Unary
+    new_tac(l->result, NULL, NULL, RETURN, l);
+    return l;
+   case ';': // in-order
+    link(l, r);
+    return l;
     break;
-   case APPLY:
-    if (n->right != NULL) push_args(n->right, f);
-    code = new_tac(l->result, NULL, new_temp(), APPLY);
-    // TODO jump to label
-    // goto(fn->label)
-    break;
-   case IF:
-    // TODO evaluate boolean and jump
-    code = gen_cond(n, l, f);
-    break;
-   case RETURN:
-    code = new_tac(l->result, NULL, NULL, RETURN);
-    break;
-   case ';':
-    //tmp = evaluate(n->left, f)->code;
-    code = evaluate(n->right, f)->code;
-    //code->prev = tmp;
-    break;
-   case '=':
-    code = new_tac(r->result, NULL, l->result, '=');
-    break;
+   case '=': // post-order
+    link(l, r);
+    new_tac(r->result, NULL, l->result, '=', r);
+    return l;
    default:
-    //perror("Error: TAC control problem\n");
-    code = NULL;
-    break;
+    perror("Error: TAC control problem\n");
+    abort();
   }
-  return code;
 }
 
 void gen(function *func) {
   evaluate(func->frame->root, func->frame);
 }
+void print_program(TAC *t);
 
 void generate_tac() {
-  //function *main_fn = get_val("main", gbl_frame)->state->function;
- evaluate(ans, gbl_frame);
+ TAC *code = evaluate(ans, gbl_frame)->code;
+ print_program(code);
 }
 
 /****************************************************************************
@@ -217,7 +270,8 @@ void print_tac(TAC *t) {
     printf("NULL TAC (print_tac)\n");
     return;
   } else if (t->str == NULL) {
-    printf("TAC has no string representation\n");
+    if (V) printf("TAC has no string representation\n");
+    if (V) printf("TAC contains constant: %d\n", t->result->value);
     return;
   }
   if (t->label != NULL) {
@@ -228,9 +282,11 @@ void print_tac(TAC *t) {
   }
 }
 
-print_program(TAC *t) {
+void print_program(TAC *t) {
+ printf("\n%s\nGenerated TAC\n%s\n", LINE, LINE);
   while (t != NULL) {
     print_tac(t);
     t = t->next;
   }
+ printf("\n%s\nEND TAC\n%s\n", LINE, LINE);
 }
