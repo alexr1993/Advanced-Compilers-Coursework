@@ -250,10 +250,11 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
 }
 void print_program(TAC *t);
 
-void generate_tac() {
- e_type = IR;
- TAC *code = evaluate(ans, gbl_frame)->code;
- print_program(code);
+TAC *generate_tac() {
+  e_type = IR;
+  TAC *code = evaluate(ans, gbl_frame)->code;
+  print_program(code);
+  return code;
 }
 
 /****************************************************************************

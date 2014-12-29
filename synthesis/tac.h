@@ -29,7 +29,7 @@ TAC *tac_control(NODE *, TAC *, TAC *, FRAME *);
 void link_tac(TAC *, TAC *);
 TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, int, TAC *);
 
-void generate_tac();
+TAC *generate_tac();
 
 void print_tac(TAC *);
 #endif
