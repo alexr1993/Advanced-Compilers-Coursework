@@ -75,8 +75,8 @@ char *named(int t) {
     return "goto";
    case POP:
     return "pop";
-   case BEGIN:
-    return "begin";
+   case START:
+    return "start";
    case END:
     return "end";
   }

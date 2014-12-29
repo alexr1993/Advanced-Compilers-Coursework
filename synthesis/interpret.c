@@ -119,6 +119,7 @@ VALUE *call(function *func) {
 }
 
 VALUE *interpret_program() {
+  e_type = INTERPRET;
   function *main_fn = get_val("main", gbl_frame)->state->function;
   return call(main_fn);
 }

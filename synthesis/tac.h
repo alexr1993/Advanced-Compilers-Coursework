@@ -26,7 +26,7 @@ typedef struct label {
 TAC *tac_leaf(NODE *, FRAME *);
 TAC *tac_arith_and_logic(NODE *, TAC *, TAC *);
 TAC *tac_control(NODE *, TAC *, TAC *, FRAME *);
-
+void link_tac(TAC *, TAC *);
 TAC *new_tac(TOKEN *, TOKEN *, TOKEN *, int, TAC *);
 
 void generate_tac();

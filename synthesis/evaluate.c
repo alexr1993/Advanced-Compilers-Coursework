@@ -15,9 +15,11 @@ EVAL *new_eval(void *obj) {
   switch(e_type) {
    case INTERPRET:
     eval->val = (VALUE *)obj;
+    if (eval->val == NULL) return NULL;
     break;
    case IR:
     eval->code = (TAC *)obj;
+    if (eval->code == NULL) return NULL;
     break;
    default:
     perror("Error: Invalid e_type\n");
@@ -104,14 +106,20 @@ EVAL *evaluate(NODE *n, FRAME *f) {
    case APPLY: case IF: case ELSE: case RETURN: case BREAK: case ';': case '=':
    case 'D':
     return control(n, l, r, f);
-   default: // pretty much just ~
+   case ',': // Multiple declarations/assignments
+    link_tac(l->code, r->code);
+    return l;
+   case '~': // pretty much just ~
     switch(e_type) {
      case INTERPRET:
       return r;
      case IR:
-      link(l->code, r->code);
-      return l;
+      if (l != NULL && l->code != NULL && r != NULL && r->code != NULL)
+        link_tac(l->code, r->code);
+      return l != NULL ? l : r;
     }
+    perror("Error! Fell out of bottom of eval\n");
+    abort();
   }
 }
 

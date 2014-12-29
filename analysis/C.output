@@ -6,7 +6,7 @@ Terminals unused in grammar
    PUSH
    POP
    GOTO
-   BEGIN
+   START
    END
 
 
@@ -186,7 +186,7 @@ LOAD (278)
 PUSH (279)
 POP (280)
 GOTO (281)
-BEGIN (282)
+START (282)
 END (283)
 
 

@@ -42,7 +42,7 @@ FRAME *parent_frame;
 %token APPLY LEAF
 
 %token  IF ELSE WHILE CONTINUE BREAK RETURN
-%token LOAD PUSH POP GOTO BEGIN END // TAC
+%token LOAD PUSH POP GOTO START END // TAC
 %start goal
 %%
 
