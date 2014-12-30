@@ -6,16 +6,12 @@
 #include "frontend.h"
 #include "interpret.h"
 #include "tac.h"
+#include "mips.h"
 
 int V,v;
 void print_test_help() {
   printf("Enter one of the following:\n");
   printf(" -f (frontend)\n -i (interpret)\n -t (tac)\n -m (mips)\n");
-}
-
-Suite *mips_suite() {
-  Suite *s = NULL;
-  return s;
 }
 
 int main (int argc, char *argv[]) {
@@ -26,7 +22,7 @@ int main (int argc, char *argv[]) {
   V = 0;
   v = 0;
 
-  Suite *s;
+  Suite *s = NULL;
   int c = 0;
   while ((c = getopt(argc, argv, "fitmvV")) != -1) {
     switch(c) {
@@ -54,10 +50,8 @@ int main (int argc, char *argv[]) {
       exit(0);
     }
   }
-
   int number_failed;
   SRunner *sr;
-
   sr = srunner_create(s);
 
   /* Run suite */
