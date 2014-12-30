@@ -31,22 +31,24 @@ void create_str_rep(TAC *code) {
   char *str = malloc(50);
   switch(code->op) {
    case APPLY:
-    sprintf(str, "%s := %s %s", op_to_str(code->result), named(code->op),
-            op_to_str(code->arg1));
+    sprintf(
+      str,              "%s := %s %s",         op_to_str(code->result),
+      named(code->op),  op_to_str(code->arg1)                           );
     break;
    case IF:
     sprintf(str, "if %s goto %s", op_to_str(code->arg1), op_to_str(code->arg2));
     break;
-   case RETURN: case PUSH: case LOAD: case GOTO: case POP: case START:
-   case END:
+   case RETURN: case PUSH:  case LOAD: case GOTO:
+   case POP:    case START: case END:
     sprintf(str, "%s %s", named(code->op), op_to_str(code->arg1));
     break;
-   case '=':
+   case EQ_OP:
     sprintf(str, "%s := %s", op_to_str(code->result), op_to_str(code->arg1));
     break;
    default:
-    sprintf(str,                  "%s := %s %s %s", op_to_str(code->result),
-            op_to_str(code->arg1), named(code->op), op_to_str(code->arg2));
+    sprintf(
+      str,                   "%s := %s %s %s", op_to_str(code->result),
+      op_to_str(code->arg1), named(code->op),  op_to_str(code->arg2)    );
   }
   code->str = str;
 }
@@ -241,7 +243,7 @@ TAC *tac_control(NODE *n, TAC *l, TAC *r, FRAME *f) {
     break;
    case '=': // post-order
     link_tac(l, r);
-    new_tac(r->result, NULL, l->result, '=', r);
+    new_tac(r->result, NULL, l->result, EQ_OP, r);
     return l;
    default:
     perror("Error: TAC control problem\n");

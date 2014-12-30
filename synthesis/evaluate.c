@@ -118,6 +118,7 @@ EVAL *evaluate(NODE *n, FRAME *f) {
         link_tac(l->code, r->code);
       return l != NULL ? l : r;
     }
+   default:
     perror("Error! Fell out of bottom of eval\n");
     abort();
   }
