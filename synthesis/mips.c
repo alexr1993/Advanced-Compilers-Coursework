@@ -15,6 +15,7 @@ MIPS *gen_arith_and_log(TAC *code) {
 
 /* Selects and returns instruction for given operation */
 MIPS *gen_instruction(TAC *code) {
+  print_tac(code);
   switch(code->op) {
    case APPLY:
     break;
@@ -38,7 +39,7 @@ MIPS *gen_instruction(TAC *code) {
   return NULL;
 }
 
-MIPS *gen_mips(TAC *first) {
+MIPS *generate_mips(TAC *first) {
   while (first != NULL) {
     gen_instruction(first);
     first = first->next;

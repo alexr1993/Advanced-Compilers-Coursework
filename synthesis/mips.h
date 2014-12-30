@@ -12,7 +12,7 @@ typedef struct mips {
   TAC *corresp_tac;
 } MIPS;
 
-MIPS *gen_mips(TAC *first);
+MIPS *generate_mips(TAC *first);
 
 
 #endif
