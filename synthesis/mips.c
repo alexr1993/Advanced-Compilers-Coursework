@@ -9,6 +9,16 @@
  * Labels must be converted to addresses of instructions
  */
 
+
+/* Implementation is guided by Aho/Sethi/Ullman P535+ */
+
+// TODO implement register descriptors to keep track of register -> name
+// mappings and address descriptors to keep track of name -> address mappings
+
+void get_reg() {
+
+}
+
 MIPS *gen_arith_and_log(TAC *code) {
   return NULL;
 }
