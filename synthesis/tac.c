@@ -95,7 +95,7 @@ TAC *new_tac(TOKEN *arg1, TOKEN *arg2, TOKEN *result, int op, TAC *prev) {
     code->str = NULL;
   } else {
     create_str_rep(code);
-    print_tac(code);
+    if (v) print_tac(code);
   }
   return code;
 }
@@ -281,10 +281,10 @@ void print_tac(TAC *t) {
 }
 
 void print_program(TAC *t) {
- printf("\n%s\nGenerated TAC\n%s\n", LINE, LINE);
+ if (V) printf("\n%s\nGenerated TAC\n%s\n", LINE, LINE);
   while (t != NULL) {
     print_tac(t);
     t = t->next;
   }
- printf("\n%s\nEND TAC\n%s\n", LINE, LINE);
+ if (V) printf("\n%s\nEND TAC\n%s\n", LINE, LINE);
 }
