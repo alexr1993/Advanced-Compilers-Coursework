@@ -91,12 +91,9 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
   int i;
   PARAM *p = func->params;
   for(i = 0; i < func->nparams; i++) {
-    // FIXME get_val may be overcomplicating the code, token->val may do?
-    VALUE *val = get_val(p->token->lexeme, func->frame);
-    val->state = args[i]->state;
+    p->token->val->state = args[i]->state;
     if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
                   p->token->lexeme);
-
     if (V) print_val(args[i]);
     p = p->next;
   }

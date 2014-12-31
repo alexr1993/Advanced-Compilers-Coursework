@@ -3,11 +3,8 @@
 
 struct frame;
 struct value;
-#include "environment.h"
 
-#define TRUE 1
-#define FALSE 0
-#define TEST_MODE 0
+#include "environment.h"
 
 /* Data */
 typedef enum DECLARATION_TYPE { VARIABLE, PARAMETER } DECLARATION_TYPE;
@@ -19,11 +16,12 @@ typedef struct token {
   struct value  *val;
   struct token  *next;
   int           newly_created;
-  // For IDENTIFIERS only
+  /* For IDENTIFIERS only */
   int data_type;
   DECLARATION_TYPE declaration_type;
 } TOKEN;
 
+/* For parser */
 struct token_stack {
   int size;
   TOKEN *top;

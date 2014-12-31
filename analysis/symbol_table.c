@@ -1,22 +1,15 @@
-/*
- * Adapted from
- * CM20029 Coursework Assignment 1
- * Tom Crick
- * cs1tc@bath.ac.uk
- * 30 Apr 2003
- *
- * symbol_table.c
- */
+#include "symbol_table.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "C.tab.h"
 
-#include "symbol_table.h"
-
+/*
+ * Adapted from CM20029 Coursework Assignment 1 (Tom Crick - cs1tc@bath.ac.uk)
+ * 30 Apr 2003
+ */
 #define HASH_SIZE (1000)
-
 extern int V, v;
 
 TOKEN **new_symbtable() {
@@ -24,7 +17,6 @@ TOKEN **new_symbtable() {
   return symbtable;
 }
 
-// Return index of Identifier in symbol table
 int hash(char *s) {
   int h = 0;
   while (*s != '\0') {
@@ -40,10 +32,12 @@ void enter_token(TOKEN *t, TOKEN **symbtable) {
   symbtable[h] = t;
 }
 
-/*
+/* Runtime == false (i.e. parse-time)
  * Looks up the input string, returning a token if it's in the symbol table
+ * Otherwise it creates a token and insert it.
  *
- * Otherwise it creates a token and insert it
+ * Runtime == true
+ * Looks up token, returning NULL if it is absent
  */
 TOKEN* lookup_token(char *s, TOKEN **symbtable, bool runtime) {
   int	h = hash(s);
@@ -61,12 +55,10 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable, bool runtime) {
     }
     a = a->next;
   }
-  // TODO this function could use rethinking - lookup + enter in one function?
   if (runtime) {
     if (V) printf("not found!\n");
     return NULL;
   }
-
   /* If not create and insert a token for s */
   ans = make_identifier(s);
   enter_token(ans, symbtable);
@@ -78,8 +70,10 @@ TOKEN* lookup_token(char *s, TOKEN **symbtable, bool runtime) {
 void print_symbtable(TOKEN **symbtable, bool should_print_val) {
   int i;
   if (!should_print_val) printf("SYMBOL TABLE\n");
-  printf("===============================================================\n");
+  printf("%s\n", LINE);
   TOKEN *current;
+
+  // Scan through hashtable's array
   for (i = 0; i < HASH_SIZE; i++) {
     if (symbtable[i] != NULL) {
       // Print all of chain
@@ -94,5 +88,5 @@ void print_symbtable(TOKEN **symbtable, bool should_print_val) {
       }
     }
   }
-  printf("===============================================================\n");
+  printf("%s\n", LINE);
 }

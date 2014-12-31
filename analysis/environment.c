@@ -11,8 +11,9 @@ extern int v,V;
 
 VALUE *get_val(char *name, FRAME *frame) {
   if (V) printf("ENVIRONMENT Looking up variable \"%s\" in frame \"%s\"\n",
-                 name, frame->proc_id);
-  TOKEN *t =  lookup_token(name, frame->symbols, true);
+                 name,
+                 frame->proc_id);
+  TOKEN *t = lookup_token(name, frame->symbols, true);
 
   // If token is not found in symbtable, check parent's
   if (t != NULL) {
