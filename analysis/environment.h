@@ -17,15 +17,26 @@ struct node;
 struct function;
 struct param;
 struct frame;
+struct value;
 
 /* Vars */
 struct token *int_token, *void_token, *function_token, *return_label;
 struct frame *gbl_frame;
 
 /* Types */
+
+typedef struct addr_desc { // maps names with addresses
+  int reg_addr;
+  int mem_addr;
+  struct value *val;
+  bool live;
+  char *str;
+} ADDR_DESC;
+
 typedef union STATE {
   int integer;
   struct function *function;
+  struct addr_descriptor *addr;
 } STATE;
 
 typedef struct value {
@@ -73,7 +84,7 @@ STATE    *new_state(int type);
 FRAME    *new_frame(char *proc_id);
 function *new_function(int return_type, FRAME *frame, PARAM *params);
 PARAM    *new_param(struct token *t);
-
+ADDR_DESC *new_address_descriptor(int);
 /* Diagnostics */
 void  print_frame(FRAME *frame);
 void  print_val(VALUE *val);

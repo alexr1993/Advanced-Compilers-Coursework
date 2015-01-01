@@ -122,6 +122,15 @@ VALUE *new_val(int type, STATE *s) {
   return val;
 }
 
+ADDR_DESC *new_address_descriptor(int reg_addr) {
+  ADDR_DESC *desc = malloc(sizeof(ADDR_DESC));
+  desc->mem_addr = -1;
+  desc->val = NULL;
+  desc->live = false;
+  desc->str = malloc(10); // e.g. $t2
+  return desc;
+}
+
 /* Define commonly used variables for parsing */
 void init_environment() {
 
