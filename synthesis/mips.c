@@ -3,8 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-ADDR_DESC *r_zero, *r_at, **r_v, **r_a, **r_t, **r_s, **r_k,
-          *r_gp, *r_gp, *r_sp, *r_fp, *r_ra;
+ADDR_DESC  *r_zero, *r_at,
+          **r_v, **r_a, **r_t, **r_s, **r_k,
+           *r_gp, *r_gp, *r_sp, *r_fp, *r_ra;
 
 /* Handles memory management, register allocation, instruction selection and
  * evaluation order
@@ -12,11 +13,7 @@ ADDR_DESC *r_zero, *r_at, **r_v, **r_a, **r_t, **r_s, **r_k,
  * Labels must be converted to addresses of instructions
  */
 
-
 /* Implementation is guided by Aho/Sethi/Ullman P535+ */
-
-// TODO implement register descriptors to keep track of register -> name
-// mappings and address descriptors to keep track of name -> address mappings
 
 /* MIPS REGISTERS
  *
@@ -87,9 +84,24 @@ MIPS *gen_instruction(TAC *code) {
   return NULL;
 }
 void init_reg_descriptors();
+void print_reg_descriptors(ADDR_DESC **descriptors, int n);
 
 MIPS *generate_mips(TAC *first) {
   init_reg_descriptors();
+  print_reg_descriptors(reg_descriptors, NREGISTERS);
+
+  /* Print registers by type */
+  /*print_reg_descriptors(&r_zero, 1);
+  print_reg_descriptors(&r_at, 1);
+  print_reg_descriptors(r_v, 2);
+  print_reg_descriptors(r_a, 4);
+  print_reg_descriptors(r_t, 10);
+  print_reg_descriptors(r_s, 8);
+  print_reg_descriptors(r_k, 2);
+  print_reg_descriptors(&r_gp, 1);
+  print_reg_descriptors(&r_sp, 1);
+  print_reg_descriptors(&r_fp, 1);
+  print_reg_descriptors(&r_ra, 1);*/
   while (first != NULL) {
     gen_instruction(first);
     first = first->next;
@@ -116,8 +128,12 @@ void print_mips_prog(MIPS *mcode) {
 /****************************************************************************
  * Init
  ***************************************************************************/
-void print_reg_descriptors() {
-  // TODO, also make a print_addr_descriptor()
+void print_reg_descriptors(ADDR_DESC **descriptors, int n) {
+  int i;
+  for (i = 0; i < n; i++) {
+    printf("%d ", i);
+    print_addr_descriptor(descriptors[i]);
+  }
 }
 
 /* Creates address descriptors for each register and links aliases of the
@@ -131,12 +147,15 @@ void init_reg_descriptors() {
   int i;
   for (i = 0; i < NREGISTERS; i++) {
     reg = new_address_descriptor(i);
+    reg_descriptors[i] = reg;
 
     // Setup strings and aliases
     switch(i) {
      case 0:
       sprintf(reg->str, "$zero");
       r_zero = reg;
+      r_zero->live = true;
+      // r_zero implicitly contains 0
       break;
 
      case 1:
@@ -144,14 +163,14 @@ void init_reg_descriptors() {
       r_at = reg;
       break;
 
-     case 2: case 3:
+     case 2: r_v = &reg_descriptors[i];
+     case 3:
       sprintf(reg->str, "$v%d", i - 2);
-      r_v = &reg;
       break;
 
-     case 4: case 5: case 6: case 7:
+     case 4: r_a = &reg_descriptors[i];
+     case 5: case 6: case 7:
       sprintf(reg->str, "$a%d", i - 4);
-      r_a = &reg;
       break;
 
      case 8:  case 9:  case 10: case 11:
@@ -160,10 +179,10 @@ void init_reg_descriptors() {
       r_t[i-8] = reg;
       break;
 
-     case 16: case 17: case 18: case 19:
+     case 16: r_s = &reg_descriptors[i];
+     case 17: case 18: case 19:
      case 20: case 21: case 22: case 23:
       sprintf(reg->str, "$s%d", i - 16);
-      r_s = &reg;
       break;
 
      case 24: case 25:
@@ -171,26 +190,30 @@ void init_reg_descriptors() {
       r_t[i-16] = reg;
       break;
 
-     case 26: case 27:
+     case 26: r_k = &reg_descriptors[i];
+     case 27:
       sprintf(reg->str, "$k%d", i - 26);
-      r_k = &reg;
+      break;
 
      case 28:
       sprintf(reg->str, "$gp");
       r_gp = reg;
+      break;
 
      case 29:
       sprintf(reg->str, "$sp");
       r_sp = reg;
+      break;
 
      case 30:
       sprintf(reg->str, "$fp");
       r_fp = reg;
+      break;
 
      case 31:
       sprintf(reg->str, "$ra");
       r_ra = reg;
+      break;
     }
-    reg_descriptors[i] = reg;
   }
 }

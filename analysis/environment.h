@@ -91,4 +91,5 @@ void  print_val(VALUE *val);
 void  print_environment(FRAME *frame);
 void  print_function(function *f);
 char *data_type_to_str(int type);
+void print_addr_descriptor(ADDR_DESC *d);
 #endif

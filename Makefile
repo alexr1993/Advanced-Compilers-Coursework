@@ -55,7 +55,7 @@ clean:
        mycc analysis/C.tab.* analysis/lex.yy.c run_tests
 
 mycc:	 ${ANALSRCS} ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS}
-	${CC} -g -o mycc -I . ${ANALOBJS} ${SYNTHOBJS} ${OBJS} ${COMMOBJS}
+	${CC} -g -o mycc -I . main.o common/*o analysis/*o synthesis/*o
 
 # Generate lexical analyser with flex
 analysis/lex.yy.c: analysis/C.flex
@@ -79,4 +79,4 @@ dist:	symbol_table.c nodes.c util.c main.c Makefile C.flex C.y nodes.h token.h
 		nodes.h token.h
 
 tests: ${ANALSRCS} ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
-	${CC} -g -o run_tests -lcheck ${ANALOBJS} ${SYNTHOBJS} ${TESTOBJS} ${COMMOBJS}
+	${CC} -g -o run_tests -lcheck analysis/*o synthesis/*o t/*o common/*o

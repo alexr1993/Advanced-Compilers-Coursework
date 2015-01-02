@@ -218,3 +218,13 @@ void print_function(function *f) {
          f->frame == NULL ? "no" : "yes",
          f->params == NULL ? "no" : "yes");
 }
+
+void print_addr_descriptor(ADDR_DESC *d) {
+  printf("%s - Live: %s, Contents: %s\n",
+         d->str,
+         d->live ? "true" : "false",
+           d->val == NULL           ? "Empty"
+         : d->val->type == INT_TYPE ? d->val->state->integer
+         :                            "function value"
+  );
+}
