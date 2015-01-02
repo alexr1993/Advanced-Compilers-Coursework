@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+extern int V,v;
 ADDR_DESC  *r_zero, *r_at,
           **r_v, **r_a, **r_t, **r_s, **r_k,
            *r_gp, *r_gp, *r_sp, *r_fp, *r_ra;
@@ -35,49 +36,111 @@ ADDR_DESC  *r_zero, *r_at,
  * Instance Manipulation
  ***************************************************************************/
 
-MIPS *new_mips(ADDR_DESC *arg, ADDR_DESC *res, int op, TAC *corresp_tac) {
+void create_str_rep(MIPS *mcode) {
+  mcode->str = malloc(20);
+  switch(mcode->op) {
+   case APPLY:
+    // TODO god save us all...
+    break;
+   case PUSH: case POP: case LOAD: case GOTO: case START: case END:
+    if (mcode->result->type == IDENTIFIER) {
+      sprintf(mcode->str, "%s %s",
+             named(mcode->op),
+             mcode->result->val->addr->str);
+    } else {
+      sprintf(mcode->str, "%s %s",
+             named(mcode->op),
+             mcode->result->val->state->integer);
+    }
+    break;
+   // Arithmetic and logic
+   default:
+    if (mcode->arg->type == IDENTIFIER) {
+      sprintf(mcode->str,
+              "%s %s, %s",
+              named(mcode->op),
+              mcode->arg->val->addr->str,
+              mcode->result->val->addr->str);
+    } else {
+      sprintf(mcode->str,
+              "%s %d, %s",
+              named(mcode->op),
+              mcode->arg->val->state->integer,
+              mcode->result->val->addr->str);
+    }
+  }
+}
+void print_mips(MIPS *mcode);
+
+MIPS *new_mips(int op, TOKEN *arg, TOKEN *res, TAC *corresp_tac) {
   MIPS *mcode = malloc(sizeof(MIPS));
   mcode->corresp_tac = corresp_tac;
-  mcode->arg = NULL;
-  mcode->res = NULL;
-  mcode->op  = NULL;
-  mcode->str = malloc(20);
+  mcode->arg = arg;
+  mcode->result = res;
+  mcode->op  = op;
+  create_str_rep(mcode);
   mcode->next = NULL;
   mcode->prev = NULL;
+  print_mips(mcode);
   return mcode;
 }
 
-/* Returns a register or possibly just a mem address */
-ADDR_DESC *get_reg() {
-  // TODO check reg_descriptor for free registers and return one
-  return reg_descriptors[1];
+/* Returns the first free reg in the reglist */
+ADDR_DESC *get_reg(ADDR_DESC **reglist, int len) {
+  int i;
+  for (i = 0; i < len; i++) {
+    if (reglist[i]->live == false) {
+      return reglist[i];
+    }
+  }
+  return NULL;
 }
 
+// Assume at least one arg is an identifier which needs loading
 MIPS *gen_arith_and_log(TAC *code) {
-  return NULL;
+  TOKEN *arg, *result;
+
+  /* Pick an identifier with a register to store the result */
+  if (code->arg1->type == IDENTIFIER) {
+    result = code->arg1;
+    arg = code->arg2;
+  } else if (code->arg2 != NULL && code->arg2->type == IDENTIFIER) {
+    result = code->arg2;
+    arg = code->arg1;
+  } else {
+    perror("Error! Unhandled Condition");
+    abort();
+  }
+ // Set result's address
+  code->result->val->addr = result->val->addr;
+  return new_mips(code->op, arg, result, code);
+}
+
+/* Generates MIPS statement to load a value into a register */
+MIPS *gen_load(TAC *code) {
+  // Assign the arg a register
+  ADDR_DESC *reg = get_reg(r_t, 10);
+  code->arg1->val->addr = reg;
+  // Generate code
+  return new_mips(LOAD, NULL, code->arg1, code);
 }
 
 /* Selects and returns instruction for given operation */
 MIPS *gen_instruction(TAC *code) {
-  ADDR_DESC *r = get_reg(); // output loc
+  if (code->op == 0) return NULL; // Weed out tac statements which store constants... these should be eliminated before here TODO
   print_tac(code);
+  if (V) printf("MIPS Generating for op \"%s\"\n", named(code->op));
   switch(code->op) {
-   case APPLY:
-    break;
-   case IF:
-    break;
-   case RETURN:
-    break;
-   case PUSH:
-    break;
-   case LOAD:
-    break;
-   case GOTO:
-    break;
+   case APPLY: break;
+   case IF:  break;
+   case RETURN: break;
+   case LOAD: return gen_load(code);
+   case GOTO: break;
+   case PUSH: break;
    case POP: break;
    case START: break;
    case END: break;
-   case EQ_OP: break;
+   case '=': break;
    default:
     return gen_arith_and_log(code);
   }
@@ -116,6 +179,13 @@ MIPS *generate_mips(TAC *first) {
 void print_mips(MIPS *mcode) {
   if (mcode->str == NULL) printf("String rep for mips is NULL\n");
   else printf("%s\n", mcode->str);
+  if (V) {
+    printf("MIPS arg ");
+    print_token(mcode->arg);
+    printf("MIPS result ");
+    if (mcode->result != NULL) print_token(mcode->result);
+    else printf("none\n");
+  }
 }
 
 void print_mips_prog(MIPS *mcode) {
@@ -125,9 +195,6 @@ void print_mips_prog(MIPS *mcode) {
   }
 }
 
-/****************************************************************************
- * Init
- ***************************************************************************/
 void print_reg_descriptors(ADDR_DESC **descriptors, int n) {
   int i;
   for (i = 0; i < n; i++) {
@@ -136,6 +203,9 @@ void print_reg_descriptors(ADDR_DESC **descriptors, int n) {
   }
 }
 
+/****************************************************************************
+ * Init
+ ***************************************************************************/
 /* Creates address descriptors for each register and links aliases of the
  * conventional blocks to the registers in the reg_descriptors array
  */

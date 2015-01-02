@@ -7,14 +7,15 @@
 #include "evaluate.h"
 
 #include "analysis/environment.h"
+#include "analysis/token.h"
 
 #include "common/util.h"
 
 typedef struct mips {
   TAC *corresp_tac;
-  ADDR_DESC *arg;
-  ADDR_DESC *res;
-  int *op;
+  TOKEN *arg;
+  TOKEN *result;
+  int op;
   char *str;
   struct mips *next;
   struct mips *prev;

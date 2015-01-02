@@ -28,7 +28,7 @@ struct frame *gbl_frame;
 typedef struct addr_desc { // maps names with addresses
   int reg_addr;
   int mem_addr;
-  struct value *val;
+  struct token *contents;
   bool live;
   char *str;
 } ADDR_DESC;
@@ -36,12 +36,12 @@ typedef struct addr_desc { // maps names with addresses
 typedef union STATE {
   int integer;
   struct function *function;
-  struct addr_descriptor *addr;
 } STATE;
 
 typedef struct value {
   int type;
   STATE *state;
+  struct addr_desc *addr;
 } VALUE;
 
 typedef struct frame {

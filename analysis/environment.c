@@ -117,15 +117,16 @@ PARAM *new_param(TOKEN *t) {
 
 VALUE *new_val(int type, STATE *s) {
   VALUE *val = malloc(sizeof(VALUE));
-  val->type = type;
+  val->type  = type;
   val->state = s;
+  val->addr  = NULL;
   return val;
 }
 
 ADDR_DESC *new_address_descriptor(int reg_addr) {
   ADDR_DESC *desc = malloc(sizeof(ADDR_DESC));
   desc->mem_addr = -1;
-  desc->val = NULL;
+  desc->contents = NULL;
   desc->live = false;
   desc->str = malloc(10); // e.g. $t2
   return desc;
@@ -223,8 +224,8 @@ void print_addr_descriptor(ADDR_DESC *d) {
   printf("%s - Live: %s, Contents: %s\n",
          d->str,
          d->live ? "true" : "false",
-           d->val == NULL           ? "Empty"
-         : d->val->type == INT_TYPE ? d->val->state->integer
-         :                            "function value"
+           d->contents == NULL                ? "Empty"
+         : d->contents->data_type == INT_TYPE ? d->contents->val->state->integer
+         :                                      "function value"
   );
 }
