@@ -166,7 +166,7 @@ void print_state(STATE *s, int type) {
 }
 
 void print_val(VALUE *val) {
-  if (!val) {
+  if (val == NULL) {
     printf("VALUE not initialised\n");
     return;
   }

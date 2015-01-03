@@ -33,38 +33,57 @@ ADDR_DESC  *r_zero, *r_at,
  */
 
 /****************************************************************************
- * Instance Manipulation
+ * Translation Tools
  ***************************************************************************/
 
+char *get_instruction_str(int instruction) {
+  switch(instruction) {
+   case APPLY: return "call";
+   case POP:   return "pop";
+   case LOAD:  return "li";
+   case GOTO:  return "jr";
+   case PUSH:  return "push";
+   default:    return "instruction string not added";
+  }
+}
+
+/* Use the mips struct data to generate code for each statement */
 void create_str_rep(MIPS *mcode) {
   mcode->str = malloc(20);
   switch(mcode->op) {
    case APPLY:
     // TODO god save us all...
     break;
-   case PUSH: case POP: case LOAD: case GOTO: case START: case END:
+   case POP: case GOTO: case START: case END:
     if (mcode->result->type == IDENTIFIER) {
       sprintf(mcode->str, "%s %s",
-             named(mcode->op),
+             get_instruction_str(mcode->op),
              mcode->result->val->addr->str);
     } else {
-      sprintf(mcode->str, "%s %s",
-             named(mcode->op),
+      sprintf(mcode->str, "%s %d",
+             get_instruction_str(mcode->op),
              mcode->result->val->state->integer);
     }
+    break;
+
+   case LOAD: case PUSH:
+    sprintf(mcode->str, "%s %s, %s",
+            get_instruction_str(mcode->op),
+            mcode->arg->lexeme,
+            mcode->result->val->addr->str);
     break;
    // Arithmetic and logic
    default:
     if (mcode->arg->type == IDENTIFIER) {
       sprintf(mcode->str,
               "%s %s, %s",
-              named(mcode->op),
+              get_instruction_str(mcode->op),
               mcode->arg->val->addr->str,
               mcode->result->val->addr->str);
     } else {
       sprintf(mcode->str,
               "%s %d, %s",
-              named(mcode->op),
+              get_instruction_str(mcode->op),
               mcode->arg->val->state->integer,
               mcode->result->val->addr->str);
     }
@@ -78,9 +97,11 @@ MIPS *new_mips(int op, TOKEN *arg, TOKEN *res, TAC *corresp_tac) {
   mcode->arg = arg;
   mcode->result = res;
   mcode->op  = op;
-  create_str_rep(mcode);
   mcode->next = NULL;
   mcode->prev = NULL;
+
+  create_str_rep(mcode);
+  printf("MIPS created: ");
   print_mips(mcode);
   return mcode;
 }
@@ -90,14 +111,19 @@ ADDR_DESC *get_reg(ADDR_DESC **reglist, int len) {
   int i;
   for (i = 0; i < len; i++) {
     if (reglist[i]->live == false) {
+      reglist[i]->live = true;
       return reglist[i];
     }
   }
   return NULL;
 }
 
+/****************************************************************************
+ * Code Generation
+ ***************************************************************************/
+
 // Assume at least one arg is an identifier which needs loading
-MIPS *gen_arith_and_log(TAC *code) {
+MIPS *gen_arith_and_log(TAC *code, MIPS *prev) {
   TOKEN *arg, *result;
 
   /* Pick an identifier with a register to store the result */
@@ -115,41 +141,70 @@ MIPS *gen_arith_and_log(TAC *code) {
   code->result->val->addr = result->val->addr;
   return new_mips(code->op, arg, result, code);
 }
+MIPS *gen_call_seq(TAC *code, MIPS *prev) {
+
+  return NULL;
+}
+MIPS *gen_return_seq(TAC *code, MIPS *prev) {
+  return NULL;
+}
+
+MIPS *gen_apply(TAC *code, MIPS *prev) {
+  return NULL;
+}
+
+MIPS *gen_return(TAC *code, MIPS *prev) {
+  // TODO store arg in return address
+  return NULL;
+}
 
 /* Generates MIPS statement to load a value into a register */
-MIPS *gen_load(TAC *code) {
+MIPS *gen_load(TAC *code, MIPS *prev) {
   // Assign the arg a register
   ADDR_DESC *reg = get_reg(r_t, 10);
   code->arg1->val->addr = reg;
   // Generate code
-  return new_mips(LOAD, NULL, code->arg1, code);
+  return new_mips(LOAD, code->arg1, code->arg1, code);
+}
+
+MIPS *gen_goto(TAC *code, MIPS *prev) {
+  // TODO find label
+  ADDR_DESC *reg = get_reg(r_t, 10);
+  // TODO set label's location to reg
+  return new_mips(GOTO, code->arg1, code->arg1, code);;
+}
+
+MIPS *gen_push(TAC *code, MIPS *prev) {
+  ADDR_DESC *reg = get_reg(r_a, 4);
+  code->arg1->val->addr = reg;
+  return new_mips(PUSH, code->arg1, code->arg1, code);
 }
 
 /* Selects and returns instruction for given operation */
-MIPS *gen_instruction(TAC *code) {
+MIPS *gen_instruction(TAC *code, MIPS *prev) {
   if (code->op == 0) return NULL; // Weed out tac statements which store constants... these should be eliminated before here TODO
   print_tac(code);
   if (V) printf("MIPS Generating for op \"%s\"\n", named(code->op));
   switch(code->op) {
-   case APPLY: break;
-   case IF:  break;
-   case RETURN: break;
-   case LOAD: return gen_load(code);
-   case GOTO: break;
-   case PUSH: break;
-   case POP: break;
-   case START: break;
-   case END: break;
-   case '=': break;
+   case APPLY:  break;
+   case IF:     break;
+   case RETURN: return gen_return(code, prev);
+   case LOAD:   return gen_load(code, prev);
+   case GOTO:   break;
+   case PUSH:   return gen_push(code, prev);
+   case POP:    break;
+   case START:  break;
+   case END:    break;
+   case '=':    break;
    default:
-    return gen_arith_and_log(code);
+    return gen_arith_and_log(code, prev);
   }
   return NULL;
 }
 void init_reg_descriptors();
 void print_reg_descriptors(ADDR_DESC **descriptors, int n);
 
-MIPS *generate_mips(TAC *first) {
+MIPS *generate_mips(TAC *code) {
   init_reg_descriptors();
   print_reg_descriptors(reg_descriptors, NREGISTERS);
 
@@ -165,11 +220,12 @@ MIPS *generate_mips(TAC *first) {
   print_reg_descriptors(&r_sp, 1);
   print_reg_descriptors(&r_fp, 1);
   print_reg_descriptors(&r_ra, 1);*/
-  while (first != NULL) {
-    gen_instruction(first);
-    first = first->next;
+  MIPS *mcode = NULL;
+  while (code != NULL) {
+    mcode = gen_instruction(code, mcode);
+    code = code->next;
   }
-  return NULL;
+  return mcode;
 }
 
 /****************************************************************************

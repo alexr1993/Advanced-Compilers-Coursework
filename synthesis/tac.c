@@ -127,6 +127,7 @@ TAC *tac_leaf(NODE *n, FRAME *f) {
   TOKEN *t = get_token(n);
   switch(t->type) {
    case IDENTIFIER:
+    t->val = get_val(t->lexeme, f);
     return new_tac(t, NULL, t, LOAD, NULL);
     break;
    case CONSTANT:

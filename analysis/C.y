@@ -328,8 +328,10 @@ void create_frame(NODE *n) {
 
     t = pop();
   }
+  printf("Initialising function \"%s\"\n", frame->proc_id);
   // the current token is the function which owns this frame
   init_fn(t, frame, params);
+  print_val(t->val);
   push(t); // let enclosing frames find this fn
 }
 
