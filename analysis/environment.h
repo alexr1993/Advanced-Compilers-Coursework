@@ -12,7 +12,7 @@
 
 #define INT_TYPE  0
 #define FN_TYPE   1
-
+#define NO_TYPE   2
 struct node;
 struct function;
 struct param;

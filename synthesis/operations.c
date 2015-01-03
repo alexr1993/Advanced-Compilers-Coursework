@@ -23,7 +23,8 @@ EVAL *arithmetic(NODE *n, EVAL *l, EVAL *r, FRAME *f) {
   switch(e_type) {
    case INTERPRET:
     val =  new_val(INT_TYPE, new_int_state(
-      interpret_arithmetic(n->type, l->val->state->integer, r->val->state->integer)));
+      interpret_arithmetic(
+        n->type, l->val->state->integer, r->val->state->integer)));
     return new_eval((void *)val);
    case IR:
     return new_eval((void *)tac_arith_and_logic(n, l->code, r->code));

@@ -15,6 +15,7 @@ void print_banner(char *content);
 void print_leaf(struct node *tree, int level);
 void print_branch(struct node *tree);
 void print_tree(struct node *tree);
+char *int_to_str(int a);
 void set_input_file(char *filename);
 void close_input_file();
 void parse(char *filename);

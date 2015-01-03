@@ -167,10 +167,12 @@ void print_state(STATE *s, int type) {
 
 void print_val(VALUE *val) {
   if (val == NULL) {
-    printf("VALUE not initialised\n");
+    printf("VALUE is NULL\n");
     return;
   }
-  printf("VALUE type: %s, ", data_type_to_str(val->type));
+  printf("VALUE type: %s, location: %s, ",
+         data_type_to_str(val->type),
+         val->addr == NULL ? NULL : val->addr->str);
   print_state(val->state, val->type);
 }
 

@@ -106,7 +106,9 @@ TOKEN *new_temp() {
   char name[4];
   sprintf(name, "t%d", id);
   if (V) printf("TAC \"%s\" created\n", name);
-  return make_identifier(name);
+  TOKEN *temp = make_identifier(name);
+  temp->val = new_val(NO_TYPE, NULL); // For attaching register info
+  return temp;
 }
 
 TOKEN *new_label() {

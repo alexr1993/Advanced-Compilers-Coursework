@@ -13,7 +13,8 @@
 
 typedef struct mips {
   TAC *corresp_tac;
-  TOKEN *arg;
+  TOKEN *arg1;
+  TOKEN *arg2;
   TOKEN *result;
   int op;
   char *str;

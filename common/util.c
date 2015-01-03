@@ -116,6 +116,11 @@ void print_tree(NODE *tree) {
   print_tree0(tree, 0);
 }
 
+// Convenience stringeriser
+char *int_to_str(int a) {
+  static char str[10];
+  sprintf(str, "%d", a);
+}
 /* Returns the root of the true subtree, given an IF node */
 NODE *get_true_root(NODE *n) {
   return ELSE == n->right->type ? n->right->left  : n->right;
