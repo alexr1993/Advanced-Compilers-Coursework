@@ -9,7 +9,6 @@
  * Adapted from CM20029 Coursework Assignment 1 (Tom Crick - cs1tc@bath.ac.uk)
  * 30 Apr 2003
  */
-#define HASH_SIZE (1000)
 extern int V, v;
 
 TOKEN **new_symbtable() {

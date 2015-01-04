@@ -83,15 +83,13 @@ VALUE **eval_args(NODE *argstree, int nargs, FRAME *caller) {
 }
 
 /* Eval and assign arguments to parameters */
-void bind_args(function *func, NODE *argstree, FRAME *caller) {
-  if (V) printf("INTERPRET Evaluating arguments for \"%s\" call\n",
-                func->proc_id);
-  VALUE **args = eval_args(argstree, func->nparams, caller);
-
+void bind_args(function *func, VALUE **args) {
   int i;
   PARAM *p = func->params;
   for(i = 0; i < func->nparams; i++) {
-    p->token->val->state = args[i]->state;
+    // TODO consider memcpy as a part of making arg assignment not affect
+    // calls lower in the stack
+    get_val(p->token->lexeme, func->frame)->state = args[i]->state;
     if (V) printf("INTERPRET Bound param \"%s\" with value:\n",
                   p->token->lexeme);
     if (V) print_val(args[i]);
@@ -102,8 +100,16 @@ void bind_args(function *func, NODE *argstree, FRAME *caller) {
 /* Evaluates the given function, if args have not been bound there may be a
  * segfault
  */
-VALUE *call(function *func) {
-  // TODO create activation record
+VALUE *call(function *func, NODE *argstree, FRAME *caller) {
+  if (V) printf("INTERPRET Evaluating arguments for \"%s\" call\n",
+                func->proc_id);
+
+  VALUE **args = argstree == NULL ? NULL
+      :                             eval_args(argstree, func->nparams, caller);
+
+  activate(func);
+  if (argstree != NULL)
+    bind_args(func, args);
   if (v) {
     char msg[80];
     sprintf(msg, "INTERPRET Calling %s", func->proc_id);
@@ -112,13 +118,15 @@ VALUE *call(function *func) {
   if (V) print_function(func);
   if (V) print_frame(func->frame);
   // Execute function
-  return evaluate(func->frame->root, func->frame)->val;
+  VALUE *output = evaluate(func->frame->root, func->frame)->val;
+  deactivate(func);
+  return output;
 }
 
 VALUE *interpret_program() {
   e_type = INTERPRET;
   function *main_fn = get_val("main", gbl_frame)->state->function;
-  return call(main_fn);
+  return call(main_fn, NULL, gbl_frame);
 }
 
 VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
@@ -129,14 +137,15 @@ VALUE *interpret_control(NODE *n, VALUE *l, VALUE *r, FRAME *f) {
     // todo bind args
     if (V) printf("INTERPRET Function to be called:\n");
     if (V) print_function(l->state->function);
-    if (n->right) bind_args(l->state->function, n->right, f);
-    return call(l->state->function);
+    return call(l->state->function, n->right, f);
 
    case IF:
     true_eval  = get_true_root(n);
     false_eval = get_false_root(n);
     // Execute branch
-    return evaluate( is_true(l) ? true_eval : false_eval, f)->val;
+    if (is_true(l)) return evaluate(true_eval, f)->val;
+    else if (false_eval != NULL) return evaluate(false_eval, f)->val;
+    else return NULL;
 
    case RETURN:
     if (V) printf("INTERPRET return called for function \"%s\"\n", f->proc_id);

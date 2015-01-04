@@ -46,6 +46,65 @@ bool is_true(VALUE *boolean) {
   return boolean->state->integer == 1;
 }
 
+/* Create copy of symbol table and place activation on stack */
+void activate(function *func) {
+  FRAME *curr_activation = func->frame;
+
+  if (V) printf("ENVIRONMENT About to activate function \"%s\":\n",
+         func->proc_id);
+  if (V) print_frame(curr_activation);
+
+  // On first activation, cache the initial symbol table
+  if (curr_activation->prev_activation == NULL) {
+    curr_activation->compile_symbols = new_symbtable();
+    memcpy(curr_activation->compile_symbols,
+           curr_activation->symbols,
+           HASH_SIZE * sizeof(TOKEN *));
+  }
+
+  // shallow copy frame links
+  FRAME *activation = new_frame(func->proc_id);
+  activation->parent    = curr_activation->parent;
+  activation->child     = curr_activation->child;
+  activation->sibling   = curr_activation->sibling;
+  activation->nchildren = curr_activation->nchildren;
+  activation->root      = curr_activation->root;
+
+  // Init a fresh copy of the symbol table from the cached copy
+  activation->compile_symbols = curr_activation->compile_symbols;
+  // Overwrite the symbtable allocated in new_frame
+  memcpy(activation->symbols,
+         activation->compile_symbols,
+         HASH_SIZE *sizeof(TOKEN *));
+
+  // copy values/states
+  int i;
+  for (i = 0; i < HASH_SIZE; i++) {
+    if (activation->symbols[i] != NULL) {
+      memcpy(activation->symbols[i]->val,
+             curr_activation->symbols[i]->val,
+             sizeof(VALUE));
+      memcpy(activation->symbols[i]->val->state,
+             curr_activation->symbols[i]->val->state,
+             sizeof(STATE));
+    }
+  }
+
+  // Pop the new activation onto the stack
+  activation->prev_activation = curr_activation;
+  func->frame = activation;
+  if (v) printf("ENVIRONMENT Activated function \"%s\"\n",
+         func->proc_id);
+  if (V) print_frame(activation);
+}
+
+void deactivate(function *func) {
+  // Set symbol table to the next one on the stack
+  FRAME *curr_activation = func->frame;
+  func->frame = curr_activation->prev_activation;
+  free(curr_activation);
+}
+
 /****************************************************************************
  * CONSTRUCTORS
  ***************************************************************************/
@@ -84,6 +143,9 @@ FRAME *new_frame(char *proc_id) {
   frame->parent  = NULL;
   frame->return_called = false;
   frame->nchildren = 0;
+  frame->prev_activation = NULL;
+  frame->compile_symbols = NULL;
+  frame->root = NULL;
   return frame;
 }
 

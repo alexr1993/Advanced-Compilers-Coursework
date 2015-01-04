@@ -123,12 +123,12 @@ char *int_to_str(int a) {
 }
 /* Returns the root of the true subtree, given an IF node */
 NODE *get_true_root(NODE *n) {
-  return ELSE == n->right->type ? n->right->left  : n->right;
+  return n->right->type == ELSE ? n->right->left  : n->right;
 }
 
 /* Returns the root of the false subtree, given an IF node */
 NODE *get_false_root(NODE *n) {
-  return ELSE == n->right->type ? n->right->right : NULL;
+  return n->right->type == ELSE ? n->right->right : NULL;
 }
 
 /* Input File Utils */

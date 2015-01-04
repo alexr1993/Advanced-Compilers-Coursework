@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "token.h"
+#define HASH_SIZE (1000)
 
 struct token **new_symbtable();
 struct token* lookup_token(char *s, struct token **symbtable, bool runtime);

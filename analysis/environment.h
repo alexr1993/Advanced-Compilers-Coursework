@@ -48,8 +48,10 @@ typedef struct frame {
   struct frame *parent;
   struct frame *child;
   struct frame *sibling;
+  struct frame *prev_activation;
   int nchildren;
   struct token **symbols;
+  struct token **compile_symbols; // not written to after analysis
   char *proc_id; // name of enclosing procedure
   struct node *root;
   bool return_called;
@@ -74,6 +76,8 @@ VALUE *get_val(char *name, FRAME *frame);
 void   set_val(char *name, STATE* state, FRAME *frame);
 FRAME *get_frame(char *name, FRAME *parent);
 bool   is_true(VALUE *boolean);
+void   activate(function *func);
+void   deactivate(function *func);
 
 /* Environment construction */
 void      init_environment();

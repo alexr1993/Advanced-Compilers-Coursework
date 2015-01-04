@@ -21,10 +21,12 @@ START_TEST(t_interpret_control) {
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
 
-  /* Aint nobody got time for factorial...
+/* This test is a version of factorial that will fail until an env
+ * bug is fixed - the argument is corrupted by procedures it is used in
   parse("t/src/control/3.cmm");
-  ck_assert_int_eq(6, interpret_program();
-  */
+  output = interpret_program();
+  ck_assert_int_eq(6, output->state->integer);
+ */
   parse("t/src/control/4.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
@@ -61,11 +63,11 @@ START_TEST(t_interpret_integration) {
   parse("t/src/integration_tests/closure.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
-/* Another factorial one, can't test until implementing a call stack
+
   parse("t/src/integration_tests/nested_subroutine.cmm");
   output = interpret_program();
-  ck_assert_int_eq(42, output->state->integer);
-*/
+  ck_assert_int_eq(6, output->state->integer);
+
   parse("t/src/integration_tests/first_class_function.cmm");
   output = interpret_program();
   ck_assert_int_eq(42, output->state->integer);
