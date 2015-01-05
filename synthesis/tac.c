@@ -209,12 +209,9 @@ TAC *gen_cond(NODE *n, TAC *cond, FRAME *f) {
   TAC *true_code = evaluate(true_root,f)->code;
   link_tac(goto_exit, true_code);
   true_code->label = true_label; // Mark as destination for true jump
-  printf("(2) "); print_tac(true_code);
 
-  // TODO this is an open issue - the best resolution is to set the label to 
-  // 'return' once the function exits with not statements to jump to after the
-  // if, this would be after gen_fn or something.
-  // next created TAC must carry next_label or change the label to a 'return'
+  // There will always be a statement after, e.g. end <proc_id>
+  // which will be able to pick up this label
   unresolved_if = true;
   next_label = goto_exit->arg1;
   return cond;

@@ -54,7 +54,7 @@ char *get_instruction_str(int instruction) {
 /* Use the mips struct data to generate code for each statement */
 void create_str_rep(MIPS *mcode) {
   TOKEN *arg1 = mcode->arg1;
-  TOKEN *arg2 = mcode->arg2;
+  //TOKEN *arg2 = mcode->arg2;
   TOKEN *res  = mcode->result;
   mcode->str = malloc(20);
   switch(mcode->op) {
@@ -162,15 +162,17 @@ MIPS *gen_arith_and_log(TAC *code, MIPS *prev) {
     perror("Error! Unhandled Condition");
     abort();
   }
-  printf("MIPS Arithmetic generation:\n  Arg1: ");
-  print_token(arg1);
-  print_val(code->arg1->val);
-  printf("  Arg2: ");
-  print_token(code->arg2);
-  print_val(code->arg2->val);
-  printf("  Result: ");
-  print_token(result);
-  print_val(code->result->val);
+  if (V) {
+    printf("MIPS Arithmetic generation:\n  Arg1: ");
+    print_token(arg1);
+    print_val(code->arg1->val);
+    printf("  Arg2: ");
+    print_token(code->arg2);
+    print_val(code->arg2->val);
+    printf("  Result: ");
+    print_token(result);
+    print_val(code->result->val);
+  }
   // Set result's address
   code->result->val->addr = result->val->addr;
   return new_mips(code->op, arg1, arg1, result, code);
@@ -211,7 +213,7 @@ MIPS *gen_load(TAC *code, MIPS *prev) {
 
 MIPS *gen_goto(TAC *code, MIPS *prev) {
   // TODO find label
-  ADDR_DESC *reg = get_reg(r_t, 10);
+  //ADDR_DESC *reg = get_reg(r_t, 10);
   // TODO set label's location to reg
   return new_mips(GOTO, code->arg1, NULL, code->arg1, code);;
 }
@@ -224,8 +226,10 @@ MIPS *gen_push(TAC *code, MIPS *prev) {
 
 /* Selects and returns instruction for given operation */
 MIPS *gen_instruction(TAC *code, MIPS *prev) {
-  if (code->op == 0) return NULL; // Weed out tac statements which store constants... these should be eliminated before here TODO
-  print_tac(code);
+  // Weed out tac statements which store constants
+  //... these should really be eliminated before here
+  if (code->op == 0) return NULL;  print_tac(code);
+
   if (V) printf("MIPS Generating for op \"%s\"\n", named(code->op));
   switch(code->op) {
    case APPLY:  break;

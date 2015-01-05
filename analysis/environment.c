@@ -102,7 +102,6 @@ void deactivate(function *func) {
   // Set symbol table to the next one on the stack
   FRAME *curr_activation = func->frame;
   func->frame = curr_activation->prev_activation;
-  free(curr_activation);
 }
 
 /****************************************************************************
@@ -289,7 +288,8 @@ void print_addr_descriptor(ADDR_DESC *d) {
          d->str,
          d->live ? "true" : "false",
            d->contents == NULL                ? "Empty"
-         : d->contents->data_type == INT_TYPE ? d->contents->val->state->integer
+         : d->contents->data_type == INT_TYPE ?
+             int_to_str(d->contents->val->state->integer)
          :                                      "function value"
   );
 }

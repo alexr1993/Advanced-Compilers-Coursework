@@ -120,6 +120,7 @@ void print_tree(NODE *tree) {
 char *int_to_str(int a) {
   static char str[10];
   sprintf(str, "%d", a);
+  return str;
 }
 /* Returns the root of the true subtree, given an IF node */
 NODE *get_true_root(NODE *n) {

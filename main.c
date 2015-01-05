@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
     }
   }
   if (action == NULL) {
-    action = "mips";
+    action = "interpret";
     printf("Setting mode to \"%s\" by default.\n", action);
   }
 
