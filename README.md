@@ -1,5 +1,5 @@
-minus2C
-=======
+Advanced Compilers Coursework
+=============================
 (Implementation by Alex Remedios)
 
 This is a compiler for the --C language (a subset of C) targeting the MIPS instruction set.
